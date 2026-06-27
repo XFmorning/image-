@@ -67,7 +67,7 @@ function calcSize(ratioIdx: number, qualityIdx: number) {
 
 const STYLE_PRESETS = [
   { key: "none",       label: "无",       suffix: "" },
-  { key: "realistic",  label: "写实",     suffix: ", photorealistic, hyperrealistic, 8K, highly detailed, professional photography, sharp focus" },
+  { key: "realistic",  label: "写实",     suffix: ", photorealistic, hyperrealistic, 8K, highly detailed, professional photography, sharp focus, anatomically correct human proportions if depicting people, natural body proportions with head-to-body ratio 1:7, legs proportional NOT short, realistic anatomy" },
   { key: "anime",      label: "动漫",     suffix: ", anime style, manga art, vibrant colors, clean linework, cel shaded, Japanese animation" },
   { key: "ink",        label: "水墨",     suffix: ", traditional Chinese ink wash painting, sumi-e style, black ink on rice paper, elegant brushstrokes, minimalist composition, artistic" },
   { key: "oil",        label: "油画",     suffix: ", oil painting on canvas, classical art style, rich textures, visible brushstrokes, masterpiece, gallery quality" },
