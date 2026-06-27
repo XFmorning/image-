@@ -56,8 +56,9 @@ export default function AppLayout({ children }: AppLayoutProps) {
         </nav>
 
         <div className="app-sider-footer">
-          <div style={{ fontWeight: 600, marginBottom: 4 }}>AI 创作者</div>
-          <div style={{ fontSize: 12, opacity: 0.7 }}>Free Plan</div>
+          <div className="user-avatar">👤</div>
+          <div style={{ fontWeight: 600, marginBottom: 2 }}>AI 创作者</div>
+          <div style={{ fontSize: 11, opacity: 0.65 }}>Free Plan</div>
         </div>
       </aside>
 

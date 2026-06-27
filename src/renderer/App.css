@@ -5,6 +5,11 @@
   --gradient-end: #764ba2;
   --sider-width: 260px;
   --sider-collapsed-width: 0px;
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+  --shadow-card: 0 2px 12px rgba(0,0,0,0.04), 0 1px 3px rgba(0,0,0,0.06);
+  --shadow-hover: 0 6px 24px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04);
 }
 
 * {
@@ -19,7 +24,8 @@ html, body, #root {
     "Helvetica Neue", Arial, "Noto Sans", sans-serif;
 }
 
-/* 侧边栏布局 */
+/* ========== 侧边栏 ========== */
+
 .app-layout {
   display: flex;
   height: 100%;
@@ -30,19 +36,50 @@ html, body, #root {
   width: var(--sider-width);
   min-width: var(--sider-width);
   height: 100%;
-  background: linear-gradient(180deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+  background: linear-gradient(180deg,
+    #5a3d8a 0%,
+    var(--gradient-start) 25%,
+    var(--gradient-end) 100%
+  );
   display: flex;
   flex-direction: column;
   color: #fff;
   user-select: none;
   z-index: 10;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 侧边栏背景装饰 */
+.app-sider::before {
+  content: "";
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.04);
+  top: -60px;
+  right: -60px;
+}
+
+.app-sider::after {
+  content: "";
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.03);
+  bottom: 80px;
+  left: -40px;
 }
 
 .app-sider-logo {
-  padding: 24px 20px 16px;
+  padding: 28px 20px 20px;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  position: relative;
+  z-index: 1;
 }
 
 .app-sider-logo h1 {
@@ -50,71 +87,258 @@ html, body, #root {
   font-weight: 700;
   color: #fff;
   white-space: nowrap;
+  letter-spacing: 0.5px;
 }
 
 .app-sider-logo .logo-icon {
-  font-size: 28px;
+  font-size: 32px;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.2));
 }
 
 .app-sider-menu {
   flex: 1;
-  padding: 8px 0;
+  padding: 8px 12px;
   overflow-y: auto;
+  position: relative;
+  z-index: 1;
 }
 
 .app-sider-menu .menu-item {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 12px 20px;
-  color: rgba(255, 255, 255, 0.75);
+  gap: 12px;
+  padding: 12px 16px;
+  margin-bottom: 4px;
+  border-radius: var(--radius-md);
+  color: rgba(255, 255, 255, 0.7);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   font-size: 15px;
   text-decoration: none;
-  border-left: 3px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.app-sider-menu .menu-item::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.1);
+  border-radius: var(--radius-md);
+  opacity: 0;
+  transition: opacity 0.25s;
 }
 
 .app-sider-menu .menu-item:hover {
   color: #fff;
-  background: rgba(255, 255, 255, 0.1);
+  transform: translateX(4px);
+}
+
+.app-sider-menu .menu-item:hover::before {
+  opacity: 1;
 }
 
 .app-sider-menu .menu-item.active {
   color: #fff;
-  background: rgba(255, 255, 255, 0.15);
-  border-left-color: #fff;
+  background: rgba(255, 255, 255, 0.18);
   font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 .app-sider-footer {
   padding: 16px 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
   font-size: 13px;
-  opacity: 0.8;
+  opacity: 0.85;
+  position: relative;
+  z-index: 1;
 }
 
-/* 主内容区 */
+.app-sider-footer .user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+/* ========== 主内容区 ========== */
+
 .main-layout {
   flex: 1;
   height: 100%;
   overflow-y: auto;
-  background: #f5f5f5;
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(102,126,234,0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 100%, rgba(118,75,162,0.03) 0%, transparent 50%),
+    #f8f9fb;
 }
 
 .main-content {
-  padding: 24px;
+  padding: 28px 32px;
   max-width: 1200px;
   margin: 0 auto;
 }
 
-/* 通用 */
+/* ========== 通用卡片样式 ========== */
+
+.ant-card {
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-card) !important;
+  border: 1px solid #f0f0f0 !important;
+  transition: box-shadow 0.3s, transform 0.2s !important;
+}
+
+.ant-card:hover {
+  box-shadow: var(--shadow-hover) !important;
+}
+
+.ant-card .ant-card-head {
+  border-bottom: 1px solid #f5f5f5 !important;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0 !important;
+}
+
+/* ========== 按钮圆润化 ========== */
+
+.ant-btn {
+  border-radius: var(--radius-sm) !important;
+  transition: all 0.25s !important;
+}
+
+.ant-btn-primary {
+  box-shadow: 0 2px 8px rgba(102,126,234,0.3) !important;
+}
+
+.ant-btn-primary:hover {
+  box-shadow: 0 4px 16px rgba(102,126,234,0.4) !important;
+  transform: translateY(-1px);
+}
+
+.ant-btn:hover {
+  transform: translateY(-1px);
+}
+
+/* ========== 输入框圆润化 ========== */
+
+.ant-input,
+.ant-input-password {
+  border-radius: var(--radius-sm) !important;
+}
+
+textarea.ant-input {
+  border-radius: var(--radius-md) !important;
+  resize: none;
+}
+
+/* ========== Tabs 优化 ========== */
+
+.ant-tabs-tab {
+  border-radius: var(--radius-sm) !important;
+  padding: 8px 20px !important;
+  transition: all 0.25s !important;
+}
+
+.ant-tabs-tab-active {
+  background: rgba(102,126,234,0.06) !important;
+}
+
+/* ========== Tag 圆润化 ========== */
+
+.ant-tag {
+  border-radius: 6px !important;
+}
+
+/* ========== Segmented 优化 ========== */
+
+.ant-segmented {
+  border-radius: var(--radius-sm) !important;
+  background: #f0f0f5 !important;
+  padding: 3px !important;
+}
+
+/* ========== Modal 优化 ========== */
+
+.ant-modal-content {
+  border-radius: var(--radius-lg) !important;
+  overflow: hidden;
+}
+
+/* ========== Drawer 优化 ========== */
+
+.ant-drawer-content {
+  border-radius: var(--radius-lg) 0 0 var(--radius-lg) !important;
+}
+
+/* ========== 消息提示优化 ========== */
+
+.ant-message-notice-content {
+  border-radius: var(--radius-md) !important;
+}
+
+/* ========== 页面标题 ========== */
+
 .page-header {
-  margin-bottom: 24px;
+  margin-bottom: 28px;
 }
 
 .page-header h2 {
-  font-size: 24px;
-  font-weight: 700;
-  color: #1a1a1a;
+  font-size: 26px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #1a1a2e, var(--gradient-start));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ========== 生成页状态图标动画 ========== */
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes spin-ring {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* ========== 历史页网格优化 ========== */
+
+.history-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+/* ========== 空状态优化 ========== */
+
+.ant-empty-image {
+  opacity: 0.5;
+}
+
+/* ========== 滚动条美化 ========== */
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.12);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0,0,0,0.2);
 }

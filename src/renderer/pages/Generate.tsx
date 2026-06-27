@@ -400,8 +400,10 @@ export default function Generate() {
               height: 80,
               margin: "0 auto 24px",
               borderRadius: "50%",
-              background: "conic-gradient(var(--gradient-start) 0deg, #f0f0f0 0deg)",
-              animation: "spin 1.5s linear infinite",
+              background: "conic-gradient(var(--gradient-start), var(--gradient-end), #e8e8ff, var(--gradient-start))",
+              animation: "spin-ring 1.5s linear infinite",
+              mask: "radial-gradient(transparent 28px, black 30px)",
+              WebkitMask: "radial-gradient(transparent 28px, black 30px)",
             }}>
               <div style={{
                 width: 60,
