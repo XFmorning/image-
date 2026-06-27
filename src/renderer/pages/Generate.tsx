@@ -76,7 +76,7 @@ const STYLE_PRESETS = [
   { key: "sketch",     label: "素描",     emoji: "✏️", suffix: ", pencil sketch, hand-drawn, detailed graphite linework, grayscale, artistic drawing, fine art" },
   { key: "3d",         label: "3D渲染",   emoji: "🎮", suffix: ", 3D render, octane render, CGI, cinema 4D, unreal engine 5, ray tracing, photorealistic 3D" },
   { key: "watercolor", label: "水彩",     emoji: "🎨", suffix: ", watercolor painting, soft washes, flowing colors, artistic, delicate textures, dreamy atmosphere" },
-}
+];
 
 export default function Generate() {
   const navigate = useNavigate();
