@@ -4,12 +4,14 @@ import {
   Button,
   Input,
   Form,
+  Select,
   Tag,
   message,
   Popconfirm,
   Empty,
   Modal,
   Space,
+  Alert,
 } from "antd";
 import {
   PlusOutlined,
@@ -58,6 +60,9 @@ export default function ModelConfig() {
       baseUrl: provider.baseUrl,
       model: provider.model,
       apiKey: provider.apiKey,
+      apiProtocol: provider.apiProtocol || "openai",
+      t2iEndpoint: provider.t2iEndpoint || "",
+      i2iEndpoint: provider.i2iEndpoint || "",
     });
     setModalOpen(true);
   };
@@ -65,6 +70,8 @@ export default function ModelConfig() {
   const handleSave = async () => {
     const values = await form.validateFields();
     const providers = [...config.providers];
+
+    const protocol = values.apiProtocol || "openai";
 
     if (editingProvider) {
       const idx = providers.findIndex((p) => p.id === editingProvider.id);
@@ -75,6 +82,9 @@ export default function ModelConfig() {
           baseUrl: values.baseUrl,
           model: values.model,
           apiKey: values.apiKey,
+          apiProtocol: protocol,
+          t2iEndpoint: values.t2iEndpoint || "",
+          i2iEndpoint: values.i2iEndpoint || "",
         };
       }
     } else {
@@ -84,6 +94,9 @@ export default function ModelConfig() {
         apiKey: values.apiKey,
         baseUrl: values.baseUrl,
         model: values.model,
+        apiProtocol: protocol,
+        t2iEndpoint: values.t2iEndpoint || "",
+        i2iEndpoint: values.i2iEndpoint || "",
         createdAt: Date.now(),
       };
       providers.push(newProvider);
@@ -255,37 +268,49 @@ export default function ModelConfig() {
               >
                 <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                   <div>
-                    <div style={{ color: "#888", fontSize: 13, marginBottom: 4 }}>
-                      名称
-                    </div>
+                    <div style={{ color: "#888", fontSize: 13, marginBottom: 4 }}>名称</div>
                     <div>{selectedProvider.name}</div>
                   </div>
                   <div>
-                    <div style={{ color: "#888", fontSize: 13, marginBottom: 4 }}>
-                      API 地址
-                    </div>
+                    <div style={{ color: "#888", fontSize: 13, marginBottom: 4 }}>协议</div>
+                    <Tag color={
+                      selectedProvider.apiProtocol === "openai" ? "blue" :
+                      selectedProvider.apiProtocol === "stability" ? "purple" : "default"
+                    }>
+                      {selectedProvider.apiProtocol === "openai" ? "OpenAI 兼容" :
+                       selectedProvider.apiProtocol === "stability" ? "Stability AI" : "自定义"}
+                    </Tag>
+                  </div>
+                  <div>
+                    <div style={{ color: "#888", fontSize: 13, marginBottom: 4 }}>API 地址</div>
                     <div style={{ fontFamily: "monospace", fontSize: 13 }}>
                       {selectedProvider.baseUrl}
                     </div>
                   </div>
                   <div>
-                    <div style={{ color: "#888", fontSize: 13, marginBottom: 4 }}>
-                      模型
-                    </div>
+                    <div style={{ color: "#888", fontSize: 13, marginBottom: 4 }}>模型</div>
                     <Tag>{selectedProvider.model}</Tag>
                   </div>
                   <div>
-                    <div style={{ color: "#888", fontSize: 13, marginBottom: 4 }}>
-                      API Key
+                    <div style={{ color: "#888", fontSize: 13, marginBottom: 4 }}>文生图接口</div>
+                    <div style={{ fontFamily: "monospace", fontSize: 12, color: "#666" }}>
+                      {selectedProvider.t2iEndpoint || "（默认）"}
                     </div>
+                  </div>
+                  <div>
+                    <div style={{ color: "#888", fontSize: 13, marginBottom: 4 }}>图生图接口</div>
+                    <div style={{ fontFamily: "monospace", fontSize: 12, color: "#666" }}>
+                      {selectedProvider.i2iEndpoint || "（默认）"}
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ color: "#888", fontSize: 13, marginBottom: 4 }}>API Key</div>
                     <div style={{ color: "#52c41a" }}>
                       <CheckCircleOutlined /> 已加密存储
                     </div>
                   </div>
                   <div>
-                    <div style={{ color: "#888", fontSize: 13, marginBottom: 4 }}>
-                      添加时间
-                    </div>
+                    <div style={{ color: "#888", fontSize: 13, marginBottom: 4 }}>添加时间</div>
                     <div>
                       {new Date(selectedProvider.createdAt).toLocaleDateString(
                         "zh-CN"
@@ -309,13 +334,28 @@ export default function ModelConfig() {
         okText="保存"
         cancelText="取消"
       >
-        <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
+        <Form form={form} layout="vertical" style={{ marginTop: 16 }}
+          initialValues={{ apiProtocol: "openai" }}
+        >
           <Form.Item
             name="name"
             label="服务商名称"
             rules={[{ required: true, message: "请输入名称" }]}
           >
             <Input placeholder="例如：GPT Image 2" />
+          </Form.Item>
+          <Form.Item
+            name="apiProtocol"
+            label="API 协议类型"
+            rules={[{ required: true, message: "请选择协议类型" }]}
+          >
+            <Select
+              options={[
+                { value: "openai", label: "OpenAI 兼容（推荐）" },
+                { value: "stability", label: "Stability AI" },
+                { value: "custom", label: "自定义" },
+              ]}
+            />
           </Form.Item>
           <Form.Item
             name="apiKey"
@@ -337,6 +377,18 @@ export default function ModelConfig() {
             rules={[{ required: true, message: "请输入模型名称" }]}
           >
             <Input placeholder="gpt-image-2" />
+          </Form.Item>
+          <Alert
+            message="接口路径（默认值适用于所选协议，一般无需修改）"
+            type="info"
+            showIcon
+            style={{ marginBottom: 12, fontSize: 12 }}
+          />
+          <Form.Item name="t2iEndpoint" label="文生图接口路径">
+            <Input placeholder="例如：/v1/images/generations" />
+          </Form.Item>
+          <Form.Item name="i2iEndpoint" label="图生图接口路径">
+            <Input placeholder="例如：/v1/images/edits" />
           </Form.Item>
         </Form>
       </Modal>

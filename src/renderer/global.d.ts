@@ -1,9 +1,14 @@
+type ApiProtocol = "openai" | "stability" | "custom";
+
 interface ProviderConfig {
   id: string;
   name: string;
   apiKey: string;
   baseUrl: string;
   model: string;
+  apiProtocol: ApiProtocol;
+  t2iEndpoint: string;   // 文生图接口路径，如 /v1/images/generations
+  i2iEndpoint: string;   // 图生图接口路径，如 /v1/images/edits
   createdAt: number;
 }
 
