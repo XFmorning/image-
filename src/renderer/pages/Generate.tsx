@@ -66,16 +66,16 @@ function calcSize(ratioIdx: number, qualityIdx: number) {
 }
 
 const STYLE_PRESETS = [
-  { key: "none",       label: "无",       emoji: "",   suffix: "" },
-  { key: "realistic",  label: "写实",     emoji: "📷", suffix: ", photorealistic, hyperrealistic, 8K, highly detailed, professional photography, sharp focus" },
-  { key: "anime",      label: "动漫",     emoji: "🎌", suffix: ", anime style, manga art, vibrant colors, clean linework, cel shaded, Japanese animation" },
-  { key: "ink",        label: "水墨",     emoji: "🖌️", suffix: ", traditional Chinese ink wash painting, sumi-e style, black ink on rice paper, elegant brushstrokes, minimalist composition, artistic" },
-  { key: "oil",        label: "油画",     emoji: "🎨", suffix: ", oil painting on canvas, classical art style, rich textures, visible brushstrokes, masterpiece, gallery quality" },
-  { key: "cyberpunk",  label: "赛博朋克", emoji: "🌃", suffix: ", cyberpunk aesthetic, neon lights, rain-soaked streets, futuristic city, synthwave colors, Blade Runner style, high contrast" },
-  { key: "fantasy",    label: "奇幻",     emoji: "🧙", suffix: ", fantasy concept art, magical atmosphere, ethereal lighting, mythical, intricate details, dramatic composition" },
-  { key: "sketch",     label: "素描",     emoji: "✏️", suffix: ", pencil sketch, hand-drawn, detailed graphite linework, grayscale, artistic drawing, fine art" },
-  { key: "3d",         label: "3D渲染",   emoji: "🎮", suffix: ", 3D render, octane render, CGI, cinema 4D, unreal engine 5, ray tracing, photorealistic 3D" },
-  { key: "watercolor", label: "水彩",     emoji: "🎨", suffix: ", watercolor painting, soft washes, flowing colors, artistic, delicate textures, dreamy atmosphere" },
+  { key: "none",       label: "无",       suffix: "" },
+  { key: "realistic",  label: "写实",     suffix: ", photorealistic, hyperrealistic, 8K, highly detailed, professional photography, sharp focus" },
+  { key: "anime",      label: "动漫",     suffix: ", anime style, manga art, vibrant colors, clean linework, cel shaded, Japanese animation" },
+  { key: "ink",        label: "水墨",     suffix: ", traditional Chinese ink wash painting, sumi-e style, black ink on rice paper, elegant brushstrokes, minimalist composition, artistic" },
+  { key: "oil",        label: "油画",     suffix: ", oil painting on canvas, classical art style, rich textures, visible brushstrokes, masterpiece, gallery quality" },
+  { key: "cyberpunk",  label: "赛博朋克", suffix: ", cyberpunk aesthetic, neon lights, rain-soaked streets, futuristic city, synthwave colors, Blade Runner style, high contrast" },
+  { key: "fantasy",    label: "奇幻",     suffix: ", fantasy concept art, magical atmosphere, ethereal lighting, mythical, intricate details, dramatic composition" },
+  { key: "sketch",     label: "素描",     suffix: ", pencil sketch, hand-drawn, detailed graphite linework, grayscale, artistic drawing, fine art" },
+  { key: "3d",         label: "3D渲染",   suffix: ", 3D render, octane render, CGI, cinema 4D, unreal engine 5, ray tracing, photorealistic 3D" },
+  { key: "watercolor", label: "水彩",     suffix: ", watercolor painting, soft washes, flowing colors, artistic, delicate textures, dreamy atmosphere" },
 ];
 
 export default function Generate() {
@@ -390,7 +390,7 @@ export default function Generate() {
                   opacity: task.status === "generating" ? 0.5 : 1,
                 }}
               >
-                {s.emoji} {s.label}
+                {s.label}
               </div>
             );
           })}
