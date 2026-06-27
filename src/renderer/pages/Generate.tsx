@@ -14,6 +14,7 @@ import {
   Tooltip,
   Space,
   Segmented,
+  Select,
 } from "antd";
 import {
   UploadOutlined,
@@ -80,19 +81,27 @@ const STYLE_PRESETS = [
 
 export default function Generate() {
   const navigate = useNavigate();
-  const { task, startTask, finishTask, failTask, resetTask, setResultDataUrl } = useGenTask();
+  const { task, input, saveInput, startTask, finishTask, failTask, resetTask, setResultDataUrl } = useGenTask();
+  const { prompt, ratioIdx, qualityIdx, selectedStyle, mode } = input;
 
-  const [mode, setMode] = useState<"t2i" | "i2i">("t2i");
-  const [prompt, setPrompt] = useState("");
-  const [ratioIdx, setRatioIdx] = useState(0);
-  const [qualityIdx, setQualityIdx] = useState(0);
+  const [providerId, setProviderId] = useState("");
+  const [providers, setProviders] = useState<ProviderConfig[]>([]);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("portrait");
-  const [selectedStyle, setSelectedStyle] = useState("");
   const [elapsedTime, setElapsedTime] = useState(0);
 
   const promptRef = useRef<HTMLTextAreaElement>(null);
+
+  // ========== 加载服务商列表 ==========
+
+  useEffect(() => {
+    window.electronAPI.getConfig().then((c) => {
+      setProviders(c.providers);
+      if (c.activeProviderId) setProviderId(c.activeProviderId);
+      else if (c.providers.length > 0) setProviderId(c.providers[0].id);
+    });
+  }, []);
 
   // ========== 计时器 ==========
 
@@ -110,7 +119,7 @@ export default function Generate() {
   // ========== 模板库 ==========
 
   const handleSelectTemplate = (item: TemplateItem) => {
-    setPrompt(item.prompt);
+    saveInput({ prompt: item.prompt });
     setDrawerOpen(false);
     message.success(`已填入模板：${item.label}`);
   };
@@ -119,7 +128,7 @@ export default function Generate() {
 
   const handleRandom = () => {
     const item = randomTemplate();
-    setPrompt(item.prompt);
+    saveInput({ prompt: item.prompt });
     message.info(`随机灵感：${item.label}`);
   };
 
@@ -155,12 +164,9 @@ export default function Generate() {
       return;
     }
 
-    const config = await window.electronAPI.getConfig();
-    const provider = config.providers.find(
-      (p) => p.id === config.activeProviderId
-    );
+    const provider = providers.find((p) => p.id === providerId);
     if (!provider) {
-      message.error("请先在「模型管理」中配置 API 服务商");
+      message.error("请先在下拉菜单中选一个服务商，或前往「模型管理」添加");
       return;
     }
 
@@ -259,7 +265,7 @@ export default function Generate() {
       {/* 模式切换 */}
       <Tabs
         activeKey={mode}
-        onChange={(key) => setMode(key as "t2i" | "i2i")}
+        onChange={(key) => saveInput({ mode: key as "t2i" | "i2i" })}
         items={[
           { key: "t2i", label: "文生图" },
           { key: "i2i", label: "图生图" },
@@ -344,7 +350,7 @@ export default function Generate() {
         <Input.TextArea
           ref={promptRef as any}
           value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
+          onChange={(e) => saveInput({ prompt: e.target.value })}
           placeholder="用英文描述你想要生成的图像，或点击下方「模板库」选择..."
           rows={4}
           style={{ fontSize: 14, marginBottom: 12 }}
@@ -372,7 +378,7 @@ export default function Generate() {
                 key={s.key}
                 onClick={() => {
                   if (task.status === "generating") return;
-                  setSelectedStyle(s.key === "none" ? "" : s.key);
+                  saveInput({ selectedStyle: s.key === "none" ? "" : s.key });
                 }}
                 style={{
                   padding: "8px 16px",
@@ -399,21 +405,45 @@ export default function Generate() {
 
       {/* 参数配置 */}
       <Card size="small" style={{ marginBottom: 16 }}>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            flexWrap: "wrap",
-            gap: 12,
-          }}
-        >
+        <Space direction="vertical" size={12} style={{ width: "100%" }}>
+          {/* 模型选择 */}
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <span style={{ color: "#666", fontSize: 14, minWidth: 40 }}>模型:</span>
+            {providers.length === 0 ? (
+              <Button size="small" type="link" onClick={() => navigate("/models")}
+                style={{ padding: 0 }}>
+                暂无服务商，点击添加
+              </Button>
+            ) : (
+              <Select
+                value={providerId}
+                onChange={(val) => {
+                  setProviderId(val);
+                  window.electronAPI.setConfig({
+                    providers,
+                    activeProviderId: val,
+                  });
+                }}
+                style={{ minWidth: 200 }}
+                options={providers.map((p) => ({
+                  value: p.id,
+                  label: `${p.name} (${p.model})`,
+                }))}
+                disabled={task.status === "generating"}
+              />
+            )}
+            <Button size="small" type="link" onClick={() => navigate("/models")}
+              style={{ fontSize: 12 }}>
+              管理
+            </Button>
+          </div>
+
           <Space direction="vertical" size={8} style={{ width: "100%" }}>
             <Space align="center">
               <span style={{ color: "#666", fontSize: 14, minWidth: 40 }}>比例:</span>
               <Segmented
                 value={ratioIdx}
-                onChange={(val) => setRatioIdx(val as number)}
+                onChange={(val) => saveInput({ ratioIdx: val as number })}
                 options={ASPECT_RATIOS.map((r, i) => ({
                   label: (
                     <div style={{ textAlign: "center", lineHeight: 1.3 }}>
@@ -430,7 +460,7 @@ export default function Generate() {
               <span style={{ color: "#666", fontSize: 14, minWidth: 40 }}>画质:</span>
               <Segmented
                 value={qualityIdx}
-                onChange={(val) => setQualityIdx(val as number)}
+                onChange={(val) => saveInput({ qualityIdx: val as number })}
                 options={QUALITY_TIERS.map((q, i) => ({
                   label: q.label,
                   value: i,
@@ -442,6 +472,7 @@ export default function Generate() {
               </Tag>
             </Space>
           </Space>
+
           <Button
             type="primary"
             size="large"
@@ -451,11 +482,12 @@ export default function Generate() {
             style={{
               background: "var(--gradient-start)",
               borderColor: "var(--gradient-start)",
+              alignSelf: "flex-end",
             }}
           >
             {task.status === "generating" ? "生成中" : "生成"}
           </Button>
-        </div>
+        </Space>
       </Card>
 
       {/* 结果展示 */}
@@ -486,7 +518,7 @@ export default function Generate() {
                 <Button
                   key={i}
                   size="small"
-                  onClick={() => setPrompt(t.prompt)}
+                  onClick={() => saveInput({ prompt: t.prompt })}
                 >
                   {t.label}
                 </Button>
@@ -547,7 +579,7 @@ export default function Generate() {
               <Button icon={<CopyOutlined />} onClick={handleCopyPrompt}>
                 复制提示词
               </Button>
-              <Button onClick={() => { resetTask(); setPrompt(""); }}>
+              <Button onClick={() => { resetTask(); saveInput({ prompt: "" }); }}>
                 再来一张
               </Button>
             </Space>

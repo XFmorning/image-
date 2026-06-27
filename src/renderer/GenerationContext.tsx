@@ -16,6 +16,14 @@ export interface GenTask {
   errorCode: string;
 }
 
+export interface GenInput {
+  prompt: string;
+  ratioIdx: number;
+  qualityIdx: number;
+  selectedStyle: string;
+  mode: "t2i" | "i2i";
+}
+
 const EMPTY_TASK: GenTask = {
   status: "idle",
   prompt: "",
@@ -30,8 +38,18 @@ const EMPTY_TASK: GenTask = {
   errorCode: "",
 };
 
+const EMPTY_INPUT: GenInput = {
+  prompt: "",
+  ratioIdx: 0,
+  qualityIdx: 0,
+  selectedStyle: "",
+  mode: "t2i",
+};
+
 interface GenContextValue {
   task: GenTask;
+  input: GenInput;
+  saveInput: (partial: Partial<GenInput>) => void;
   startTask: (partial: Pick<GenTask, "prompt" | "size" | "mode" | "providerName" | "providerModel">) => void;
   finishTask: (resultFilename: string) => void;
   failTask: (errorMsg: string, errorCode: string) => void;
@@ -43,10 +61,14 @@ const GenContext = createContext<GenContextValue | null>(null);
 
 export function GenerationProvider({ children }: { children: ReactNode }) {
   const [task, setTask] = useState<GenTask>(EMPTY_TASK);
+  const [input, setInput] = useState<GenInput>(EMPTY_INPUT);
   const taskRef = useRef<GenTask>(EMPTY_TASK);
 
-  // 同步 ref，确保异步回调中能读到最新值
   taskRef.current = task;
+
+  const saveInput = useCallback((partial: Partial<GenInput>) => {
+    setInput((prev) => ({ ...prev, ...partial }));
+  }, []);
 
   const startTask = useCallback((partial: Pick<GenTask, "prompt" | "size" | "mode" | "providerName" | "providerModel">) => {
     const t: GenTask = {
@@ -83,7 +105,7 @@ export function GenerationProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <GenContext.Provider value={{ task, startTask, finishTask, failTask, resetTask, setResultDataUrl }}>
+    <GenContext.Provider value={{ task, input, saveInput, startTask, finishTask, failTask, resetTask, setResultDataUrl }}>
       {children}
     </GenContext.Provider>
   );
