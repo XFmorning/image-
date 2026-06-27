@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Tabs,
   Button,
@@ -18,7 +18,6 @@ import {
   UploadOutlined,
   DeleteOutlined,
   ThunderboltOutlined,
-  TranslationOutlined,
   BulbOutlined,
   BookOutlined,
   DownloadOutlined,
@@ -31,7 +30,6 @@ import { generateImage, generateImageWithRef } from "../api";
 import {
   TEMPLATE_CATEGORIES,
   TEMPLATES,
-  translateToEnglish,
   randomTemplate,
   type TemplateItem,
 } from "../prompt-templates";
@@ -58,8 +56,23 @@ export default function Generate() {
   const [errorCode, setErrorCode] = useState("");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("portrait");
+  const [elapsedTime, setElapsedTime] = useState(0);
 
   const promptRef = useRef<HTMLTextAreaElement>(null);
+
+  // ========== 计时器 ==========
+
+  useEffect(() => {
+    if (status !== "generating") {
+      setElapsedTime(0);
+      return;
+    }
+    const start = Date.now();
+    const timer = setInterval(() => {
+      setElapsedTime(Math.floor((Date.now() - start) / 1000));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [status]);
 
   // ========== 模板库 ==========
 
@@ -67,18 +80,6 @@ export default function Generate() {
     setPrompt(item.prompt);
     setDrawerOpen(false);
     message.success(`已填入模板：${item.label}`);
-  };
-
-  // ========== 中译英 ==========
-
-  const handleTranslate = () => {
-    if (!prompt.trim()) {
-      message.warning("请先输入中文提示词");
-      return;
-    }
-    const translated = translateToEnglish(prompt);
-    setPrompt(translated);
-    message.success("已翻译为英文");
   };
 
   // ========== 随机灵感 ==========
@@ -301,16 +302,13 @@ export default function Generate() {
           ref={promptRef as any}
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
-          placeholder="描述你想要生成的图像..."
+          placeholder="用英文描述你想要生成的图像，或点击下方「模板库」选择..."
           rows={4}
           style={{ fontSize: 14, marginBottom: 12 }}
         />
         <Space>
           <Button icon={<BookOutlined />} onClick={() => setDrawerOpen(true)}>
             模板库
-          </Button>
-          <Button icon={<TranslationOutlined />} onClick={handleTranslate}>
-            中译英
           </Button>
           <Button icon={<BulbOutlined />} onClick={handleRandom}>
             随机灵感
@@ -396,10 +394,34 @@ export default function Generate() {
         )}
 
         {status === "generating" && (
-          <div style={{ textAlign: "center", padding: "60px 20px" }}>
-            <Spin size="large" />
-            <p style={{ marginTop: 16, color: "#666" }}>
-              正在生成图像，请稍候...
+          <div style={{ textAlign: "center", padding: "48px 20px" }}>
+            <div style={{
+              width: 80,
+              height: 80,
+              margin: "0 auto 24px",
+              borderRadius: "50%",
+              background: "conic-gradient(var(--gradient-start) 0deg, #f0f0f0 0deg)",
+              animation: "spin 1.5s linear infinite",
+            }}>
+              <div style={{
+                width: 60,
+                height: 60,
+                borderRadius: "50%",
+                background: "#fff",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 24,
+              }}>
+                🎨
+              </div>
+            </div>
+            <h3 style={{ color: "#333", marginBottom: 8 }}>AI 正在创作...</h3>
+            <p style={{ color: "#888", marginBottom: 4 }}>
+              已用时 <span style={{ color: "var(--gradient-start)", fontWeight: 700, fontSize: 18 }}>{elapsedTime}s</span>
+            </p>
+            <p style={{ color: "#aaa", fontSize: 12 }}>
+              预计需要 60 - 120 秒，请耐心等待
             </p>
           </div>
         )}
