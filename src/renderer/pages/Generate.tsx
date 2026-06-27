@@ -34,6 +34,7 @@ import {
   randomTemplate,
   type TemplateItem,
 } from "../prompt-templates";
+import { useGenTask } from "../GenerationContext";
 
 const ASPECT_RATIOS = [
   { label: "1:1", w: 1, h: 1 },
@@ -64,19 +65,15 @@ function calcSize(ratioIdx: number, qualityIdx: number) {
   return { width, height };
 }
 
-type GenerationStatus = "idle" | "generating" | "completed" | "failed";
-
 export default function Generate() {
   const navigate = useNavigate();
+  const { task, startTask, finishTask, failTask, resetTask, setResultDataUrl } = useGenTask();
+
   const [mode, setMode] = useState<"t2i" | "i2i">("t2i");
   const [prompt, setPrompt] = useState("");
   const [ratioIdx, setRatioIdx] = useState(0);
   const [qualityIdx, setQualityIdx] = useState(0);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
-  const [status, setStatus] = useState<GenerationStatus>("idle");
-  const [resultImage, setResultImage] = useState("");
-  const [errorMsg, setErrorMsg] = useState("");
-  const [errorCode, setErrorCode] = useState("");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("portrait");
   const [elapsedTime, setElapsedTime] = useState(0);
@@ -86,16 +83,15 @@ export default function Generate() {
   // ========== 计时器 ==========
 
   useEffect(() => {
-    if (status !== "generating") {
+    if (task.status !== "generating") {
       setElapsedTime(0);
       return;
     }
-    const start = Date.now();
     const timer = setInterval(() => {
-      setElapsedTime(Math.floor((Date.now() - start) / 1000));
+      setElapsedTime(Math.floor((Date.now() - task.startTime) / 1000));
     }, 1000);
     return () => clearInterval(timer);
-  }, [status]);
+  }, [task.status, task.startTime]);
 
   // ========== 模板库 ==========
 
@@ -157,9 +153,13 @@ export default function Generate() {
     const size = calcSize(ratioIdx, qualityIdx);
     const sizeStr = `${size.width}x${size.height}`;
 
-    setStatus("generating");
-    setErrorMsg("");
-    setErrorCode("");
+    startTask({
+      prompt,
+      size: sizeStr,
+      mode,
+      providerName: provider.name,
+      providerModel: provider.model,
+    });
 
     try {
       let result;
@@ -179,8 +179,7 @@ export default function Generate() {
 
       if (result.success && result.images.length > 0) {
         const timestamp = Date.now();
-        const ext = "png";
-        const filename = `img_${timestamp}.${ext}`;
+        const filename = `img_${timestamp}.png`;
         await window.electronAPI.saveImageBuffer(filename, result.images[0]);
 
         const history = await window.electronAPI.getHistory();
@@ -198,27 +197,30 @@ export default function Generate() {
         await window.electronAPI.setHistory(history);
 
         const dataUrl = await window.electronAPI.readImage(filename);
-        setResultImage(dataUrl);
-        setStatus("completed");
+        setResultDataUrl(dataUrl);
+        finishTask(filename);
         message.success("生成成功！");
       } else {
-        setErrorMsg(result.error || "生成失败");
-        setErrorCode(result.errorCode || "");
-        setStatus("failed");
+        failTask(result.error || "生成失败", result.errorCode || "");
       }
     } catch (e: any) {
-      setErrorMsg(e.message || "请求异常");
-      setErrorCode("network");
-      setStatus("failed");
+      failTask(e.message || "请求异常", "network");
     }
+  };
+
+  // ========== 重新生成（先重置再触发生成） ==========
+
+  const handleRetry = () => {
+    resetTask();
+    handleGenerate();
   };
 
   // ========== 下载 ==========
 
   const handleDownload = () => {
-    if (!resultImage) return;
+    if (!task.resultDataUrl) return;
     const link = document.createElement("a");
-    link.href = resultImage;
+    link.href = task.resultDataUrl;
     link.download = `generated_${Date.now()}.png`;
     link.click();
   };
@@ -226,7 +228,7 @@ export default function Generate() {
   // ========== 复制 prompt ==========
 
   const handleCopyPrompt = () => {
-    navigator.clipboard.writeText(prompt);
+    navigator.clipboard.writeText(task.prompt);
     message.success("提示词已复制");
   };
 
@@ -328,12 +330,15 @@ export default function Generate() {
           placeholder="用英文描述你想要生成的图像，或点击下方「模板库」选择..."
           rows={4}
           style={{ fontSize: 14, marginBottom: 12 }}
+          disabled={task.status === "generating"}
         />
         <Space>
-          <Button icon={<BookOutlined />} onClick={() => setDrawerOpen(true)}>
+          <Button icon={<BookOutlined />} onClick={() => setDrawerOpen(true)}
+            disabled={task.status === "generating"}>
             模板库
           </Button>
-          <Button icon={<BulbOutlined />} onClick={handleRandom}>
+          <Button icon={<BulbOutlined />} onClick={handleRandom}
+            disabled={task.status === "generating"}>
             随机灵感
           </Button>
         </Space>
@@ -360,6 +365,7 @@ export default function Generate() {
                   label: r.label,
                   value: i,
                 }))}
+                disabled={task.status === "generating"}
               />
             </Space>
             <Space align="center">
@@ -371,6 +377,7 @@ export default function Generate() {
                   label: q.label,
                   value: i,
                 }))}
+                disabled={task.status === "generating"}
               />
               <Tag color="blue" style={{ marginLeft: 8 }}>
                 {calcSize(ratioIdx, qualityIdx).width}×{calcSize(ratioIdx, qualityIdx).height}
@@ -382,13 +389,13 @@ export default function Generate() {
             size="large"
             icon={<ThunderboltOutlined />}
             onClick={handleGenerate}
-            loading={status === "generating"}
+            loading={task.status === "generating"}
             style={{
               background: "var(--gradient-start)",
               borderColor: "var(--gradient-start)",
             }}
           >
-            生成
+            {task.status === "generating" ? "生成中" : "生成"}
           </Button>
         </div>
       </Card>
@@ -400,7 +407,8 @@ export default function Generate() {
         style={{ minHeight: 300 }}
         styles={{ body: { display: "flex", justifyContent: "center" } }}
       >
-        {status === "idle" && (
+        {/* 空闲状态 */}
+        {task.status === "idle" && (
           <div
             style={{
               textAlign: "center",
@@ -429,7 +437,8 @@ export default function Generate() {
           </div>
         )}
 
-        {status === "generating" && (
+        {/* 生成中 */}
+        {task.status === "generating" && (
           <div style={{ textAlign: "center", padding: "48px 20px" }}>
             <div style={{
               width: 80,
@@ -440,20 +449,7 @@ export default function Generate() {
               animation: "spin-ring 1.5s linear infinite",
               mask: "radial-gradient(transparent 28px, black 30px)",
               WebkitMask: "radial-gradient(transparent 28px, black 30px)",
-            }}>
-              <div style={{
-                width: 60,
-                height: 60,
-                borderRadius: "50%",
-                background: "#fff",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: 24,
-              }}>
-                🎨
-              </div>
-            </div>
+            }} />
             <h3 style={{ color: "#333", marginBottom: 8 }}>AI 正在创作...</h3>
             <p style={{ color: "#888", marginBottom: 4 }}>
               已用时 <span style={{ color: "var(--gradient-start)", fontWeight: 700, fontSize: 18 }}>{elapsedTime}s</span>
@@ -464,7 +460,8 @@ export default function Generate() {
           </div>
         )}
 
-        {status === "completed" && (
+        {/* 完成 */}
+        {task.status === "completed" && (
           <div style={{ textAlign: "center", padding: "16px 0" }}>
             <Tag
               icon={<CheckCircleOutlined />}
@@ -474,12 +471,16 @@ export default function Generate() {
               生成成功
             </Tag>
             <div style={{ marginTop: 8 }}>
-              <Image
-                src={resultImage}
-                alt="生成结果"
-                style={{ maxWidth: "100%", maxHeight: 500, borderRadius: 8 }}
-                preview={{ mask: "点击预览" }}
-              />
+              {task.resultDataUrl ? (
+                <Image
+                  src={task.resultDataUrl}
+                  alt="生成结果"
+                  style={{ maxWidth: "100%", maxHeight: 500, borderRadius: 8 }}
+                  preview={{ mask: "点击预览" }}
+                />
+              ) : (
+                <Spin size="large" style={{ padding: 40 }} />
+              )}
             </div>
             <Space style={{ marginTop: 12 }}>
               <Button icon={<DownloadOutlined />} onClick={handleDownload}>
@@ -488,21 +489,25 @@ export default function Generate() {
               <Button icon={<CopyOutlined />} onClick={handleCopyPrompt}>
                 复制提示词
               </Button>
+              <Button onClick={() => { resetTask(); setPrompt(""); }}>
+                再来一张
+              </Button>
             </Space>
           </div>
         )}
 
-        {status === "failed" && (
+        {/* 失败 */}
+        {task.status === "failed" && (
           <div style={{ textAlign: "center", padding: "40px 20px", maxWidth: 480, margin: "0 auto" }}>
             <CloseCircleOutlined
               style={{ fontSize: 48, color: "#ff4d4f", marginBottom: 16 }}
             />
             <h3 style={{ color: "#ff4d4f", marginBottom: 8 }}>
-              {errorCode === "content_policy" ? "内容审核未通过" :
-               errorCode === "auth" ? "API 认证失败" :
-               errorCode === "network" ? "网络连接失败" :
-               errorCode === "rate_limit" ? "请求过于频繁" :
-               errorCode === "server" ? "服务商异常" : "生成失败"}
+              {task.errorCode === "content_policy" ? "内容审核未通过" :
+               task.errorCode === "auth" ? "API 认证失败" :
+               task.errorCode === "network" ? "网络连接失败" :
+               task.errorCode === "rate_limit" ? "请求过于频繁" :
+               task.errorCode === "server" ? "服务商异常" : "生成失败"}
             </h3>
             <div style={{
               color: "#666",
@@ -516,20 +521,20 @@ export default function Generate() {
               border: "1px solid #f0f0f0",
               textAlign: "left",
             }}>
-              {errorMsg}
+              {task.errorMsg}
             </div>
             <Space>
-              {errorCode === "content_policy" && (
+              {task.errorCode === "content_policy" && (
                 <Button icon={<BulbOutlined />} onClick={handleRandom}>
                   换一条随机灵感
                 </Button>
               )}
-              {errorCode === "auth" && (
+              {task.errorCode === "auth" && (
                 <Button onClick={() => navigate("/models")}>
                   前往模型管理
                 </Button>
               )}
-              <Button onClick={handleGenerate}>重试</Button>
+              <Button onClick={handleRetry}>重试</Button>
             </Space>
           </div>
         )}
