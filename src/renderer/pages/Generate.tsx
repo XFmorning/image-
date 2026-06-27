@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Tabs,
   Button,
@@ -34,21 +35,43 @@ import {
   type TemplateItem,
 } from "../prompt-templates";
 
-const SIZE_PRESETS = [
-  { label: "1:1", width: 1024, height: 1024 },
-  { label: "4:3", width: 1200, height: 900 },
-  { label: "16:9", width: 1536, height: 864 },
-  { label: "9:16", width: 864, height: 1536 },
-  { label: "3:4", width: 900, height: 1200 },
-  { label: "21:9", width: 1792, height: 768 },
+const ASPECT_RATIOS = [
+  { label: "1:1", w: 1, h: 1 },
+  { label: "4:3", w: 4, h: 3 },
+  { label: "16:9", w: 16, h: 9 },
+  { label: "9:16", w: 9, h: 16 },
+  { label: "3:4", w: 3, h: 4 },
+  { label: "21:9", w: 21, h: 9 },
 ];
+
+const QUALITY_TIERS = [
+  { label: "1K", value: 1024 },
+  { label: "2K", value: 2048 },
+  { label: "4K", value: 4096 },
+];
+
+function calcSize(ratioIdx: number, qualityIdx: number) {
+  const ratio = ASPECT_RATIOS[ratioIdx];
+  const maxDim = QUALITY_TIERS[qualityIdx].value;
+  let width: number, height: number;
+  if (ratio.w >= ratio.h) {
+    width = maxDim;
+    height = Math.round((maxDim * ratio.h) / ratio.w);
+  } else {
+    height = maxDim;
+    width = Math.round((maxDim * ratio.w) / ratio.h);
+  }
+  return { width, height };
+}
 
 type GenerationStatus = "idle" | "generating" | "completed" | "failed";
 
 export default function Generate() {
+  const navigate = useNavigate();
   const [mode, setMode] = useState<"t2i" | "i2i">("t2i");
   const [prompt, setPrompt] = useState("");
-  const [sizeIdx, setSizeIdx] = useState(0);
+  const [ratioIdx, setRatioIdx] = useState(0);
+  const [qualityIdx, setQualityIdx] = useState(0);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [status, setStatus] = useState<GenerationStatus>("idle");
   const [resultImage, setResultImage] = useState("");
@@ -131,7 +154,7 @@ export default function Generate() {
       return;
     }
 
-    const size = SIZE_PRESETS[sizeIdx];
+    const size = calcSize(ratioIdx, qualityIdx);
     const sizeStr = `${size.width}x${size.height}`;
 
     setStatus("generating");
@@ -327,19 +350,32 @@ export default function Generate() {
             gap: 12,
           }}
         >
-          <Space align="center">
-            <span style={{ color: "#666", fontSize: 14 }}>尺寸:</span>
-            <Segmented
-              value={sizeIdx}
-              onChange={(val) => setSizeIdx(val as number)}
-              options={SIZE_PRESETS.map((s, i) => ({
-                label: s.label,
-                value: i,
-              }))}
-            />
-            <Tag color="blue" style={{ marginLeft: 8 }}>
-              {SIZE_PRESETS[sizeIdx].width}×{SIZE_PRESETS[sizeIdx].height}
-            </Tag>
+          <Space direction="vertical" size={8} style={{ width: "100%" }}>
+            <Space align="center">
+              <span style={{ color: "#666", fontSize: 14, minWidth: 40 }}>比例:</span>
+              <Segmented
+                value={ratioIdx}
+                onChange={(val) => setRatioIdx(val as number)}
+                options={ASPECT_RATIOS.map((r, i) => ({
+                  label: r.label,
+                  value: i,
+                }))}
+              />
+            </Space>
+            <Space align="center">
+              <span style={{ color: "#666", fontSize: 14, minWidth: 40 }}>画质:</span>
+              <Segmented
+                value={qualityIdx}
+                onChange={(val) => setQualityIdx(val as number)}
+                options={QUALITY_TIERS.map((q, i) => ({
+                  label: q.label,
+                  value: i,
+                }))}
+              />
+              <Tag color="blue" style={{ marginLeft: 8 }}>
+                {calcSize(ratioIdx, qualityIdx).width}×{calcSize(ratioIdx, qualityIdx).height}
+              </Tag>
+            </Space>
           </Space>
           <Button
             type="primary"
@@ -489,7 +525,7 @@ export default function Generate() {
                 </Button>
               )}
               {errorCode === "auth" && (
-                <Button onClick={() => window.location.hash = "#/models"}>
+                <Button onClick={() => navigate("/models")}>
                   前往模型管理
                 </Button>
               )}

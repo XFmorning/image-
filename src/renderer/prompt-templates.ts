@@ -11,6 +11,7 @@ export const TEMPLATE_CATEGORIES: { key: string; name: string; icon: string }[] 
   { key: "ancient", name: "古风", icon: "EnvironmentOutlined" },
   { key: "animal", name: "动物", icon: "BugOutlined" },
   { key: "abstract", name: "抽象", icon: "ExperimentOutlined" },
+  { key: "video", name: "图生视频", icon: "PlayCircleOutlined" },
 ];
 
 export const TEMPLATES: TemplateItem[] = [
@@ -85,6 +86,20 @@ export const TEMPLATES: TemplateItem[] = [
   { category: "abstract", label: "玻璃折射", prompt: "glass prism light refraction, rainbow spectrum, crystal clear, optical physics, minimalist setup, white background, caustic light patterns" },
   { category: "abstract", label: "梦幻渐变", prompt: "dreamy gradient blur, soft pastel colors, ethereal atmosphere, abstract background, smooth transitions, vaporwave aesthetic, calming and peaceful" },
   { category: "abstract", label: "金属质感", prompt: "brushed metal texture, industrial abstract, steel and gold, reflective surfaces, macro detail, mechanical precision, modern material study" },
+
+  // 图生视频专用
+  { category: "video", label: "角色三视图", prompt: "character turnaround sheet, front view, side view, back view, 3/4 view, full body standing pose, consistent character design, white background, professional animation reference sheet, clean linework, same clothing and appearance in all views" },
+  { category: "video", label: "角色表情集", prompt: "character expression sheet, same character showing multiple emotions (happy, sad, angry, surprised, neutral), consistent face design, clean white background, animation production reference, manga style, headshots in grid layout" },
+  { category: "video", label: "角色动作关键帧", prompt: "character action sequence, 6 key frames of a complete motion cycle, running movement breakdown, consistent character design, clean white background, animation reference sheet, professional 2D animation style, frame by frame" },
+  { category: "video", label: "产品360展示", prompt: "product 360 degree rotation reference, multiple angles (front, 45°, side, 135°, back, 270°), consistent studio lighting, pure white background, commercial product photography, e-commerce style, same scale in all shots" },
+  { category: "video", label: "武器/道具三视图", prompt: "weapon design orthographic views, front elevation, side elevation, top view, detailed prop design, game asset reference, clean technical drawing style, white background, fantasy weapon, labeled dimensions" },
+  { category: "video", label: "场景多角度", prompt: "environment establishing shots, same location from 3 different camera angles (wide establishing, medium, close-up detail), consistent lighting and atmosphere, cinematic composition, film location scout reference, matte painting quality" },
+  { category: "video", label: "服装设计图", prompt: "fashion design reference sheet, front and back view of full outfit, fabric details, color swatches, clean white background, fashion illustration style, animation costume design, professional character wardrobe reference" },
+  { category: "video", label: "机甲/载具蓝图", prompt: "mecha design blueprint, front view, side view, rear view, detailed mechanical parts callouts, technical drawing style, blueprint aesthetic, white lines on blue background, sci-fi vehicle design, engineering reference" },
+  { category: "video", label: "怪物概念多视图", prompt: "creature concept design, multiple views (side profile, front, 3/4), anatomy study, scale reference, fantasy creature, professional game design reference, consistent design across views, creature design sheet" },
+  { category: "video", label: "行走循环序列", prompt: "walk cycle sequence, 8 frames of continuous walking motion, side view, consistent character silhouette, animation reference, professional 2D animation, clean background, frame by frame breakdown, smooth motion" },
+  { category: "video", label: "物品图标集", prompt: "item icon set, multiple fantasy items in consistent top-down or isometric view, game asset style, clean design, uniform lighting, organized in grid, RPG inventory items, professional game UI assets" },
+  { category: "video", label: "建筑立面图", prompt: "building elevation drawing, front facade, architectural orthographic view, clean lines, professional architectural rendering, detailed windows and doors, white background, modern architecture design reference" },
 ];
 
 /** 中→英 prompt 关键词映射 */
