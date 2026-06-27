@@ -37,12 +37,12 @@ import {
 import { useGenTask } from "../GenerationContext";
 
 const ASPECT_RATIOS = [
-  { label: "1:1", w: 1, h: 1 },
-  { label: "4:3", w: 4, h: 3 },
-  { label: "16:9", w: 16, h: 9 },
-  { label: "9:16", w: 9, h: 16 },
-  { label: "3:4", w: 3, h: 4 },
-  { label: "21:9", w: 21, h: 9 },
+  { label: "1:1",  hint: "头像·社交",  w: 1,  h: 1 },
+  { label: "4:3",  hint: "平板·照片",  w: 4,  h: 3 },
+  { label: "16:9", hint: "电脑·视频",  w: 16, h: 9 },
+  { label: "9:16", hint: "手机·短视频", w: 9,  h: 16 },
+  { label: "3:4",  hint: "竖版照片",   w: 3,  h: 4 },
+  { label: "21:9", hint: "超宽·电影",  w: 21, h: 9 },
 ];
 
 const QUALITY_TIERS = [
@@ -415,7 +415,12 @@ export default function Generate() {
                 value={ratioIdx}
                 onChange={(val) => setRatioIdx(val as number)}
                 options={ASPECT_RATIOS.map((r, i) => ({
-                  label: r.label,
+                  label: (
+                    <div style={{ textAlign: "center", lineHeight: 1.3 }}>
+                      <div style={{ fontWeight: 600, fontSize: 14 }}>{r.label}</div>
+                      <div style={{ fontSize: 10, color: "#999", whiteSpace: "nowrap" }}>{r.hint}</div>
+                    </div>
+                  ),
                   value: i,
                 }))}
                 disabled={task.status === "generating"}
