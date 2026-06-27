@@ -55,10 +55,12 @@ export default function AppLayout({ children }: AppLayoutProps) {
           ))}
         </nav>
 
-        <div className="app-sider-footer">
-          <div className="user-avatar">👤</div>
-          <div style={{ fontWeight: 600, marginBottom: 2 }}>AI 创作者</div>
-          <div style={{ fontSize: 11, opacity: 0.65 }}>Free Plan</div>
+        <div className="app-sider-footer" style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <div className="user-avatar" style={{ marginBottom: 0, flexShrink: 0 }}>🎨</div>
+          <div>
+            <div style={{ fontWeight: 600, fontSize: 14 }}>AI 创作者</div>
+            <div style={{ fontSize: 11, opacity: 0.6 }}>无限创意 · 即刻生成</div>
+          </div>
         </div>
       </aside>
 
