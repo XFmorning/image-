@@ -501,87 +501,170 @@ export default function Generate() {
       >
         {/* 空闲状态 */}
         {task.status === "idle" && (
-          <div
-            style={{
-              textAlign: "center",
-              padding: "60px 20px",
-              color: "#999",
-            }}
-          >
-            <ThunderboltOutlined
-              style={{ fontSize: 48, marginBottom: 16, color: "#ccc" }}
-            />
-            <h3 style={{ color: "#333", marginBottom: 8 }}>开始创作</h3>
-            <p style={{ marginBottom: 16 }}>
-              输入提示词，选择尺寸，点击生成按钮
+          <div style={{ textAlign: "center", padding: "40px 20px" }}>
+            {/* 装饰插图 */}
+            <div className="idle-illustration">
+              <div className="orb orb-1" />
+              <div className="orb orb-2" />
+              <div className="orb orb-3" />
+              <div className="icon-center">
+                <ThunderboltOutlined style={{ fontSize: 32, color: "var(--gradient-start)" }} />
+              </div>
+            </div>
+            <h3 style={{ color: "#1a1a2e", marginBottom: 6, fontSize: 20, fontWeight: 700 }}>
+              开始你的创作之旅
+            </h3>
+            <p style={{ color: "#888", marginBottom: 20, fontSize: 14, lineHeight: 1.6 }}>
+              用文字描绘你心中的画面<br />AI 将为你呈现独一无二的视觉作品
             </p>
-            <Space wrap>
-              {TEMPLATES.slice(0, 6).map((t, i) => (
-                <Button
-                  key={i}
-                  size="small"
-                  onClick={() => saveInput({ prompt: t.prompt })}
-                >
-                  {t.label}
-                </Button>
-              ))}
-            </Space>
+            <div style={{
+              background: "linear-gradient(135deg, rgba(102,126,234,0.04), rgba(118,75,162,0.04))",
+              borderRadius: 12,
+              padding: "12px 16px",
+              marginBottom: 16,
+            }}>
+              <div style={{ color: "#999", fontSize: 12, marginBottom: 8 }}>💡 快速试试这些</div>
+              <Space wrap size={[8, 8]}>
+                {TEMPLATES.slice(0, 4).map((t, i) => (
+                  <Button
+                    key={i}
+                    size="small"
+                    onClick={() => saveInput({ prompt: t.prompt })}
+                    style={{
+                      borderRadius: 16,
+                      border: "1px solid #e8e8ff",
+                      background: "#fff",
+                    }}
+                  >
+                    {t.label}
+                  </Button>
+                ))}
+              </Space>
+            </div>
           </div>
         )}
 
         {/* 生成中 */}
         {task.status === "generating" && (
-          <div style={{ textAlign: "center", padding: "48px 20px" }}>
+          <div className="fade-in" style={{ textAlign: "center", padding: "48px 20px" }}>
             <div style={{
-              width: 80,
-              height: 80,
+              width: 96,
+              height: 96,
               margin: "0 auto 24px",
-              borderRadius: "50%",
-              background: "conic-gradient(var(--gradient-start), var(--gradient-end), #e8e8ff, var(--gradient-start))",
-              animation: "spin-ring 1.5s linear infinite",
-              mask: "radial-gradient(transparent 28px, black 30px)",
-              WebkitMask: "radial-gradient(transparent 28px, black 30px)",
-            }} />
-            <h3 style={{ color: "#333", marginBottom: 8 }}>AI 正在创作...</h3>
-            <p style={{ color: "#888", marginBottom: 4 }}>
-              已用时 <span style={{ color: "var(--gradient-start)", fontWeight: 700, fontSize: 18 }}>{elapsedTime}s</span>
+              position: "relative",
+            }}>
+              {/* 外圈旋转环 */}
+              <div style={{
+                position: "absolute", inset: 0,
+                borderRadius: "50%",
+                background: "conic-gradient(var(--gradient-start), var(--gradient-end), #e8e8ff, var(--gradient-start))",
+                animation: "spin-ring 1.5s linear infinite",
+                mask: "radial-gradient(transparent 36px, black 38px)",
+                WebkitMask: "radial-gradient(transparent 36px, black 38px)",
+              }} />
+              {/* 内圈逆旋转 */}
+              <div style={{
+                position: "absolute", inset: 8,
+                borderRadius: "50%",
+                background: "conic-gradient(var(--gradient-end), #e8e8ff, var(--gradient-start), var(--gradient-end))",
+                animation: "spin-ring 2s linear infinite reverse",
+                mask: "radial-gradient(transparent 28px, black 30px)",
+                WebkitMask: "radial-gradient(transparent 28px, black 30px)",
+              }} />
+              {/* 中心图标 */}
+              <div style={{
+                position: "absolute",
+                top: "50%", left: "50%",
+                transform: "translate(-50%, -50%)",
+                fontSize: 28,
+              }}>
+                ✨
+              </div>
+            </div>
+            <h3 style={{ color: "#333", marginBottom: 6, fontWeight: 700 }}>
+              正在生成你的图像
+            </h3>
+            <p style={{ color: "#888", marginBottom: 16, fontSize: 14 }}>
+              已用时 <span style={{ color: "var(--gradient-start)", fontWeight: 700, fontSize: 18 }}>{elapsedTime}</span> 秒
             </p>
-            <p style={{ color: "#aaa", fontSize: 12 }}>
-              预计需要 60 - 120 秒，请耐心等待
+            <div className="loading-dots">
+              <span /><span /><span />
+            </div>
+            <p style={{ color: "#bbb", fontSize: 12, marginTop: 16 }}>
+              AI 正在精心绘制每一个像素，预计 60-120 秒
             </p>
           </div>
         )}
 
         {/* 完成 */}
         {task.status === "completed" && (
-          <div style={{ textAlign: "center", padding: "16px 0" }}>
+          <div className="scale-in" style={{ textAlign: "center", padding: "16px 0" }}>
             <Tag
               icon={<CheckCircleOutlined />}
               color="success"
-              style={{ marginBottom: 12, padding: "4px 12px", fontSize: 14 }}
+              style={{
+                marginBottom: 16,
+                padding: "6px 16px",
+                fontSize: 14,
+                borderRadius: 20,
+                fontWeight: 600,
+              }}
             >
               生成成功
             </Tag>
-            <div style={{ marginTop: 8 }}>
+            <div style={{
+              background: "linear-gradient(135deg, #f8f9ff, #faf5ff)",
+              borderRadius: 16,
+              padding: 20,
+              marginBottom: 12,
+            }}>
               {task.resultDataUrl ? (
                 <Image
                   src={task.resultDataUrl}
                   alt="生成结果"
-                  style={{ maxWidth: "100%", maxHeight: 500, borderRadius: 8 }}
-                  preview={{ mask: "点击预览" }}
+                  style={{ maxWidth: "100%", maxHeight: 480, borderRadius: 12 }}
+                  preview={{
+                    mask: (
+                      <div style={{ textAlign: "center" }}>
+                        <div style={{ fontSize: 20, marginBottom: 4 }}>🔍</div>
+                        <div>点击查看大图</div>
+                      </div>
+                    ),
+                  }}
                 />
               ) : (
                 <Spin size="large" style={{ padding: 40 }} />
               )}
             </div>
-            <Space style={{ marginTop: 12 }}>
-              <Button icon={<DownloadOutlined />} onClick={handleDownload}>
-                下载
+            {/* 快捷信息 */}
+            <div style={{
+              display: "flex",
+              justifyContent: "center",
+              gap: 16,
+              flexWrap: "wrap",
+              marginBottom: 16,
+            }}>
+              <Tag color="purple" style={{ borderRadius: 12, padding: "2px 12px" }}>
+                {task.size}
+              </Tag>
+              <Tag color="blue" style={{ borderRadius: 12, padding: "2px 12px" }}>
+                {task.providerModel}
+              </Tag>
+              <Tag color="cyan" style={{ borderRadius: 12, padding: "2px 12px" }}>
+                {task.mode === "t2i" ? "文生图" : "图生图"}
+              </Tag>
+            </div>
+            <Space size={12}>
+              <Button icon={<DownloadOutlined />} onClick={handleDownload}
+                style={{ borderRadius: 20 }}>
+                下载原图
               </Button>
-              <Button icon={<CopyOutlined />} onClick={handleCopyPrompt}>
+              <Button icon={<CopyOutlined />} onClick={handleCopyPrompt}
+                style={{ borderRadius: 20 }}>
                 复制提示词
               </Button>
-              <Button onClick={() => { resetTask(); saveInput({ prompt: "" }); }}>
+              <Button type="primary" onClick={() => { resetTask(); saveInput({ prompt: "" }); }}
+                style={{ borderRadius: 20 }}>
                 再来一张
               </Button>
             </Space>
