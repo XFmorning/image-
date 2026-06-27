@@ -29,6 +29,13 @@ export interface GenInputState {
   i2i: GenInput;
 }
 
+const EMPTY_INPUT: GenInput = {
+  prompt: "",
+  ratioIdx: 0,
+  qualityIdx: 0,
+  selectedStyle: "",
+};
+
 const EMPTY_INPUT_STATE: GenInputState = {
   mode: "t2i",
   t2i: { ...EMPTY_INPUT },
@@ -47,14 +54,6 @@ const EMPTY_TASK: GenTask = {
   resultDataUrl: "",
   errorMsg: "",
   errorCode: "",
-};
-
-const EMPTY_INPUT: GenInput = {
-  prompt: "",
-  ratioIdx: 0,
-  qualityIdx: 0,
-  selectedStyle: "",
-  mode: "t2i",
 };
 
 interface GenContextValue {
