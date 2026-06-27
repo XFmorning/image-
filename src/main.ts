@@ -185,6 +185,7 @@ function createWindow() {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
       nodeIntegration: false,
+      devTools: true,
     },
     show: false,
   });
@@ -193,9 +194,15 @@ function createWindow() {
     mainWindow.show();
   });
 
-  mainWindow.loadFile(
-    path.join(__dirname, "../renderer/main_window/index.html")
-  );
+  // 开发模式使用 Vite dev server，生产模式加载文件
+  if (process.env.MAIN_WINDOW_VITE_DEV_SERVER_URL) {
+    mainWindow.loadURL(process.env.MAIN_WINDOW_VITE_DEV_SERVER_URL);
+    mainWindow.webContents.openDevTools();
+  } else {
+    mainWindow.loadFile(
+      path.join(__dirname, "../renderer/main_window/index.html")
+    );
+  }
 }
 
 // ========== 应用生命周期 ==========
