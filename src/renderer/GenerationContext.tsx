@@ -21,8 +21,19 @@ export interface GenInput {
   ratioIdx: number;
   qualityIdx: number;
   selectedStyle: string;
-  mode: "t2i" | "i2i";
 }
+
+export interface GenInputState {
+  mode: "t2i" | "i2i";
+  t2i: GenInput;
+  i2i: GenInput;
+}
+
+const EMPTY_INPUT_STATE: GenInputState = {
+  mode: "t2i",
+  t2i: { ...EMPTY_INPUT },
+  i2i: { ...EMPTY_INPUT },
+};
 
 const EMPTY_TASK: GenTask = {
   status: "idle",
@@ -48,8 +59,9 @@ const EMPTY_INPUT: GenInput = {
 
 interface GenContextValue {
   task: GenTask;
-  input: GenInput;
+  input: GenInputState;
   saveInput: (partial: Partial<GenInput>) => void;
+  setInputMode: (mode: "t2i" | "i2i") => void;
   startTask: (partial: Pick<GenTask, "prompt" | "size" | "mode" | "providerName" | "providerModel">) => void;
   finishTask: (resultFilename: string) => void;
   failTask: (errorMsg: string, errorCode: string) => void;
@@ -61,13 +73,20 @@ const GenContext = createContext<GenContextValue | null>(null);
 
 export function GenerationProvider({ children }: { children: ReactNode }) {
   const [task, setTask] = useState<GenTask>(EMPTY_TASK);
-  const [input, setInput] = useState<GenInput>(EMPTY_INPUT);
+  const [input, setInput] = useState<GenInputState>(EMPTY_INPUT_STATE);
   const taskRef = useRef<GenTask>(EMPTY_TASK);
 
   taskRef.current = task;
 
   const saveInput = useCallback((partial: Partial<GenInput>) => {
-    setInput((prev) => ({ ...prev, ...partial }));
+    setInput((prev) => {
+      const modeKey = prev.mode;
+      return { ...prev, [modeKey]: { ...prev[modeKey], ...partial } };
+    });
+  }, []);
+
+  const setInputMode = useCallback((mode: "t2i" | "i2i") => {
+    setInput((prev) => ({ ...prev, mode }));
   }, []);
 
   const startTask = useCallback((partial: Pick<GenTask, "prompt" | "size" | "mode" | "providerName" | "providerModel">) => {
@@ -105,7 +124,7 @@ export function GenerationProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <GenContext.Provider value={{ task, input, saveInput, startTask, finishTask, failTask, resetTask, setResultDataUrl }}>
+    <GenContext.Provider value={{ task, input, saveInput, setInputMode, startTask, finishTask, failTask, resetTask, setResultDataUrl }}>
       {children}
     </GenContext.Provider>
   );

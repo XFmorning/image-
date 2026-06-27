@@ -81,8 +81,10 @@ const STYLE_PRESETS = [
 
 export default function Generate() {
   const navigate = useNavigate();
-  const { task, input, saveInput, startTask, finishTask, failTask, resetTask, setResultDataUrl } = useGenTask();
-  const { prompt, ratioIdx, qualityIdx, selectedStyle, mode } = input;
+  const { task, input, saveInput, setInputMode, startTask, finishTask, failTask, resetTask, setResultDataUrl } = useGenTask();
+  const cur = input[input.mode];
+  const { prompt, ratioIdx, qualityIdx, selectedStyle } = cur;
+  const { mode } = input;
 
   const [providerId, setProviderId] = useState("");
   const [providers, setProviders] = useState<ProviderConfig[]>([]);
@@ -265,7 +267,7 @@ export default function Generate() {
       {/* 模式切换 */}
       <Tabs
         activeKey={mode}
-        onChange={(key) => saveInput({ mode: key as "t2i" | "i2i" })}
+        onChange={(key) => setInputMode(key as "t2i" | "i2i")}
         items={[
           { key: "t2i", label: "文生图" },
           { key: "i2i", label: "图生图" },
