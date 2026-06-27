@@ -5,6 +5,7 @@ export default defineConfig({
     outDir: ".vite/build",
     lib: {
       entry: "src/preload.ts",
+      fileName: "preload",
       formats: ["cjs"],
     },
     rollupOptions: {

@@ -5,6 +5,7 @@ export default defineConfig({
     outDir: ".vite/build",
     lib: {
       entry: "src/main.ts",
+      fileName: "main",
       formats: ["cjs"],
     },
     rollupOptions: {
