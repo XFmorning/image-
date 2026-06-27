@@ -194,9 +194,9 @@ function createWindow() {
     mainWindow.show();
   });
 
-  // 开发模式使用 Vite dev server，生产模式加载文件
-  if (process.env.MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-    mainWindow.loadURL(process.env.MAIN_WINDOW_VITE_DEV_SERVER_URL);
+  // 开发模式使用 Vite dev server，生产模式加载打包文件
+  if (!app.isPackaged) {
+    mainWindow.loadURL("http://localhost:5173");
     mainWindow.webContents.openDevTools();
   } else {
     mainWindow.loadFile(
