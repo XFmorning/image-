@@ -4,7 +4,6 @@ import {
   Button,
   Input,
   Form,
-  List,
   Tag,
   message,
   Popconfirm,
@@ -159,16 +158,14 @@ export default function ModelConfig() {
       ) : (
         <div style={{ display: "flex", gap: 24 }}>
           <div style={{ width: 220, minWidth: 220 }}>
-            <List
-              dataSource={config.providers}
-              renderItem={(item) => (
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {config.providers.map((item) => (
                 <Card
                   key={item.id}
                   size="small"
                   hoverable
                   onClick={() => setSelectedId(item.id)}
                   style={{
-                    marginBottom: 8,
                     cursor: "pointer",
                     borderColor:
                       item.id === selectedId
@@ -211,8 +208,8 @@ export default function ModelConfig() {
                     )}
                   </div>
                 </Card>
-              )}
-            />
+              ))}
+            </div>
           </div>
 
           <div style={{ flex: 1 }}>

@@ -445,7 +445,7 @@ export default function Generate() {
         title="提示词模板库"
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
-        width={480}
+        size="large"
       >
         <Tabs
           activeKey={selectedCategory}
