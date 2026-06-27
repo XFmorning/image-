@@ -55,6 +55,7 @@ export default function Generate() {
   const [status, setStatus] = useState<GenerationStatus>("idle");
   const [resultImage, setResultImage] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+  const [errorCode, setErrorCode] = useState("");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("portrait");
 
@@ -134,6 +135,7 @@ export default function Generate() {
 
     setStatus("generating");
     setErrorMsg("");
+    setErrorCode("");
 
     try {
       let result;
@@ -177,10 +179,12 @@ export default function Generate() {
         message.success("生成成功！");
       } else {
         setErrorMsg(result.error || "生成失败");
+        setErrorCode(result.errorCode || "");
         setStatus("failed");
       }
     } catch (e: any) {
       setErrorMsg(e.message || "请求异常");
+      setErrorCode("network");
       setStatus("failed");
     }
   };
@@ -429,13 +433,44 @@ export default function Generate() {
         )}
 
         {status === "failed" && (
-          <div style={{ textAlign: "center", padding: "60px 20px" }}>
+          <div style={{ textAlign: "center", padding: "40px 20px", maxWidth: 480, margin: "0 auto" }}>
             <CloseCircleOutlined
               style={{ fontSize: 48, color: "#ff4d4f", marginBottom: 16 }}
             />
-            <h3 style={{ color: "#ff4d4f", marginBottom: 8 }}>生成失败</h3>
-            <p style={{ color: "#666", marginBottom: 16 }}>{errorMsg}</p>
-            <Button onClick={handleGenerate}>重试</Button>
+            <h3 style={{ color: "#ff4d4f", marginBottom: 8 }}>
+              {errorCode === "content_policy" ? "内容审核未通过" :
+               errorCode === "auth" ? "API 认证失败" :
+               errorCode === "network" ? "网络连接失败" :
+               errorCode === "rate_limit" ? "请求过于频繁" :
+               errorCode === "server" ? "服务商异常" : "生成失败"}
+            </h3>
+            <div style={{
+              color: "#666",
+              marginBottom: 16,
+              whiteSpace: "pre-line",
+              lineHeight: 1.6,
+              fontSize: 14,
+              background: "#fff",
+              padding: 12,
+              borderRadius: 8,
+              border: "1px solid #f0f0f0",
+              textAlign: "left",
+            }}>
+              {errorMsg}
+            </div>
+            <Space>
+              {errorCode === "content_policy" && (
+                <Button icon={<BulbOutlined />} onClick={handleRandom}>
+                  换一条随机灵感
+                </Button>
+              )}
+              {errorCode === "auth" && (
+                <Button onClick={() => window.location.hash = "#/models"}>
+                  前往模型管理
+                </Button>
+              )}
+              <Button onClick={handleGenerate}>重试</Button>
+            </Space>
           </div>
         )}
       </Card>

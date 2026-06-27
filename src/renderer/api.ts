@@ -11,7 +11,88 @@ interface GenerateWithRefParams extends GenerateParams {
 interface ApiResult {
   success: boolean;
   images: ArrayBuffer[];
-  error?: string;
+  error?: string;       // 用户友好的中文错误信息
+  errorCode?: string;   // 错误类型标识：network / auth / rate_limit / content_policy / server / unknown
+}
+
+/** 将 API 错误翻译为中文友好提示 */
+function formatError(status: number, body: string): { message: string; code: string } {
+  // 尝试解析 JSON 错误体
+  let apiMessage = "";
+  try {
+    const json = JSON.parse(body);
+    apiMessage = json?.error?.message || json?.message || "";
+  } catch {
+    apiMessage = body;
+  }
+
+  // 内容审核拦截
+  if (status === 400 && (apiMessage.includes("content_policy") || apiMessage.includes("内容") || apiMessage.includes("政策"))) {
+    return {
+      code: "content_policy",
+      message: "内容审核未通过，请修改提示词后重试。建议：\n• 避免敏感词汇\n• 换一种描述方式\n• 使用模板库中的安全提示词",
+    };
+  }
+  if (status === 400 && apiMessage.includes("content")) {
+    return {
+      code: "content_policy",
+      message: `内容审核拦截：${apiMessage}`,
+    };
+  }
+
+  // 普通 400 错误
+  if (status === 400) {
+    return {
+      code: "bad_request",
+      message: `请求参数有误：${apiMessage || "请检查提示词和参数设置"}`,
+    };
+  }
+
+  // 认证失败
+  if (status === 401) {
+    return {
+      code: "auth",
+      message: "API Key 无效或已过期，请到「模型管理」中重新设置。",
+    };
+  }
+
+  // 权限不足
+  if (status === 403) {
+    return {
+      code: "auth",
+      message: "API 访问被拒绝，请检查你的账户权限或余额是否充足。",
+    };
+  }
+
+  // 资源不存在
+  if (status === 404) {
+    return {
+      code: "not_found",
+      message: "API 接口不存在，请检查「模型管理」中的请求地址是否正确。",
+    };
+  }
+
+  // 频率限制
+  if (status === 429) {
+    return {
+      code: "rate_limit",
+      message: "请求太频繁，请稍等片刻后重试。",
+    };
+  }
+
+  // 服务端错误
+  if (status >= 500) {
+    return {
+      code: "server",
+      message: `服务商服务器异常 (${status})，请稍后重试。`,
+    };
+  }
+
+  // 其他 HTTP 错误
+  return {
+    code: "unknown",
+    message: `请求失败 (HTTP ${status})：${apiMessage || "未知错误"}`,
+  };
 }
 
 /** 文生图 */
@@ -38,8 +119,9 @@ export async function generateImage(params: GenerateParams): Promise<ApiResult> 
     });
 
     if (!response.ok) {
-      const err = await response.text();
-      return { success: false, images: [], error: `HTTP ${response.status}: ${err}` };
+      const errText = await response.text();
+      const { message, code } = formatError(response.status, errText);
+      return { success: false, images: [], error: message, errorCode: code };
     }
 
     const data = await response.json();
@@ -63,7 +145,21 @@ export async function generateImage(params: GenerateParams): Promise<ApiResult> 
 
     return { success: true, images };
   } catch (e: any) {
-    return { success: false, images: [], error: e.message || "网络请求失败" };
+    const msg = e.message || "";
+    if (msg.includes("fetch") || msg.includes("Failed to fetch") || msg.includes("ENOTFOUND") || msg.includes("ECONNREFUSED")) {
+      return {
+        success: false,
+        images: [],
+        error: "无法连接到 API 服务器，请检查：\n• 网络连接是否正常\n• 「模型管理」中的请求地址是否正确",
+        errorCode: "network",
+      };
+    }
+    return {
+      success: false,
+      images: [],
+      error: `网络异常：${msg}`,
+      errorCode: "network",
+    };
   }
 }
 
@@ -95,8 +191,9 @@ export async function generateImageWithRef(
     });
 
     if (!response.ok) {
-      const err = await response.text();
-      return { success: false, images: [], error: `HTTP ${response.status}: ${err}` };
+      const errText = await response.text();
+      const { message, code } = formatError(response.status, errText);
+      return { success: false, images: [], error: message, errorCode: code };
     }
 
     const data = await response.json();
@@ -120,6 +217,20 @@ export async function generateImageWithRef(
 
     return { success: true, images };
   } catch (e: any) {
-    return { success: false, images: [], error: e.message || "网络请求失败" };
+    const msg = e.message || "";
+    if (msg.includes("fetch") || msg.includes("Failed to fetch") || msg.includes("ENOTFOUND") || msg.includes("ECONNREFUSED")) {
+      return {
+        success: false,
+        images: [],
+        error: "无法连接到 API 服务器，请检查：\n• 网络连接是否正常\n• 「模型管理」中的请求地址是否正确",
+        errorCode: "network",
+      };
+    }
+    return {
+      success: false,
+      images: [],
+      error: `网络异常：${msg}`,
+      errorCode: "network",
+    };
   }
 }
