@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useRef, useCallback, type ReactNode } from "react";
+import { createContext, useContext, useState, useRef, useCallback, useEffect, type ReactNode } from "react";
 
 export type GenStatus = "idle" | "generating" | "completed" | "failed" | "pending";
 
@@ -87,13 +87,32 @@ function genId() {
   return `t_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
 }
 
+// ====== 任务持久化 ======
+
+const TASKS_KEY = "futureai_tasks";
+
+function persistTasks(tasks: GenTask[]) {
+  const clean = tasks.map(({ resultDataUrl, ...rest }) => rest);
+  try { localStorage.setItem(TASKS_KEY, JSON.stringify(clean)); } catch { /* quota */ }
+}
+
+function restoreTasks(): GenTask[] {
+  try {
+    const raw = localStorage.getItem(TASKS_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+}
+
 export function GenerationProvider({ children }: { children: ReactNode }) {
-  const [tasks, setTasks] = useState<GenTask[]>([]);
+  const [tasks, setTasks] = useState<GenTask[]>(restoreTasks);
   const [input, setInput] = useState<GenInputState>(EMPTY_INPUT_STATE);
   const tasksRef = useRef<GenTask[]>([]);
   const activeIdRef = useRef<string | null>(null);
 
   tasksRef.current = tasks;
+
+  // 任务变化 → 持久化
+  useEffect(() => { persistTasks(tasks); }, [tasks]);
 
   // ====== 新 API ======
 
