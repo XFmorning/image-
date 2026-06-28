@@ -551,10 +551,10 @@ export default function Generate() {
 
       {/* 参数配置 */}
       <Card size="small" style={{ marginBottom: 16 }}>
-        <Space direction="vertical" size={16} style={{ width: "100%" }}>
+        <Space direction="vertical" size={12} style={{ width: "100%" }}>
           {/* 模型选择 */}
-          <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-            <span style={{ color: "#888", fontSize: 13, minWidth: 36 }}>模型</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <span style={{ color: "#888", fontSize: 13, minWidth: 36, flexShrink: 0 }}>模型</span>
             {providers.length === 0 ? (
               <Button size="small" type="link" onClick={() => navigate("/models")}>
                 暂无服务商，点击添加
@@ -581,16 +581,15 @@ export default function Generate() {
               value={ratioIdx}
               onChange={(val) => saveInput({ ratioIdx: val as number })}
               options={ASPECT_RATIOS.map((r, i) => ({
-                label: r.label,
+                label: <div style={{ textAlign: "center", padding: "2px 4px" }}><div style={{ fontWeight: 600 }}>{r.label}</div><div style={{ fontSize: 10, color: "#999" }}>{r.hint}</div></div>,
                 value: i,
-                title: r.hint,
               }))}
             />
           </div>
 
           {/* 画质 + 分辨率 */}
-          <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-            <span style={{ color: "#888", fontSize: 13, minWidth: 36 }}>画质</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <span style={{ color: "#888", fontSize: 13 }}>画质</span>
             <Segmented
               value={qualityIdx}
               onChange={(val) => saveInput({ qualityIdx: val as number })}

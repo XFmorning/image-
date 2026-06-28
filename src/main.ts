@@ -292,16 +292,15 @@ function createWindow() {
 // ========== 托盘 ==========
 
 function createTray() {
-  // 查找 icon 文件路径
-  let iconPath = path.join(app.getAppPath(), "resources", "icon.png");
+  let iconPath = path.join(app.getAppPath(), "resources", "tray-icon.png");
   if (!fs.existsSync(iconPath)) {
-    iconPath = path.join(__dirname, "../../resources/icon.png");
+    iconPath = path.join(__dirname, "../../resources/tray-icon.png");
   }
   const icon = fs.existsSync(iconPath)
     ? nativeImage.createFromPath(iconPath).resize({ width: 16, height: 16 })
     : nativeImage.createEmpty();
   tray = new Tray(icon);
-  tray.setToolTip("FutureAI Image - 正在运行");
+  tray.setToolTip("Morning AI - 正在运行");
 
   const contextMenu = Menu.buildFromTemplate([
     {

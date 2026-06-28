@@ -1,6 +1,6 @@
 {
   "name": "futureai-image",
-  "productName": "FutureAI Image",
+  "productName": "Morning AI",
   "version": "1.0.0",
   "description": "AI 图像生成桌面客户端",
   "main": ".vite/build/main.js",
@@ -12,7 +12,7 @@
   },
   "build": {
     "appId": "com.futureai.image",
-    "productName": "FutureAI Image",
+    "productName": "Morning AI",
     "directories": {
       "output": "dist"
     },

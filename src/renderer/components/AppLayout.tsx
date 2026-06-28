@@ -39,7 +39,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
       >
         <div className="app-sider-logo">
           <RobotOutlined className="logo-icon" />
-          <h1>FutureAI Image</h1>
+          <h1>Morning AI</h1>
         </div>
 
         <nav className="app-sider-menu">
