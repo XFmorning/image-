@@ -876,6 +876,9 @@ export default function Generate() {
         onClose={() => setDrawerOpen(false)}
         size="large"
       >
+        {availableCategories.length === 0 ? (
+          <Empty description="当前模式无可用的模板分类" />
+        ) : (
         <Tabs
           activeKey={safeCategory}
           onChange={(key) => { if (availableCategories.some(c => c.key === key)) setSelectedCategory(key); }}
@@ -913,6 +916,7 @@ export default function Generate() {
             ),
           }))}
         />
+        )}
       </Drawer>
 
       {/* 任务列表抽屉 */}
