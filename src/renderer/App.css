@@ -36,10 +36,10 @@ html, body, #root {
   width: var(--sider-width);
   min-width: var(--sider-width);
   height: 100%;
-  background: url("./assets/sider-bg.png") center center / cover no-repeat;
+  background: url("./assets/sider-bg.jpg") center center / cover no-repeat;
   display: flex;
   flex-direction: column;
-  color: #fff;
+  color: #222;
   user-select: none;
   z-index: 10;
   position: relative;
@@ -81,14 +81,15 @@ html, body, #root {
 .app-sider-logo h1 {
   font-size: 18px;
   font-weight: 700;
-  color: #fff;
+  color: #222;
   white-space: nowrap;
   letter-spacing: 0.5px;
 }
 
 .app-sider-logo .logo-icon {
   font-size: 32px;
-  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.2));
+  color: #222;
+  filter: drop-shadow(0 1px 3px rgba(0,0,0,0.15));
 }
 
 .app-sider-menu {
@@ -106,7 +107,7 @@ html, body, #root {
   padding: 12px 16px;
   margin-bottom: 4px;
   border-radius: var(--radius-md);
-  color: rgba(255, 255, 255, 0.7);
+  color: #333;
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   font-size: 15px;
@@ -119,14 +120,14 @@ html, body, #root {
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(255,255,255,0.1);
+  background: rgba(102, 126, 234, 0.08);
   border-radius: var(--radius-md);
   opacity: 0;
   transition: opacity 0.25s;
 }
 
 .app-sider-menu .menu-item:hover {
-  color: #fff;
+  color: var(--primary);
   transform: translateX(4px);
 }
 
@@ -135,26 +136,29 @@ html, body, #root {
 }
 
 .app-sider-menu .menu-item.active {
-  color: #fff;
-  background: rgba(255, 255, 255, 0.18);
+  color: var(--primary);
+  background: rgba(102, 126, 234, 0.12);
   font-weight: 600;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 
 .app-sider-footer {
-  padding: 16px 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 12px 16px;
+  margin: 0 12px 16px;
+  border: 2px solid rgba(102, 126, 234, 0.4);
+  border-radius: var(--radius-md);
   font-size: 13px;
-  opacity: 0.85;
+  color: #333;
   position: relative;
   z-index: 1;
+  background: rgba(255, 255, 255, 0.3);
 }
 
 .app-sider-footer .user-avatar {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.2);
+  background: rgba(102, 126, 234, 0.15);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -167,7 +171,7 @@ html, body, #root {
   flex: 1;
   height: 100%;
   overflow-y: auto;
-  background: url("./assets/bg.png") center center / cover no-repeat fixed;
+  background: url("./assets/main-bg.jpg") center center / cover no-repeat fixed;
   position: relative;
 }
 
