@@ -441,12 +441,10 @@ export default function Generate() {
           style={{ fontSize: 14, marginBottom: 12 }}
         />
         <Space>
-          <Button icon={<BookOutlined />} onClick={() => setDrawerOpen(true)}
-            disabled={task.status === "generating"}>
+          <Button icon={<BookOutlined />} onClick={() => setDrawerOpen(true)}>
             模板库
           </Button>
-          <Button icon={<BulbOutlined />} onClick={handleRandom}
-            disabled={task.status === "generating"}>
+          <Button icon={<BulbOutlined />} onClick={handleRandom}>
             随机灵感
           </Button>
         </Space>
