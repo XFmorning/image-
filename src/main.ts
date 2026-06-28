@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, shell, Menu, safeStorage } from "electron";
+import { app, BrowserWindow, ipcMain, shell, Menu, safeStorage, Tray, nativeImage } from "electron";
 import path from "path";
 import fs from "fs";
 
@@ -238,8 +238,11 @@ function registerIpcHandlers() {
 
 // ========== 窗口创建 ==========
 
+let mainWindow: BrowserWindow | null = null;
+let tray: Tray | null = null;
+
 function createWindow() {
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
     minWidth: 900,
@@ -254,7 +257,15 @@ function createWindow() {
   });
 
   mainWindow.once("ready-to-show", () => {
-    mainWindow.show();
+    mainWindow?.show();
+  });
+
+  // 关闭窗口 → 最小化到托盘
+  mainWindow.on("close", (event) => {
+    if (!app.isQuitting) {
+      event.preventDefault();
+      mainWindow?.hide();
+    }
   });
 
   // 开发模式使用 Vite dev server，生产模式加载打包文件
@@ -268,6 +279,41 @@ function createWindow() {
   }
 }
 
+// ========== 托盘 ==========
+
+function createTray() {
+  // 用简单的 16x16 彩色图标（绿色圆点）
+  const icon = nativeImage.createFromDataURL(
+    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAMklEQVQ4T2NkYPj/n4EBBJgYKAQMowJGDcAaQDMPGNEIGNAAAwahwYAM4w0whkEDBg0AAGFfD4Gx4gM5AAAAAElFTkSuQmCC"
+  );
+  tray = new Tray(icon);
+  tray.setToolTip("FutureAI Image - 正在运行");
+
+  const contextMenu = Menu.buildFromTemplate([
+    {
+      label: "显示窗口",
+      click: () => {
+        mainWindow?.show();
+        mainWindow?.focus();
+      },
+    },
+    { type: "separator" },
+    {
+      label: "退出",
+      click: () => {
+        (app as any).isQuitting = true;
+        app.quit();
+      },
+    },
+  ]);
+
+  tray.setContextMenu(contextMenu);
+  tray.on("click", () => {
+    mainWindow?.show();
+    mainWindow?.focus();
+  });
+}
+
 // ========== 应用生命周期 ==========
 
 app.whenReady().then(() => {
@@ -275,12 +321,19 @@ app.whenReady().then(() => {
   registerIpcHandlers();
   Menu.setApplicationMenu(null);
   createWindow();
+  createTray();
 
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {
       createWindow();
+    } else {
+      mainWindow?.show();
     }
   });
+});
+
+app.on("before-quit", () => {
+  (app as any).isQuitting = true;
 });
 
 app.on("window-all-closed", () => {
