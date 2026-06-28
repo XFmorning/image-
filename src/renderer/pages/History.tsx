@@ -17,6 +17,7 @@ import {
   FolderOpenOutlined,
   ClearOutlined,
   PictureOutlined,
+  CopyOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 
@@ -141,6 +142,14 @@ export default function History() {
               size="small"
               styles={{ body: { padding: 12 } }}
               actions={[
+                <Tooltip title="复制提示词" key="copy">
+                  <CopyOutlined
+                    onClick={() => {
+                      navigator.clipboard.writeText(item.prompt);
+                      message.success("提示词已复制");
+                    }}
+                  />
+                </Tooltip>,
                 <Tooltip title="下载" key="download">
                   <DownloadOutlined
                     onClick={() =>
