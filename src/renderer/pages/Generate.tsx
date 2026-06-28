@@ -19,6 +19,7 @@ import {
   List,
   Empty,
   Divider,
+  Modal,
 } from "antd";
 import {
   UploadOutlined,
@@ -32,6 +33,7 @@ import {
   CloseCircleOutlined,
   SyncOutlined,
   OrderedListOutlined,
+  PictureOutlined,
 } from "@ant-design/icons";
 import type { UploadFile } from "antd";
 import { generateImage, generateImageWithRef } from "../api";
@@ -109,6 +111,8 @@ export default function Generate() {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [taskListOpen, setTaskListOpen] = useState(false);
+  const [historyPickOpen, setHistoryPickOpen] = useState(false);
+  const [historyImages, setHistoryImages] = useState<{ id: string; dataUrl: string }[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("portrait");
   const [elapsedTime, setElapsedTime] = useState(0);
   const [elapsedTimes, setElapsedTimes] = useState<Record<string, number>>({});
@@ -182,6 +186,32 @@ export default function Generate() {
 
   const handleRemoveFile = (uid: string) => {
     setFileList((prev) => prev.filter((f) => f.uid !== uid));
+  };
+
+  // ========== 从历史选择参考图 ==========
+
+  const openHistoryPicker = async () => {
+    setHistoryPickOpen(true);
+    const history = await window.electronAPI.getHistory();
+    const completed = history.filter((h: any) => h.status === "completed");
+    const loaded: { id: string; dataUrl: string }[] = [];
+    for (const h of completed.slice(0, 30)) {
+      try {
+        const du = await window.electronAPI.readImage(h.imagePath);
+        loaded.push({ id: h.id, dataUrl: du });
+      } catch { /* skip */ }
+    }
+    setHistoryImages(loaded);
+  };
+
+  const handlePickHistory = (dataUrl: string) => {
+    fetch(dataUrl)
+      .then(r => r.blob())
+      .then(blob => {
+        const file = new File([blob], `ref_${Date.now()}.png`, { type: "image/png" });
+        handleUpload(file);
+      });
+    setHistoryPickOpen(false);
   };
 
   // ========== 单次生成（5 分钟超时） ==========
@@ -323,15 +353,20 @@ export default function Generate() {
           title="参考图片"
           style={{ marginBottom: 16 }}
           extra={
-            <Upload
-              beforeUpload={handleUpload}
-              showUploadList={false}
-              accept="image/*"
-            >
-              <Button size="small" icon={<UploadOutlined />}>
-                上传
+            <Space size={8}>
+              <Button size="small" icon={<PictureOutlined />} onClick={openHistoryPicker}>
+                从历史选
               </Button>
-            </Upload>
+              <Upload
+                beforeUpload={handleUpload}
+                showUploadList={false}
+                accept="image/*"
+              >
+                <Button size="small" icon={<UploadOutlined />}>
+                  上传
+                </Button>
+              </Upload>
+            </Space>
           }
         >
           {fileList.length === 0 ? (
@@ -793,6 +828,39 @@ export default function Generate() {
           </div>
         )}
       </Card>
+
+      {/* 历史参考图选择 */}
+      <Modal
+        title="从历史记录选择参考图"
+        open={historyPickOpen}
+        onCancel={() => setHistoryPickOpen(false)}
+        footer={null}
+        width={640}
+      >
+        {historyImages.length === 0 ? (
+          <Empty description="没有已生成的图片" style={{ padding: 40 }} />
+        ) : (
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))", gap: 12, maxHeight: 400, overflow: "auto" }}>
+            {historyImages.map((img) => (
+              <div
+                key={img.id}
+                onClick={() => handlePickHistory(img.dataUrl)}
+                style={{
+                  cursor: "pointer",
+                  borderRadius: 8,
+                  overflow: "hidden",
+                  border: "2px solid transparent",
+                  transition: "border-color 0.2s",
+                }}
+                onMouseEnter={e => (e.currentTarget.style.borderColor = "var(--gradient-start)")}
+                onMouseLeave={e => (e.currentTarget.style.borderColor = "transparent")}
+              >
+                <img src={img.dataUrl} alt="" style={{ width: "100%", aspectRatio: "1", objectFit: "cover", display: "block" }} />
+              </div>
+            ))}
+          </div>
+        )}
+      </Modal>
 
       {/* 模板库抽屉 */}
       <Drawer
