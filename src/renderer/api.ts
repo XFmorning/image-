@@ -97,27 +97,28 @@ async function parseStabilityResponse(data: any): Promise<ArrayBuffer[]> {
   return images;
 }
 
-/** 解析通用 JSON 响应，尝试多种常见字段名 */
-async function parseGenericResponse(data: any): Promise<ArrayBuffer[]> {
+/** 解析通用 JSON 响应，尝试多种常见字段名。apiKey 用于下载 URL 图片时携带认证头 */
+async function parseGenericResponse(data: any, apiKey: string): Promise<ArrayBuffer[]> {
   const images: ArrayBuffer[] = [];
-  // 尝试多种常见路径
-  const candidates: { value: string; source: string }[] = [];
+  const candidates: { value: string }[] = [];
   if (data.data) for (const d of data.data) {
-    candidates.push({ value: d.b64_json || d.url || d.image || d.base64 || "", source: "data[].b64_json/url" });
+    candidates.push({ value: d.b64_json || d.url || d.image || d.base64 || "" });
   }
   if (data.images) for (const img of data.images) {
-    candidates.push({ value: img.image || img.b64_json || img.base64 || img.url || "", source: "images[].image" });
+    candidates.push({ value: img.image || img.b64_json || img.base64 || img.url || "" });
   }
-  if (data.output) candidates.push({ value: data.output.b64_json || data.output.image || data.output.base64 || data.output.url || "", source: "output" });
-  if (data.result) candidates.push({ value: data.result.b64_json || data.result.image || data.result.base64 || data.result.url || "", source: "result" });
-  if (data.image) candidates.push({ value: data.image, source: "image" });
-  if (data.url) candidates.push({ value: data.url, source: "url" });
+  if (data.output) candidates.push({ value: data.output.b64_json || data.output.image || data.output.base64 || data.output.url || "" });
+  if (data.result) candidates.push({ value: data.result.b64_json || data.result.image || data.result.base64 || data.result.url || "" });
+  if (data.image) candidates.push({ value: data.image });
+  if (data.url) candidates.push({ value: data.url });
 
   for (const c of candidates) {
     if (!c.value) continue;
     if (c.value.startsWith("http")) {
       try {
-        const resp = await fetch(c.value);
+        const resp = await fetch(c.value, {
+          headers: { Authorization: `Bearer ${apiKey}` },
+        });
         images.push(await resp.arrayBuffer());
       } catch { /* skip failed URLs */ }
     } else {
@@ -208,7 +209,6 @@ export async function generateImage(params: GenerateParams): Promise<ApiResult> 
             prompt,
             size: `${width}x${height}`,
             n: 1,
-            response_format: "b64_json",
           }),
         });
         if (!response.ok) {
@@ -222,7 +222,7 @@ export async function generateImage(params: GenerateParams): Promise<ApiResult> 
           return { success: true, images: [await response.arrayBuffer()] };
         }
         const data = await response.json();
-        const images = await parseGenericResponse(data);
+        const images = await parseGenericResponse(data, provider.apiKey);
         if (images.length === 0) {
           console.warn("[API] 无法从响应中提取图片，原始数据：", JSON.stringify(data));
           return { success: false, images: [], error: "API 返回成功但未包含图片数据，请检查 API 协议类型是否正确，或按 F12 打开控制台查看原始响应。", errorCode: "parse_error" };
@@ -307,7 +307,6 @@ export async function generateImageWithRef(params: GenerateWithRefParams): Promi
         const endpoint = provider.i2iEndpoint || "/v1/images/edits";
         const formData = new FormData();
         formData.append("prompt", prompt);
-        formData.append("response_format", "b64_json");
         if (provider.model) formData.append("model", provider.model);
         for (const file of refImages) formData.append("image", file);
 
@@ -326,7 +325,7 @@ export async function generateImageWithRef(params: GenerateWithRefParams): Promi
           return { success: true, images: [await response.arrayBuffer()] };
         }
         const data = await response.json();
-        const images = await parseGenericResponse(data);
+        const images = await parseGenericResponse(data, provider.apiKey);
         if (images.length === 0) {
           console.warn("[API] 无法从响应中提取图片，原始数据：", JSON.stringify(data));
           return { success: false, images: [], error: "API 返回成功但未包含图片数据，请检查 API 协议类型是否正确，或按 F12 打开控制台查看原始响应。", errorCode: "parse_error" };
