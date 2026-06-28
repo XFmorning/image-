@@ -70,7 +70,7 @@ html, body, #root {
 }
 
 .app-sider-logo {
-  padding: 28px 20px 20px;
+  padding: 28px 20px 20px 28px;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -79,11 +79,15 @@ html, body, #root {
 }
 
 .app-sider-logo h1 {
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 22px;
+  font-weight: 800;
   color: #222;
   white-space: nowrap;
-  letter-spacing: 0.5px;
+  letter-spacing: 1.5px;
+  background: linear-gradient(135deg, #4a3f6b, #8b6fc0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .app-sider-logo .logo-icon {
