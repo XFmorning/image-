@@ -101,14 +101,12 @@ function restoreTasks(): GenTask[] {
     const raw = localStorage.getItem(TASKS_KEY);
     if (!raw) return [];
     const tasks: GenTask[] = JSON.parse(raw);
-    // 重启后：生成中/排队 → 失败，已完成 → 清除（避免显示旧结果），失败保留供重试
-    return tasks
-      .filter((t) => t.status !== "completed") // 旧的完成记录不显示
-      .map((t) =>
-        t.status === "generating" || t.status === "pending"
-          ? { ...t, status: "failed" as GenStatus, errorMsg: "软件已重启，任务中断", errorCode: "restarted", endTime: Date.now() }
-          : t
-      );
+    // 重启后：生成中/排队 → 失败，其余保留
+    return tasks.map((t) =>
+      t.status === "generating" || t.status === "pending"
+        ? { ...t, status: "failed" as GenStatus, errorMsg: "软件已重启，任务中断", errorCode: "restarted", endTime: Date.now() }
+        : t
+    );
   } catch { return []; }
 }
 
@@ -154,8 +152,10 @@ export function GenerationProvider({ children }: { children: ReactNode }) {
   }, []);
 
   // ====== 兼容旧 API（操作最新任务）======
-
-  const task = tasks.length > 0 ? tasks[tasks.length - 1] : EMPTY_TASK;
+  // 仅在当前会话有活动任务时才显示，避免重启后显示旧的完成状态
+  const task = activeIdRef.current
+    ? (tasks.find(t => t.id === activeIdRef.current) || EMPTY_TASK)
+    : EMPTY_TASK;
 
   const saveInput = useCallback((partial: Partial<GenInput>) => {
     setInput((prev) => {

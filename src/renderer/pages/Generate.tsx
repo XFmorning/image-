@@ -916,7 +916,13 @@ export default function Generate() {
             label: cat.name,
             children: (
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {getAllTemplates().filter((t) => t.category === cat.key && (!t.mode || t.mode === mode || t.mode === "both" || cat.mode === "both")).map(
+                {getAllTemplates().filter((t) => {
+                    if (t.category !== cat.key) return false;
+                    // 自定义模板严格按 mode 过滤
+                    if (cat.key === "custom") return t.mode === mode || t.mode === "both";
+                    // 其他分类按原有逻辑
+                    return !t.mode || t.mode === mode || t.mode === "both" || cat.mode === "both";
+                  }).map(
                   (item, idx) => {
                     const isCustom = cat.key === "custom";
                     return (
