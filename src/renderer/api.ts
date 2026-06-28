@@ -68,14 +68,14 @@ function b64ToBuffer(b64: string): ArrayBuffer {
 }
 
 /** 解析 OpenAI 兼容响应: { data: [{ b64_json?, url? }] } */
-async function parseOpenAiResponse(data: any): Promise<ArrayBuffer[]> {
+async function parseOpenAiResponse(data: any, apiKey: string): Promise<ArrayBuffer[]> {
   const images: ArrayBuffer[] = [];
   for (const item of data.data || []) {
     if (item.b64_json) {
       images.push(b64ToBuffer(item.b64_json));
     } else if (item.url) {
-      const resp = await fetch(item.url);
-      images.push(await resp.arrayBuffer());
+      const buf = await window.electronAPI.fetchUrlBuffer(item.url, `Bearer ${apiKey}`);
+      if (buf) images.push(buf);
     }
   }
   return images;
@@ -116,10 +116,8 @@ async function parseGenericResponse(data: any, apiKey: string): Promise<ArrayBuf
     if (!c.value) continue;
     if (c.value.startsWith("http")) {
       try {
-        const resp = await fetch(c.value, {
-          headers: { Authorization: `Bearer ${apiKey}` },
-        });
-        images.push(await resp.arrayBuffer());
+        const buf = await window.electronAPI.fetchUrlBuffer(c.value, `Bearer ${apiKey}`);
+        if (buf) images.push(buf);
       } catch { /* skip failed URLs */ }
     } else {
       try {
@@ -164,7 +162,7 @@ export async function generateImage(params: GenerateParams): Promise<ApiResult> 
           return { success: false, images: [], error: message, errorCode: code };
         }
         const data = await response.json();
-        return { success: true, images: await parseOpenAiResponse(data) };
+        return { success: true, images: await parseOpenAiResponse(data, provider.apiKey) };
       }
 
       // ---- Stability AI ----
@@ -272,7 +270,7 @@ export async function generateImageWithRef(params: GenerateWithRefParams): Promi
           return { success: false, images: [], error: message, errorCode: code };
         }
         const data = await response.json();
-        return { success: true, images: await parseOpenAiResponse(data) };
+        return { success: true, images: await parseOpenAiResponse(data, provider.apiKey) };
       }
 
       // ---- Stability AI (image-to-image) ----

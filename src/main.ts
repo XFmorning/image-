@@ -147,6 +147,21 @@ function registerIpcHandlers() {
     }
   });
 
+  // --- URL 下载（绕过 CORS） ---
+
+  ipcMain.handle("fetch-url-buffer", async (_, url: string, authHeader?: string) => {
+    try {
+      const headers: Record<string, string> = {};
+      if (authHeader) headers["Authorization"] = authHeader;
+      const response = await fetch(url, { headers });
+      if (!response.ok) return null;
+      const buf = await response.arrayBuffer();
+      return Buffer.from(buf); // 转为 Node Buffer，Electron IPC 可序列化
+    } catch {
+      return null;
+    }
+  });
+
   // --- 存储管理 ---
 
   ipcMain.handle("clear-all-images", async () => {

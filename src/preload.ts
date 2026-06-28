@@ -16,5 +16,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
     ipcRenderer.invoke("download-image", url, filename),
   clearAllImages: () => ipcRenderer.invoke("clear-all-images"),
   openStorageFolder: () => ipcRenderer.invoke("open-storage-folder"),
+  fetchUrlBuffer: (url: string, authHeader?: string) =>
+    ipcRenderer.invoke("fetch-url-buffer", url, authHeader),
   openExternal: (url: string) => ipcRenderer.invoke("open-external", url),
 });
