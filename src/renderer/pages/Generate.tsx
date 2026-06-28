@@ -880,7 +880,7 @@ export default function Generate() {
             label: cat.name,
             children: (
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {TEMPLATES.filter((t) => t.category === cat.key && (!t.mode || t.mode === mode || t.mode === "both")).map(
+                {TEMPLATES.filter((t) => t.category === cat.key && (!t.mode || t.mode === mode || t.mode === "both" || cat.mode === "both")).map(
                   (item, idx) => (
                     <Card
                       key={idx}

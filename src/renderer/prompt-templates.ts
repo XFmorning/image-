@@ -301,13 +301,13 @@ export const TEMPLATES: TemplateItem[] = [
   // ===================== 产品电商 =====================
   {
     category: "ecommerce",
-    mode: "t2i",
+    mode: "both",
     label: "奢华香水广告大片",
     prompt: "luxury perfume advertisement poster, high-end fragrance campaign in the style of Tom Ford and Dior, a stunning young woman with confident sensual expression, voluminous glossy hair with golden highlights softly lifted by wind, soft glam makeup with glowing skin and bold lips, brown tailored blazer with patterned silk scarf and thin transparent eyeglasses, shot on 85mm portrait lens at f/1.6 from a slightly low premium angle, the perfume bottle placed in the foreground on glossy black marble surface: clear crystal glass bottle with golden liquid inside and metallic gold cap, strong reflections and golden glow with subtle condensation on the glass, dark blurred luxury interior background with warm golden light streaks, small scattered flowers near the bottle and golden particles floating in the air, deep black shadows with rich golden highlights, cinematic spotlight plus golden rim light, ultra sharp on face and bottle, the brand name VELORA PARFUMS in elegant serif typography with the tagline Not just a scent it is your Signature, hyper-realistic 4K ultra HD commercial grade advertising",
   },
   {
     category: "ecommerce",
-    mode: "t2i",
+    mode: "both",
     label: "化妆品电商白底图",
     prompt: "ultra-realistic luxury cosmetic product photography on pure white seamless studio background, a premium squeeze tube product with satin-finish periwinkle-blue surface and reflective metallic chrome cap, product positioned vertically centered in the frame, surrounded by ink-like swirling clouds of lavender indigo and icy blue smoke wrapping around the product creating depth and mystery, fresh purple and lilac flowers with intricate petal details and vibrant yellow centers placed at the base, tiny violet blossoms scattered for added dimension, soft directional lighting from upper left highlighting the smooth curvature of the tube and adding subtle sheen to the metallic cap, ethereal floral fragrance aesthetic with seamless cool blue and purple tones, hyper-detailed textures on petals and vapor tendrils, high-end perfumed skincare advertising style, 8K ultra-high resolution with cinematic depth of field, commercial product photography for luxury beauty brand, no text overlay no watermark",
   },
@@ -339,7 +339,7 @@ export const TEMPLATES: TemplateItem[] = [
   // ===================== 品牌海报 =====================
   {
     category: "brand",
-    mode: "t2i",
+    mode: "both",
     label: "电影级双重曝光海报",
     prompt: "hyper-realistic cinematic double exposure portrait poster, a young person in side profile with intense focused expression detailed skin texture and sharp directional gaze, their facial silhouette seamlessly blended with a futuristic city skyline emerging from within their head and neck area, skyscrapers and urban infrastructure forming the internal structure of their profile, strong contrast of deep blue and vibrant red tones symbolizing conflict duality and inner power, abstract digital scratches fractured glass textures and light leak effects overlaying the face for dramatic visual impact, clean white background with subtle paper grain texture, ultra-detailed cinematic lighting with dramatic blue and red split toning, professional movie poster style with intentional negative space for title placement, high contrast sharp focus 8K resolution, realistic hair strands catching colored light, editorial poster composition with modern graphic design aesthetics, dramatic atmosphere suitable for a psychological thriller or character-driven drama film poster",
   },
@@ -369,7 +369,7 @@ export const TEMPLATES: TemplateItem[] = [
   },
   {
     category: "brand",
-    mode: "t2i",
+    mode: "both",
     label: "城市文字旅行海报",
     prompt: "minimalist flat travel poster illustration of an iconic world destination, clean vector art style with Scandinavian color palette of soft pastel tones, calm atmospheric scenery depicting the destination's most recognizable landmarks and natural features reduced to their essential geometric shapes, the specific destination rendered with loving attention to its unique character: lakeside village with alpine mountains and perfect reflections colorful harbor houses with fjord backdrop traditional riverside town with cherry blossoms and pagoda or white cliffside architecture with blue domes overlooking the sea, ultra clean composition with geometric landscape shapes smooth gradients and elegant typography featuring the destination name in refined sans-serif or serif, modern tourism poster aesthetic with serene travel mood crisp vector lines and cinematic wide-angle scenery, peaceful stylized skies with geometric clouds, highly detailed environment art rendered in contemporary flat illustration style, premium editorial travel design with balanced composition and minimal shadows, dreamy vacation atmosphere with soft morning or golden hour lighting, high-end hospitality brand poster vibe, 4K ultra detailed",
   },
@@ -440,6 +440,24 @@ export const TEMPLATES: TemplateItem[] = [
     mode: "i2i",
     label: "照片转MS Paint拙劣风",
     prompt: "redraw the uploaded image in the most clumsy messy and hopelessly amateur way possible as if created in Microsoft Paint by someone who has never used a computer before, use a flat white background and render everything with the characteristic MS Paint aesthetic: jagged pixelated edges from the lack of anti-aliasing obviously filled areas using the paint bucket tool with gaps where the fill leaked through, use only the default MS Paint color palette with garish bright colors chosen seemingly at random, lines should be drawn with the pencil tool at 1px thickness with shaky mouse-drawn quality and no smooth curves, shapes should be approximated with the rectangle and oval tools creating a blocky geometric interpretation, the image should vaguely resemble the original in concept: the same number of subjects in roughly the same positions with some attempt at the same colors but everything is strangely off and awkwardly proportioned, add accidental MS Paint artifacts: random stray pixels incomplete eraser smudges text tool typos with default font text boxes left in wrong places, emphasize the low-quality pixelated look and make it appear ridiculously badly drawn yet somehow endearing in its earnestness, the final result should look like something that would go viral on social media for being hilariously terrible",
+  },
+  {
+    category: "i2i",
+    mode: "i2i",
+    label: "人物换装与风格改造",
+    prompt: "using the uploaded portrait photo as strict facial identity reference preserving every detail of the person's face and body proportions exactly, completely change their outfit and styling to a completely different look, options include: transform casual wear into an elegant red carpet evening gown with jewelry and sophisticated makeup, change to traditional Chinese Hanfu with flowing silk layers and classical hair ornaments, convert to cyberpunk streetwear with neon accents and futuristic accessories, or redesign as a historical period costume with accurate era-specific clothing, the key is that the person must remain unmistakably themselves while wearing completely different clothes in a matching environment, lighting should complement the new outfit: dramatic studio light for evening wear, soft natural light for traditional clothing, neon reflections for cyberpunk, the original background should be replaced with a setting appropriate to the new style, the final result should look like an authentic photograph of this person at a different event or in a different world, photorealistic quality with seamless integration of new clothing onto the original body",
+  },
+  {
+    category: "i2i",
+    mode: "i2i",
+    label: "照片表情编辑与微调",
+    prompt: "take the uploaded portrait photo and subtly adjust the subject's facial expression while keeping everything else absolutely identical: the same lighting same background same clothing same hair same pose same camera angle same skin texture, only the expression changes, adjust as specified: change from neutral to a warm genuine smile with natural eye crinkles and slight cheek elevation, change from smiling to a serious contemplative look with relaxed mouth and focused eyes, add subtle surprise with slightly raised eyebrows and parted lips, the key constraint is maximum realism: the new expression must look completely natural and authentic as if the person was originally photographed making that exact expression, avoid uncanny valley effects overexaggeration or artificial stretching, preserve the exact same skin texture pore detail lighting reflections and facial proportions, the transition between original and edited areas must be completely invisible, this should look like a genuine alternate shot from the same photo session not a digitally altered image",
+  },
+  {
+    category: "i2i",
+    mode: "i2i",
+    label: "照片真实变老/年轻化",
+    prompt: "using the uploaded portrait photo as the identity reference, realistically age this person by 30-40 years to show them as a dignified elderly version of themselves while keeping their facial identity unmistakably recognizable, the aging must be completely natural and photorealistic: add fine lines and wrinkles appropriate to the face structure including crow's feet forehead lines nasolabial folds and subtle age spots, the skin should show natural loss of elasticity with slightly looser contours around the jaw and neck while maintaining the same bone structure, hair should transition to silver gray white or salt-and-pepper while keeping the same hair texture and general style, eyebrows may thin slightly, the eyes should show the same color and general shape but with slightly heavier eyelids and wisdom lines around them, keep the same lighting background clothing and composition as the original, the result should look like a genuine photograph of this person's parent or older self not a caricature or cartoon, alternatively if asked to de-age make the person look 15-20 years younger with smoother skin fuller facial volume and youthful vitality while keeping the same facial identity, in both cases photorealism and identity preservation are the absolute priorities",
   },
   {
     category: "i2i",
