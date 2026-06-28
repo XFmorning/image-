@@ -114,15 +114,13 @@ export default function Generate() {
   const [taskListOpen, setTaskListOpen] = useState(false);
   const [historyPickOpen, setHistoryPickOpen] = useState(false);
   const [historyImages, setHistoryImages] = useState<{ id: string; dataUrl: string }[]>([]);
-  // 初始分类由当前模式决定
-  const [selectedCategory, setSelectedCategory] = useState(() =>
-    (TEMPLATE_CATEGORIES.find((c) => !c.mode || c.mode === "t2i" || c.mode === "both")?.key || "portrait")
-  );
+  // 根据当前模式动态获取可用分类列表
+  const availableCategories = TEMPLATE_CATEGORIES.filter((c) => !c.mode || c.mode === mode || c.mode === "both");
+  const [selectedCategory, setSelectedCategory] = useState(availableCategories[0]?.key || "portrait");
 
-  // 切换模式时重置分类
+  // 切换模式时重置为第一个可用分类
   useEffect(() => {
-    const first = TEMPLATE_CATEGORIES.find((c) => !c.mode || c.mode === mode || c.mode === "both");
-    if (first) setSelectedCategory(first.key);
+    setSelectedCategory(availableCategories[0]?.key || "portrait");
   }, [mode]);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [elapsedTimes, setElapsedTimes] = useState<Record<string, number>>({});
@@ -878,11 +876,9 @@ export default function Generate() {
         size="large"
       >
         <Tabs
-          activeKey={selectedCategory}
+          activeKey={availableCategories.some(c => c.key === selectedCategory) ? selectedCategory : availableCategories[0]?.key}
           onChange={setSelectedCategory}
-          items={TEMPLATE_CATEGORIES
-          .filter((cat) => !cat.mode || cat.mode === mode || cat.mode === "both")
-          .map((cat) => ({
+          items={availableCategories.map((cat) => ({
             key: cat.key,
             label: cat.name,
             children: (
