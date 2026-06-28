@@ -174,7 +174,7 @@ export default function Generate() {
   // ========== 随机灵感 ==========
 
   const handleRandom = () => {
-    const item = randomTemplate();
+    const item = randomTemplate(mode);
     saveInput({ prompt: item.prompt });
     message.info(`随机灵感：${item.label}`);
   };

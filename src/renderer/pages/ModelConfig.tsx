@@ -274,13 +274,9 @@ export default function ModelConfig() {
                   <div>
                     <div style={{ color: "#888", fontSize: 13, marginBottom: 4 }}>协议</div>
                     <Tag color={
-                      selectedProvider.apiProtocol === "openai" ? "blue" :
-                      selectedProvider.apiProtocol === "stability" ? "purple" :
-                      selectedProvider.apiProtocol === "pollinations" ? "green" : "default"
+                      selectedProvider.apiProtocol === "openai" ? "blue" : "default"
                     }>
-                      {selectedProvider.apiProtocol === "openai" ? "OpenAI 兼容" :
-                       selectedProvider.apiProtocol === "stability" ? "Stability AI" :
-                       selectedProvider.apiProtocol === "pollinations" ? "Pollinations.ai（免费）" : "自定义"}
+                      {selectedProvider.apiProtocol === "openai" ? "OpenAI 兼容" : "自定义"}
                     </Tag>
                   </div>
                   <div>
@@ -354,8 +350,6 @@ export default function ModelConfig() {
             <Select
               options={[
                 { value: "openai", label: "OpenAI 兼容（推荐）" },
-                { value: "stability", label: "Stability AI" },
-                { value: "pollinations", label: "Pollinations.ai（免费无 Key）" },
                 { value: "custom", label: "自定义" },
               ]}
             />
@@ -376,7 +370,7 @@ export default function ModelConfig() {
               },
             ]}
           >
-            <Input.Password placeholder="sk-... (Pollinations 无需填写)" />
+            <Input.Password placeholder="sk-..." style={{ maxWidth: 420, height: 44 }} />
           </Form.Item>
           <Form.Item
             name="baseUrl"

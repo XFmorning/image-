@@ -1,4 +1,4 @@
-type ApiProtocol = "openai" | "stability" | "custom";
+type ApiProtocol = "openai" | "custom";
 
 interface ProviderConfig {
   id: string;

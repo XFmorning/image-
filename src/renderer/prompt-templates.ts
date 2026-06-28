@@ -625,9 +625,31 @@ export function translateToEnglish(chinesePrompt: string): string {
   return result;
 }
 
-export function randomTemplate(): TemplateItem {
-  const idx = Math.floor(Math.random() * TEMPLATES.length);
-  return TEMPLATES[idx];
+let _recentRandom = new Set<number>();
+
+export function randomTemplate(mode?: "t2i" | "i2i"): TemplateItem {
+  let pool = TEMPLATES;
+  if (mode) {
+    pool = TEMPLATES.filter(t => !t.mode || t.mode === mode || t.mode === "both");
+  }
+  if (pool.length === 0) pool = TEMPLATES;
+
+  // 避开最近 8 次出现过的，保持新鲜感
+  let fresh = pool.filter((_, i) => !_recentRandom.has(i));
+  if (fresh.length === 0) {
+    _recentRandom.clear();
+    fresh = pool;
+  }
+
+  const item = fresh[Math.floor(Math.random() * fresh.length)];
+  const idx = TEMPLATES.indexOf(item);
+  _recentRandom.add(idx);
+  if (_recentRandom.size > 8) {
+    const oldest = _recentRandom.values().next().value;
+    if (oldest !== undefined) _recentRandom.delete(oldest);
+  }
+
+  return item;
 }
 
 export function templatesByCategory(category: string): TemplateItem[] {
