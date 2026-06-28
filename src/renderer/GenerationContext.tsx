@@ -99,7 +99,14 @@ function persistTasks(tasks: GenTask[]) {
 function restoreTasks(): GenTask[] {
   try {
     const raw = localStorage.getItem(TASKS_KEY);
-    return raw ? JSON.parse(raw) : [];
+    if (!raw) return [];
+    const tasks: GenTask[] = JSON.parse(raw);
+    // 应用重启后，所有未完成的任务都已中断，标记为失败
+    return tasks.map((t) =>
+      t.status === "generating" || t.status === "pending"
+        ? { ...t, status: "failed" as GenStatus, errorMsg: "软件已重启，任务中断", errorCode: "restarted", endTime: Date.now() }
+        : t
+    );
   } catch { return []; }
 }
 
