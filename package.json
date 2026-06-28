@@ -1,5 +1,5 @@
 {
-  "name": "futureai-image",
+  "name": "morning-ai",
   "productName": "Morning AI",
   "version": "1.0.0",
   "description": "AI 图像生成桌面客户端",
@@ -11,7 +11,7 @@
     "build:win": "electron-builder --win --x64"
   },
   "build": {
-    "appId": "com.futureai.image",
+    "appId": "com.morning.ai",
     "productName": "Morning AI",
     "directories": {
       "output": "dist"

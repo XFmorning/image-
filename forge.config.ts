@@ -11,8 +11,8 @@ const config: ForgeConfig = {
   rebuildConfig: {},
   makers: [
     new MakerSquirrel({
-      name: "futureai-image",
-      setupIcon: "resources/icon.ico",
+      name: "MorningAI",
+      setupIcon: "resources/tray-icon.png",
     }),
     new MakerZIP({}, ["darwin", "linux"]),
   ],

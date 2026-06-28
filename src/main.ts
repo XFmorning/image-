@@ -247,6 +247,8 @@ function createWindow() {
     height: 800,
     minWidth: 900,
     minHeight: 600,
+    title: "Morning AI",
+    icon: path.join(__dirname, "../../resources/tray-icon.png"),
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
