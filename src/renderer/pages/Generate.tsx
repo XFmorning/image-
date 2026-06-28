@@ -905,7 +905,7 @@ export default function Generate() {
                         </div>
                         <Space size={4} wrap style={{ fontSize: 11 }}>
                           <Tag color={t.mode === "t2i" ? "blue" : "cyan"} style={{ fontSize: 10 }}>{t.size}</Tag>
-                          <Tag color="purple" style={{ fontSize: 10 }}>{t.providerModel}</Tag>
+                          <Tag color="purple" style={{ fontSize: 10 }}>{t.providerName}·{t.providerModel}</Tag>
                           <Tag
                             color={t.status === "generating" ? "gold" : t.status === "completed" ? "success" : t.status === "failed" ? "error" : "default"}
                             style={{ fontSize: 10 }}
