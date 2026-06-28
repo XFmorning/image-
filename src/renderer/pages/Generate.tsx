@@ -1025,7 +1025,13 @@ export default function Generate() {
                         {t.resultDataUrl ? (
                           <img src={t.resultDataUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                         ) : t.status === "generating" ? (
-                          <Spin size="small" />
+                          <div style={{
+                            width: 24, height: 24,
+                            borderRadius: "50%",
+                            border: "3px solid #F4EDFF",
+                            borderTopColor: "#8B5CF6",
+                            animation: "spin-ring 0.8s linear infinite",
+                          }} />
                         ) : t.status === "failed" ? (
                           <CloseCircleOutlined style={{ color: "#ff4d4f", fontSize: 22 }} />
                         ) : t.status === "pending" ? (

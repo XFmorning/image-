@@ -32,41 +32,28 @@ export default function History() {
   const observerRef = useRef<IntersectionObserver | null>(null);
   const navigate = useNavigate();
 
-  // 首次加载元数据（不等图片）
-  useEffect(() => {
-    if (_cachedItems) {
-      setItems(_cachedItems);
-      setReady(true);
-      return;
-    }
-    (async () => {
-      const history = await window.electronAPI.getHistory();
-      history.sort((a: HistoryItem, b: HistoryItem) => b.timestamp - a.timestamp);
-      const entries: HistoryEntry[] = history.map((item) => ({
-        ...item,
-        _dataUrl: _loadedImages.get(item.imagePath || ""),
-      }));
-      _cachedItems = entries;
-      setItems(entries);
-      setReady(true);
-    })();
+  const refreshMeta = useCallback(async () => {
+    const history = await window.electronAPI.getHistory();
+    history.sort((a: HistoryItem, b: HistoryItem) => b.timestamp - a.timestamp);
+    const entries: HistoryEntry[] = history.map((item) => ({
+      ...item,
+      _dataUrl: _loadedImages.get(item.imagePath || ""),
+    }));
+    _cachedItems = entries;
+    setItems(entries);
   }, []);
 
-  // 窗口获焦时刷新元数据
+  // 每次进入页面刷新元数据（复用已缓存的图片 dataUrl）
   useEffect(() => {
-    const refresh = async () => {
-      const history = await window.electronAPI.getHistory();
-      history.sort((a: HistoryItem, b: HistoryItem) => b.timestamp - a.timestamp);
-      const entries: HistoryEntry[] = history.map((item) => ({
-        ...item,
-        _dataUrl: _loadedImages.get(item.imagePath || ""),
-      }));
-      _cachedItems = entries;
-      setItems(entries);
-    };
-    window.addEventListener("focus", refresh);
-    return () => window.removeEventListener("focus", refresh);
-  }, []);
+    refreshMeta().then(() => setReady(true));
+  }, [refreshMeta]);
+
+  // 窗口获焦时也刷新
+  useEffect(() => {
+    const handleFocus = () => refreshMeta();
+    window.addEventListener("focus", handleFocus);
+    return () => window.removeEventListener("focus", handleFocus);
+  }, [refreshMeta]);
 
   // 懒加载单张图片
   const loadImage = useCallback(async (item: HistoryEntry) => {
