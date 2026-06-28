@@ -67,6 +67,16 @@ export const TEMPLATES: TemplateItem[] = [
   // ===================== 摄影感 =====================
   {
     category: "photography",
+    label: "手写笔记本桌面照",
+    prompt: "Amateur photo of an open notebook lying flat on a desk, filled with handwritten notes in black ballpoint pen. The handwriting is casual and slightly messy, like personal notes, with natural imperfections, crossed out words, underlined headings. Shot from slightly above at an angle, natural daylight from a window creating soft shadows across the page, no flash. Casual desk setting with a coffee cup and pen visible at the edges, shot on iPhone, realistic everyday study or work scene, warm and intimate atmosphere",
+  },
+  {
+    category: "photography",
+    label: "韩式雾面编辑风",
+    prompt: "9:16 vertical editorial portrait, single subject, soft black mist filter creating subtle haze and gentle highlight bloom, muted tones, minimal indoor space with clean background and slight texture, young subject with minimal makeup and natural skin texture, fitted ribbed knit top or soft camisole under a loose shirt with high-waisted shorts or skirt, slightly messy hair with natural volume, sitting on floor with one leg bent and the other relaxed, body slightly leaning with shoulders not aligned and head tilted, subject slightly off-center with negative space present, calm slightly distant expression with natural lips, soft side light with gentle shadow falloff, understated quiet mood subtly sensual through natural body lines, fine grain with slight softness and realistic unposed quality",
+  },
+  {
+    category: "photography",
     label: "RAW iPhone纪实风",
     prompt: "Create a completely RAW quality, unprocessed, unedited image with full iPhone camera quality. A momentary blur, natural imperfections, no posing. Shot from slightly above, natural daylight from a window, no flash. Casual everyday setting, shot on iPhone, strong sense of realism and authenticity, 4K detail with subtle noise and grain",
   },
@@ -285,6 +295,11 @@ export const TEMPLATES: TemplateItem[] = [
   },
 
   // ===================== 抽象 =====================
+  {
+    category: "abstract",
+    label: "剪影宇宙叙事海报",
+    prompt: "Generate a high-aesthetic silhouette universe collector's edition narrative poster based on a theme. The AI should choose the most symbolic and visually strong outer silhouette for the theme — an artifact, building, gate, tower, statue, eye, hand, wing, mask, mirror, throne, or any more creative contour. Inside the silhouette, generate a rich layered narrative world tied to the theme: iconic scenes, key architecture or spaces, symbols and metaphors, foreground-midground-background depth. Blend the feeling of a collector's edition film poster with dreamy watercolor texture and fine printed paper — paper grain, feathered edges, watercolor brush marks, gentle diffusion, atmospheric perspective, soft haze, volumetric light, generous negative space. The image should feel premium, poetic, majestic, nostalgic, and mythic. Low saturation restrained color palette, no chaotic neon or plastic digital colors",
+  },
   {
     category: "abstract",
     label: "流动水墨",
