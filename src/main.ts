@@ -248,7 +248,7 @@ function createWindow() {
     minWidth: 900,
     minHeight: 600,
     title: "Morning AI",
-    icon: path.join(__dirname, "../../resources/tray-icon.png"),
+    icon: path.join(__dirname, "../../resources/icon.png"),
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
@@ -294,9 +294,9 @@ function createWindow() {
 // ========== 托盘 ==========
 
 function createTray() {
-  let iconPath = path.join(app.getAppPath(), "resources", "tray-icon.png");
+  let iconPath = path.join(app.getAppPath(), "resources", "icon.png");
   if (!fs.existsSync(iconPath)) {
-    iconPath = path.join(__dirname, "../../resources/tray-icon.png");
+    iconPath = path.join(__dirname, "../../resources/icon.png");
   }
   const icon = fs.existsSync(iconPath)
     ? nativeImage.createFromPath(iconPath).resize({ width: 16, height: 16 })

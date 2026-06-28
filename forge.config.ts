@@ -12,7 +12,7 @@ const config: ForgeConfig = {
   makers: [
     new MakerSquirrel({
       name: "MorningAI",
-      setupIcon: "resources/tray-icon.png",
+      setupIcon: "resources/icon.png",
     }),
     new MakerZIP({}, ["darwin", "linux"]),
   ],
