@@ -292,10 +292,14 @@ function createWindow() {
 // ========== 托盘 ==========
 
 function createTray() {
-  // 用简单的 16x16 彩色图标（绿色圆点）
-  const icon = nativeImage.createFromDataURL(
-    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAMklEQVQ4T2NkYPj/n4EBBJgYKAQMowJGDcAaQDMPGNEIGNAAAwahwYAM4w0whkEDBg0AAGFfD4Gx4gM5AAAAAElFTkSuQmCC"
-  );
+  // 查找 icon 文件路径
+  let iconPath = path.join(app.getAppPath(), "resources", "icon.png");
+  if (!fs.existsSync(iconPath)) {
+    iconPath = path.join(__dirname, "../../resources/icon.png");
+  }
+  const icon = fs.existsSync(iconPath)
+    ? nativeImage.createFromPath(iconPath).resize({ width: 16, height: 16 })
+    : nativeImage.createEmpty();
   tray = new Tray(icon);
   tray.setToolTip("FutureAI Image - 正在运行");
 
