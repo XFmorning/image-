@@ -36,6 +36,7 @@ import {
   PictureOutlined,
 } from "@ant-design/icons";
 import type { UploadFile } from "antd";
+import imgBanner from "../assets/2.jpg";
 import heroImage from "../assets/hero.png";
 import { generateImage, generateImageWithRef } from "../api";
 import {
@@ -368,32 +369,48 @@ export default function Generate() {
     message.success("提示词已复制");
   };
 
+  const styleEmojis: Record<string, string> = {
+    none: "🔄", realistic: "📷", anime: "🎨", ink: "🖌️", oil: "🖼️",
+    cyberpunk: "🌃", fantasy: "🧙", sketch: "✏️", "3d": "🎮", watercolor: "🌈",
+  };
+  const subjectEmojis: Record<string, string> = {
+    none: "🎯", portrait: "👤", animal: "🐾", landscape: "🏔️", product: "📦",
+    food: "🍽️", building: "🏛️", vehicle: "🚗", plant: "🌿",
+  };
+
   return (
     <div>
-      <div className="page-header">
-        <h2>图像生成</h2>
+      {/* Banner */}
+      <div className="page-banner">
+        <div className="banner-text">
+          <h2>图像生成 ✨</h2>
+          <div className="banner-sub">用AI创造无限可能...</div>
+        </div>
+        <img src={imgBanner} alt="" className="banner-img" />
       </div>
 
-      {/* 模式切换 */}
-      <Tabs
-        activeKey={mode}
-        onChange={(key) => setInputMode(key as "t2i" | "i2i")}
-        items={[
-          { key: "t2i", label: "文生图" },
-          { key: "i2i", label: "图生图" },
-        ]}
-        style={{ marginBottom: 16 }}
-      />
+      <div className="gen-tabs-wrapper">
+        {/* 模式切换 */}
+        <Tabs
+          activeKey={mode}
+          onChange={(key) => setInputMode(key as "t2i" | "i2i")}
+          items={[
+            { key: "t2i", label: "文生图" },
+            { key: "i2i", label: "图生图" },
+          ]}
+        />
 
-      {/* 参考图区域（仅图生图） */}
+        {/* 参考图区域（仅图生图） */}
       {mode === "i2i" && (
         <Card
-          size="small"
-          title="参考图片"
-          style={{ marginBottom: 16 }}
+          title={
+            <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              🖼️ 参考图片
+            </span>
+          }
           extra={
             <Space size={8}>
-              <Button size="small" icon={<PictureOutlined />} onClick={openHistoryPicker}>
+              <Button size="small" className="btn-capsule" icon={<PictureOutlined />} onClick={openHistoryPicker}>
                 从历史选
               </Button>
               <Upload
@@ -401,7 +418,7 @@ export default function Generate() {
                 showUploadList={false}
                 accept="image/*"
               >
-                <Button size="small" icon={<UploadOutlined />}>
+                <Button size="small" className="btn-capsule" icon={<UploadOutlined />}>
                   上传
                 </Button>
               </Upload>
@@ -409,37 +426,27 @@ export default function Generate() {
           }
         >
           {fileList.length === 0 ? (
-            <div
-              style={{
-                color: "#999",
-                textAlign: "center",
-                padding: "20px 0",
-                fontSize: 14,
-              }}
-            >
+            <div style={{ color: "#BDBDBD", textAlign: "center", padding: "28px 0", fontSize: 15 }}>
               点击「上传」按钮添加参考图片
             </div>
           ) : (
-            <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+            <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
               {fileList.map((file) => (
                 <div
                   key={file.uid}
                   style={{
                     position: "relative",
-                    width: 88,
-                    height: 88,
-                    borderRadius: 8,
+                    width: 100,
+                    height: 100,
+                    borderRadius: 16,
                     overflow: "hidden",
+                    border: "1px solid var(--border)",
                   }}
                 >
                   <img
                     src={file.thumbUrl}
                     alt={file.name}
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                    }}
+                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
                   />
                   <Button
                     type="text"
@@ -449,10 +456,12 @@ export default function Generate() {
                     onClick={() => handleRemoveFile(file.uid)}
                     style={{
                       position: "absolute",
-                      top: 2,
-                      right: 2,
-                      background: "rgba(0,0,0,0.5)",
+                      top: 4,
+                      right: 4,
+                      background: "rgba(0,0,0,0.45)",
                       color: "#fff",
+                      borderRadius: 10,
+                      width: 28, height: 28,
                     }}
                   />
                 </div>
@@ -463,52 +472,52 @@ export default function Generate() {
       )}
 
       {/* 提示词输入 */}
-      <Card size="small" title="提示词" style={{ marginBottom: 16 }}>
+      <Card
+        title={
+          <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            ✨ 提示词
+          </span>
+        }
+      >
         <Input.TextArea
           ref={promptRef as any}
           value={prompt}
           onChange={(e) => saveInput({ prompt: e.target.value })}
-          placeholder="用英文描述你想要生成的图像，或点击下方「模板库」选择..."
-          rows={4}
-          style={{ fontSize: 14, marginBottom: 12 }}
+          placeholder="描述你想要的画面..."
+          rows={5}
+          style={{ fontSize: 16 }}
         />
-        <Space>
-          <Button icon={<BookOutlined />} onClick={() => setDrawerOpen(true)}>
-            模板库
-          </Button>
-          <Button icon={<BulbOutlined />} onClick={handleRandom}>
-            随机灵感
-          </Button>
-        </Space>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 14 }}>
+          <Space size={10}>
+            <Button className="btn-capsule" icon={<BookOutlined />} onClick={() => setDrawerOpen(true)}>
+              模板库
+            </Button>
+            <Button className="btn-capsule" icon={<BulbOutlined />} onClick={handleRandom}>
+              随机灵感
+            </Button>
+          </Space>
+          <span style={{ color: "#BDBDBD", fontSize: 13, fontWeight: 500 }}>{prompt.length}/1000</span>
+        </div>
       </Card>
 
-      {/* 风格选择 */}
-      <Card size="small" title="画面风格" style={{ marginBottom: 16 }}>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+      {/* 画面风格 */}
+      <Card
+        title={
+          <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            🎨 画面风格
+          </span>
+        }
+      >
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
           {STYLE_PRESETS.map((s) => {
             const isActive = selectedStyle === s.key || (s.key === "none" && !selectedStyle);
             return (
               <div
                 key={s.key}
-                onClick={() => {
-                  saveInput({ selectedStyle: s.key === "none" ? "" : s.key });
-                }}
-                style={{
-                  padding: "8px 16px",
-                  borderRadius: 20,
-                  cursor: "pointer",
-                  background: isActive
-                    ? "linear-gradient(135deg, var(--gradient-start), var(--gradient-end))"
-                    : "#f5f5f5",
-                  color: isActive ? "#fff" : "#555",
-                  fontWeight: isActive ? 600 : 400,
-                  fontSize: 14,
-                  transition: "all 0.2s",
-                  border: isActive ? "none" : "1px solid #e8e8e8",
-                  userSelect: "none",
-                  opacity: 1,
-                }}
+                className={`filter-chip${isActive ? " active" : ""}`}
+                onClick={() => saveInput({ selectedStyle: s.key === "none" ? "" : s.key })}
               >
+                <span style={{ fontSize: 18 }}>{styleEmojis[s.key] || "🎨"}</span>
                 {s.label}
               </div>
             );
@@ -517,32 +526,23 @@ export default function Generate() {
       </Card>
 
       {/* 画面主体 */}
-      <Card size="small" title="画面主体" style={{ marginBottom: 16 }}>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+      <Card
+        title={
+          <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            🎯 画面主体
+          </span>
+        }
+      >
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
           {SUBJECT_PRESETS.map((s) => {
             const isActive = selectedSubject === s.key || (s.key === "none" && !selectedSubject);
             return (
               <div
                 key={s.key}
-                onClick={() => {
-                  saveInput({ selectedSubject: s.key === "none" ? "" : s.key });
-                }}
-                style={{
-                  padding: "6px 14px",
-                  borderRadius: 20,
-                  cursor: "pointer",
-                  background: isActive
-                    ? "linear-gradient(135deg, var(--gradient-start), var(--gradient-end))"
-                    : "#f5f5f5",
-                  color: isActive ? "#fff" : "#555",
-                  fontWeight: isActive ? 600 : 400,
-                  fontSize: 13,
-                  transition: "all 0.2s",
-                  border: isActive ? "none" : "1px solid #e8e8e8",
-                  userSelect: "none",
-                  opacity: 1,
-                }}
+                className={`filter-chip${isActive ? " active" : ""}`}
+                onClick={() => saveInput({ selectedSubject: s.key === "none" ? "" : s.key })}
               >
+                <span style={{ fontSize: 18 }}>{subjectEmojis[s.key] || "🎯"}</span>
                 {s.label}
               </div>
             );
@@ -550,104 +550,142 @@ export default function Generate() {
         </div>
       </Card>
 
-      {/* 参数配置 */}
-      <Card size="small" style={{ marginBottom: 16 }}>
-        <Space direction="vertical" size={12} style={{ width: "100%" }}>
-          {/* 模型选择 */}
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ color: "#888", fontSize: 13, minWidth: 36, flexShrink: 0 }}>模型</span>
-            {providers.length === 0 ? (
-              <Button size="small" type="link" onClick={() => navigate("/models")}>
-                暂无服务商，点击添加
-              </Button>
-            ) : (
-              <Select
-                value={providerId}
-                onChange={(val) => {
-                  setProviderId(val);
-                  window.electronAPI.setConfig({ providers, activeProviderId: val });
-                }}
-                style={{ flex: 1, minWidth: 180 }}
-                options={providers.map((p) => ({ value: p.id, label: `${p.name} (${p.model})` }))}
-              />
-            )}
-            <Button size="small" type="link" onClick={() => navigate("/models")}>管理</Button>
-          </div>
-
-          {/* 比例 */}
-          <div>
-            <div style={{ color: "#888", fontSize: 13, marginBottom: 6 }}>比例</div>
-            <Segmented
-              block
-              value={ratioIdx}
-              onChange={(val) => saveInput({ ratioIdx: val as number })}
-              options={ASPECT_RATIOS.map((r, i) => ({
-                label: <div style={{ textAlign: "center", padding: "2px 4px" }}><div style={{ fontWeight: 600 }}>{r.label}</div><div style={{ fontSize: 10, color: "#999" }}>{r.hint}</div></div>,
-                value: i,
-              }))}
-            />
-          </div>
-
-          {/* 画质 + 分辨率 */}
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <span style={{ color: "#888", fontSize: 13 }}>画质</span>
-            <Segmented
-              value={qualityIdx}
-              onChange={(val) => saveInput({ qualityIdx: val as number })}
-              options={QUALITY_TIERS.map((q, i) => ({ label: q.label, value: i }))}
-            />
-            <Tag color="blue">{calcSize(ratioIdx, qualityIdx).width}×{calcSize(ratioIdx, qualityIdx).height}</Tag>
-          </div>
-
-          {/* 操作按钮 */}
-          <div style={{ display: "flex", gap: 10, justifyContent: "space-between", alignItems: "center" }}>
-            <Button type="primary" size="large" icon={<ThunderboltOutlined />} onClick={handleGenerate}>
-              生成
+      {/* 模型设置 */}
+      <Card>
+        {/* 模型选择 */}
+        <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 20 }}>
+          <span style={{ fontSize: 14, fontWeight: 600, color: "#555", whiteSpace: "nowrap" }}>模型</span>
+          {providers.length === 0 ? (
+            <Button size="small" type="link" onClick={() => navigate("/models")}>
+              暂无服务商，点击添加
             </Button>
-            <Badge count={tasks.filter(t => t.status === "generating" || t.status === "pending").length} size="small" offset={[-4, 4]}>
-              <Button size="large" icon={<OrderedListOutlined />} onClick={() => setTaskListOpen(true)}>任务</Button>
-            </Badge>
+          ) : (
+            <Select
+              value={providerId}
+              onChange={(val) => {
+                setProviderId(val);
+                window.electronAPI.setConfig({ providers, activeProviderId: val });
+              }}
+              style={{ flex: 1, maxWidth: 520 }}
+              options={providers.map((p) => ({ value: p.id, label: `${p.name} (${p.model})` }))}
+            />
+          )}
+          <Button size="small" type="link" onClick={() => navigate("/models")} style={{ fontSize: 14 }}>
+            管理
+          </Button>
+        </div>
+
+        {/* 比例 */}
+        <div style={{ marginBottom: 20 }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: "#555", marginBottom: 8 }}>比例</div>
+          <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+            {ASPECT_RATIOS.map((r, i) => {
+              const isActive = ratioIdx === i;
+              const size = calcSize(i, qualityIdx);
+              return (
+                <div
+                  key={r.label}
+                  className={`aspect-card${isActive ? " active" : ""}`}
+                  onClick={() => saveInput({ ratioIdx: i })}
+                >
+                  <div className="aspect-icon" style={{
+                    width: r.w >= r.h ? 32 : 22,
+                    height: r.w >= r.h ? 22 : 32,
+                  }} />
+                  <div className="aspect-label">{r.label}</div>
+                  <div className="aspect-hint">{r.hint}</div>
+                </div>
+              );
+            })}
           </div>
-        </Space>
+        </div>
+
+        {/* 画质 */}
+        <div style={{ marginBottom: 24 }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: "#555", marginBottom: 8 }}>画质</div>
+          <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+            {QUALITY_TIERS.map((q, i) => {
+              const isActive = qualityIdx === i;
+              const size = calcSize(ratioIdx, i);
+              return (
+                <div
+                  key={q.label}
+                  className={`quality-btn${isActive ? " active" : ""}`}
+                  onClick={() => saveInput({ qualityIdx: i })}
+                >
+                  {q.label}
+                  <span style={{ fontSize: 11, opacity: 0.7, marginLeft: 4 }}>
+                    {size.width}×{size.height}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* 操作按钮 */}
+        <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+          <button className="btn-generate ant-btn" onClick={handleGenerate}>
+            <ThunderboltOutlined style={{ marginRight: 8 }} />
+            立即生成
+          </button>
+          <Badge
+            count={tasks.filter(t => t.status === "generating" || t.status === "pending").length}
+            size="small"
+            offset={[-6, 6]}
+          >
+            <Button
+              size="large"
+              icon={<OrderedListOutlined />}
+              onClick={() => setTaskListOpen(true)}
+              style={{ height: 56, borderRadius: 16, fontSize: 15, fontWeight: 500 }}
+            >
+              任务列表
+            </Button>
+          </Badge>
+        </div>
       </Card>
 
       {/* 结果展示 */}
       <Card
-        size="small"
-        title="生成结果"
+        title={
+          <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            🖼️ 生成结果
+          </span>
+        }
         style={{ minHeight: 300 }}
         styles={{ body: { display: "flex", justifyContent: "center" } }}
       >
         {/* 空闲状态 */}
         {task.status === "idle" && (
-          <div style={{ textAlign: "center", padding: "40px 20px" }}>
-            <div style={{ marginBottom: 16 }}>
-              <img src={heroImage} alt="Morning AI" style={{ width: 240, height: "auto", borderRadius: 16, boxShadow: "0 8px 32px rgba(102,126,234,0.15)" }} />
+          <div style={{ textAlign: "center", padding: "40px 20px", maxWidth: 420 }}>
+            <div style={{ marginBottom: 20 }}>
+              <img
+                src={heroImage}
+                alt="Morning AI"
+                style={{ width: 200, height: "auto", borderRadius: 20, opacity: 0.9 }}
+              />
             </div>
-            <h3 style={{ color: "#1a1a2e", marginBottom: 6, fontSize: 20, fontWeight: 700 }}>
+            <h3 style={{ color: "#222", marginBottom: 8, fontSize: 22, fontWeight: 700 }}>
               开始你的创作之旅
             </h3>
-            <p style={{ color: "#888", marginBottom: 20, fontSize: 14, lineHeight: 1.6 }}>
+            <p style={{ color: "#888", marginBottom: 20, fontSize: 15, lineHeight: 1.7 }}>
               用文字描绘你心中的画面<br />AI 将为你呈现独一无二的视觉作品
             </p>
             <div style={{
-              background: "linear-gradient(135deg, rgba(102,126,234,0.04), rgba(118,75,162,0.04))",
-              borderRadius: 12,
-              padding: "12px 16px",
-              marginBottom: 16,
+              background: "#F8F5FF",
+              borderRadius: 18,
+              padding: "16px 20px",
+              marginBottom: 8,
             }}>
-              <div style={{ color: "#999", fontSize: 12, marginBottom: 8 }}>💡 快速试试这些</div>
+              <div style={{ color: "#999", fontSize: 13, marginBottom: 10 }}>💡 快速试试这些</div>
               <Space wrap size={[8, 8]}>
                 {TEMPLATES.slice(0, 4).map((t, i) => (
                   <Button
                     key={i}
                     size="small"
+                    className="btn-capsule"
                     onClick={() => saveInput({ prompt: t.prompt })}
-                    style={{
-                      borderRadius: 16,
-                      border: "1px solid #e8e8ff",
-                      background: "#fff",
-                    }}
                   >
                     {t.label}
                   </Button>
@@ -666,25 +704,22 @@ export default function Generate() {
               margin: "0 auto 24px",
               position: "relative",
             }}>
-              {/* 外圈旋转环 */}
               <div style={{
                 position: "absolute", inset: 0,
                 borderRadius: "50%",
-                background: "conic-gradient(var(--gradient-start), var(--gradient-end), #e8e8ff, var(--gradient-start))",
+                background: "conic-gradient(#8B5CF6, #FF7A7A, #F4EDFF, #8B5CF6)",
                 animation: "spin-ring 1.5s linear infinite",
                 mask: "radial-gradient(transparent 36px, black 38px)",
                 WebkitMask: "radial-gradient(transparent 36px, black 38px)",
               }} />
-              {/* 内圈逆旋转 */}
               <div style={{
                 position: "absolute", inset: 8,
                 borderRadius: "50%",
-                background: "conic-gradient(var(--gradient-end), #e8e8ff, var(--gradient-start), var(--gradient-end))",
+                background: "conic-gradient(#FF7A7A, #F4EDFF, #8B5CF6, #FF7A7A)",
                 animation: "spin-ring 2s linear infinite reverse",
                 mask: "radial-gradient(transparent 28px, black 30px)",
                 WebkitMask: "radial-gradient(transparent 28px, black 30px)",
               }} />
-              {/* 中心图标 */}
               <div style={{
                 position: "absolute",
                 top: "50%", left: "50%",
@@ -694,16 +729,16 @@ export default function Generate() {
                 ✨
               </div>
             </div>
-            <h3 style={{ color: "#333", marginBottom: 6, fontWeight: 700 }}>
+            <h3 style={{ color: "#222", marginBottom: 6, fontWeight: 700, fontSize: 20 }}>
               正在生成你的图像
             </h3>
-            <p style={{ color: "#888", marginBottom: 16, fontSize: 14 }}>
-              已用时 <span style={{ color: "var(--gradient-start)", fontWeight: 700, fontSize: 18 }}>{elapsedTime}</span> 秒
+            <p style={{ color: "#888", marginBottom: 16, fontSize: 15 }}>
+              已用时 <span style={{ color: "#8B5CF6", fontWeight: 700, fontSize: 18 }}>{elapsedTime}</span> 秒
             </p>
             <div className="loading-dots">
               <span /><span /><span />
             </div>
-            <p style={{ color: "#bbb", fontSize: 12, marginTop: 16 }}>
+            <p style={{ color: "#BDBDBD", fontSize: 13, marginTop: 16 }}>
               AI 正在精心绘制每一个像素，预计 60-120 秒
             </p>
           </div>
@@ -717,7 +752,7 @@ export default function Generate() {
               color="success"
               style={{
                 marginBottom: 16,
-                padding: "6px 16px",
+                padding: "6px 18px",
                 fontSize: 14,
                 borderRadius: 20,
                 fontWeight: 600,
@@ -726,9 +761,9 @@ export default function Generate() {
               生成成功
             </Tag>
             <div style={{
-              background: "linear-gradient(135deg, #f8f9ff, #faf5ff)",
-              borderRadius: 16,
-              padding: 20,
+              background: "#F8F5FF",
+              borderRadius: 20,
+              padding: 24,
               marginBottom: 12,
             }}>
               {task.resultDataUrl ? (
@@ -768,16 +803,13 @@ export default function Generate() {
               </Tag>
             </div>
             <Space size={12}>
-              <Button icon={<DownloadOutlined />} onClick={handleDownload}
-                style={{ borderRadius: 20 }}>
+              <Button className="btn-capsule" icon={<DownloadOutlined />} onClick={handleDownload}>
                 下载原图
               </Button>
-              <Button icon={<CopyOutlined />} onClick={handleCopyPrompt}
-                style={{ borderRadius: 20 }}>
+              <Button className="btn-capsule" icon={<CopyOutlined />} onClick={handleCopyPrompt}>
                 复制提示词
               </Button>
-              <Button type="primary" onClick={() => { resetTask(); saveInput({ prompt: "" }); }}
-                style={{ borderRadius: 20 }}>
+              <Button type="primary" className="btn-capsule" onClick={() => { resetTask(); saveInput({ prompt: "" }); }}>
                 再来一张
               </Button>
             </Space>
@@ -827,6 +859,7 @@ export default function Generate() {
           </div>
         )}
       </Card>
+      </div>
 
       {/* 历史参考图选择 */}
       <Modal

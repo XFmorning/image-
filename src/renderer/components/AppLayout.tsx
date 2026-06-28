@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   PictureOutlined,
@@ -19,7 +18,6 @@ const menuItems = [
 export default function AppLayout({ children }: AppLayoutProps) {
   const location = useLocation();
   const navigate = useNavigate();
-  const [collapsed] = useState(false);
 
   const isActive = (path: string) => {
     if (path === "/") return location.pathname === "/";
@@ -29,17 +27,16 @@ export default function AppLayout({ children }: AppLayoutProps) {
   return (
     <div className="app-layout">
       {/* 侧边栏 */}
-      <aside
-        className="app-sider"
-        style={{
-          width: collapsed ? 0 : "var(--sider-width)",
-          minWidth: collapsed ? 0 : "var(--sider-width)",
-        }}
-      >
+      <aside className="app-sider">
+        {/* Logo */}
         <div className="app-sider-logo">
-          <h1>Morning AI</h1>
+          <div className="logo-row">
+            <h1>Morning AI</h1>
+          </div>
+          <div className="logo-sub">让创意在清晨发芽🌱</div>
         </div>
 
+        {/* 菜单 */}
         <nav className="app-sider-menu">
           {menuItems.map((item) => (
             <div
@@ -53,16 +50,21 @@ export default function AppLayout({ children }: AppLayoutProps) {
           ))}
         </nav>
 
-        <div className="app-sider-footer" style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div className="user-avatar" style={{ marginBottom: 0, flexShrink: 0 }}>🎨</div>
-          <div>
-            <div style={{ fontWeight: 600, fontSize: 14 }}>AI 创作者</div>
-            <div style={{ fontSize: 11, opacity: 0.6 }}>无限创意 · 即刻生成</div>
+        {/* 底部 PRO 卡片 */}
+        <div className="app-sider-footer">
+          <div className="footer-left">
+            <span className="pro-badge">PRO</span>
+            <div className="pro-title">AI 创作者</div>
+            <div className="pro-sub">无限创意 · 即刻生成</div>
+          </div>
+          <div className="footer-right">
+            <div className="user-avatar">🎨</div>
           </div>
         </div>
       </aside>
 
-      <main className={`main-layout${collapsed ? " collapsed" : ""}`}>
+      {/* 主内容 */}
+      <main className="main-layout">
         <div className="main-content">{children}</div>
       </main>
     </div>
