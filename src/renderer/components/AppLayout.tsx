@@ -4,7 +4,6 @@ import {
   PictureOutlined,
   HistoryOutlined,
   SettingOutlined,
-  RobotOutlined,
 } from "@ant-design/icons";
 
 interface AppLayoutProps {
@@ -38,7 +37,6 @@ export default function AppLayout({ children }: AppLayoutProps) {
         }}
       >
         <div className="app-sider-logo">
-          <RobotOutlined className="logo-icon" />
           <h1>Morning AI</h1>
         </div>
 
