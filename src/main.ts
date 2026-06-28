@@ -273,9 +273,19 @@ function createWindow() {
     mainWindow.loadURL("http://localhost:5173");
     mainWindow.webContents.openDevTools();
   } else {
-    mainWindow.loadFile(
-      path.join(__dirname, "../renderer/main_window/index.html")
-    );
+    // 生产模式：try 多个可能的路径
+    const candidates = [
+      path.join(__dirname, "../renderer/main_window/index.html"),
+      path.join(__dirname, "../../src/renderer/.vite/renderer/main_window/index.html"),
+    ];
+    const fs = require("fs");
+    const found = candidates.find((p) => fs.existsSync(p));
+    if (found) {
+      mainWindow.loadFile(found);
+    } else {
+      console.error("找不到 index.html，尝试的路径：", candidates);
+      mainWindow.loadFile(candidates[0]); // 最后尝试默认路径
+    }
   }
 }
 

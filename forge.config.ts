@@ -4,7 +4,10 @@ import { MakerZIP } from "@electron-forge/maker-zip";
 import { VitePlugin } from "@electron-forge/plugin-vite";
 
 const config: ForgeConfig = {
-  packagerConfig: {},
+  packagerConfig: {
+    out: "D:/futureai-pkg-out",
+    asar: false,
+  },
   rebuildConfig: {},
   makers: [
     new MakerSquirrel({

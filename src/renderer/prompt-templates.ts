@@ -638,29 +638,40 @@ export function templatesByMode(mode: "t2i" | "i2i" | "both"): TemplateItem[] {
   return TEMPLATES.filter((t) => t.mode === mode);
 }
 
-// ====== 自定义模板 ======
+// ====== 自定义模板（按模式分开存储） ======
 
-const CUSTOM_KEY = "futureai_custom_templates";
+const CUSTOM_KEY_T2I = "futureai_custom_t2i";
+const CUSTOM_KEY_I2I = "futureai_custom_i2i";
 
-export function loadCustomTemplates(): TemplateItem[] {
-  try {
-    const raw = localStorage.getItem(CUSTOM_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch { return []; }
+function customKey(mode: string) {
+  return mode === "i2i" ? CUSTOM_KEY_I2I : CUSTOM_KEY_T2I;
+}
+
+export function loadCustomTemplates(mode?: string): TemplateItem[] {
+  const keys = mode ? [customKey(mode)] : [CUSTOM_KEY_T2I, CUSTOM_KEY_I2I];
+  const all: TemplateItem[] = [];
+  for (const k of keys) {
+    try {
+      const raw = localStorage.getItem(k);
+      if (raw) all.push(...JSON.parse(raw));
+    } catch { /* skip */ }
+  }
+  return all;
 }
 
 export function saveCustomTemplate(label: string, prompt: string, mode: "t2i" | "i2i" | "both"): TemplateItem {
-  const templates = loadCustomTemplates();
+  const templates = loadCustomTemplates(mode);
   const item: TemplateItem = { label, prompt, category: "custom", mode };
   templates.push(item);
-  localStorage.setItem(CUSTOM_KEY, JSON.stringify(templates));
+  localStorage.setItem(customKey(mode), JSON.stringify(templates));
   return item;
 }
 
-export function removeCustomTemplate(index: number): void {
-  const templates = loadCustomTemplates();
+export function removeCustomTemplate(index: number, mode?: string): void {
+  const m = mode || "t2i";
+  const templates = loadCustomTemplates(m);
   templates.splice(index, 1);
-  localStorage.setItem(CUSTOM_KEY, JSON.stringify(templates));
+  localStorage.setItem(customKey(m), JSON.stringify(templates));
 }
 
 export function getAllTemplates(): TemplateItem[] {

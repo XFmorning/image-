@@ -178,9 +178,14 @@ export default function Generate() {
   };
 
   // ========== 自定义模板 ==========
-  const [customTemplates, setCustomTemplates] = useState<TemplateItem[]>(loadCustomTemplates);
+  const [customTemplates, setCustomTemplates] = useState<TemplateItem[]>(() => loadCustomTemplates(mode));
   const [customLabel, setCustomLabel] = useState("");
   const [customPrompt, setCustomPrompt] = useState("");
+
+  // 切换模式时刷新自定义模板列表
+  useEffect(() => {
+    setCustomTemplates(loadCustomTemplates(mode));
+  }, [mode]);
 
   const handleAddCustom = () => {
     if (!customLabel.trim() || !customPrompt.trim()) {
@@ -188,15 +193,15 @@ export default function Generate() {
       return;
     }
     saveCustomTemplate(customLabel.trim(), customPrompt.trim(), mode);
-    setCustomTemplates(loadCustomTemplates());
+    setCustomTemplates(loadCustomTemplates(mode));
     setCustomLabel("");
     setCustomPrompt("");
     message.success("已保存到「我的模板」");
   };
 
   const handleRemoveCustom = (index: number) => {
-    removeCustomTemplate(index);
-    setCustomTemplates(loadCustomTemplates());
+    removeCustomTemplate(index, mode);
+    setCustomTemplates(loadCustomTemplates(mode));
   };
 
   // ========== 参考图 ==========
