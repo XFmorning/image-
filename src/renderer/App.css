@@ -175,13 +175,15 @@ html, body, #root {
   position: relative;
 }
 
-/* 主内容顶部装饰条 */
+/* 主内容顶部装饰条 — 右侧图片向左渐变融合 */
 .main-content::before {
   content: "";
   display: block;
   height: 180px;
   margin: -36px -48px 24px;
-  background: url("./assets/main-bg.jpg") center 30% / cover no-repeat;
+  background:
+    linear-gradient(to left, rgba(248,249,251,0) 30%, #f8f9fb 100%),
+    url("./assets/main-bg.jpg") right 30% / cover no-repeat;
   border-radius: 0 0 var(--radius-lg) var(--radius-lg);
 }
 
@@ -250,7 +252,13 @@ textarea.ant-input {
 }
 
 .ant-tabs-tab-active {
-  background: rgba(102,126,234,0.06) !important;
+  background: rgba(102,126,234,0.1) !important;
+}
+
+/* 主内容选中态统一为淡紫色 */
+.ant-segmented .ant-segmented-item-selected {
+  background: rgba(102,126,234,0.12) !important;
+  color: var(--primary) !important;
 }
 
 /* ========== Tag 圆润化 ========== */
