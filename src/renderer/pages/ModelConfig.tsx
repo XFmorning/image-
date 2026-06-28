@@ -29,6 +29,7 @@ export default function ModelConfig() {
   const [selectedId, setSelectedId] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [editingProvider, setEditingProvider] = useState<ProviderConfig | null>(null);
+  const [ready, setReady] = useState(false);
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -38,9 +39,10 @@ export default function ModelConfig() {
   const loadConfig = async () => {
     const c = await window.electronAPI.getConfig();
     setConfig(c);
-    if (c.providers.length > 0 && !selectedId) {
+    if (!selectedId && c.providers.length > 0) {
       setSelectedId(c.providers[0].id);
     }
+    setReady(true);
   };
 
   const selectedProvider = config.providers.find(
@@ -158,7 +160,7 @@ export default function ModelConfig() {
         </Button>
       </div>
 
-      {config.providers.length === 0 ? (
+      {!ready ? null : config.providers.length === 0 ? (
         <Empty
           image={<KeyOutlined style={{ fontSize: 64, color: "#ccc" }} />}
           description="还没有配置 API 服务商"

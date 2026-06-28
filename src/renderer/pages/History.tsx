@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import {
   Card,
   Button,
@@ -9,7 +9,6 @@ import {
   Empty,
   message,
   Tooltip,
-  Spin,
 } from "antd";
 import {
   DeleteOutlined,
@@ -21,64 +20,105 @@ import {
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 
-// 模块级缓存：只在首次加载时从磁盘读取
-let _cachedItems: (HistoryItem & { _dataUrl?: string })[] | null = null;
-let _cacheTime = 0;
+type HistoryEntry = HistoryItem & { _dataUrl?: string; _loading?: boolean };
+
+// 模块级缓存
+let _cachedItems: HistoryEntry[] | null = null;
+const _loadedImages = new Map<string, string>(); // imagePath → dataUrl
 
 export default function History() {
-  const [items, setItems] = useState<(HistoryItem & { _dataUrl?: string })[]>(_cachedItems || []);
-  const [loading, setLoading] = useState(!_cachedItems);
+  const [items, setItems] = useState<HistoryEntry[]>(_cachedItems || []);
+  const [ready, setReady] = useState(!!_cachedItems);
+  const observerRef = useRef<IntersectionObserver | null>(null);
   const navigate = useNavigate();
 
-  const loadHistory = async (force = false) => {
-    if (!force && _cachedItems) {
+  // 首次加载元数据（不等图片）
+  useEffect(() => {
+    if (_cachedItems) {
       setItems(_cachedItems);
-      setLoading(false);
+      setReady(true);
       return;
     }
-    const history = await window.electronAPI.getHistory();
-    history.sort((a: HistoryItem, b: HistoryItem) => b.timestamp - a.timestamp);
-    for (const item of history) {
-      if (item.imagePath && item.status === "completed") {
-        try {
-          (item as any)._dataUrl = await window.electronAPI.readImage(item.imagePath);
-        } catch {
-          (item as any)._dataUrl = "";
-        }
-      }
-    }
-    _cachedItems = history as any;
-    _cacheTime = Date.now();
-    setItems(history);
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    loadHistory();
+    (async () => {
+      const history = await window.electronAPI.getHistory();
+      history.sort((a: HistoryItem, b: HistoryItem) => b.timestamp - a.timestamp);
+      const entries: HistoryEntry[] = history.map((item) => ({
+        ...item,
+        _dataUrl: _loadedImages.get(item.imagePath || ""),
+      }));
+      _cachedItems = entries;
+      setItems(entries);
+      setReady(true);
+    })();
   }, []);
 
-  // 每次页面获得焦点时静默刷新元数据（不重新加载图片）
+  // 窗口获焦时刷新元数据
   useEffect(() => {
     const refresh = async () => {
       const history = await window.electronAPI.getHistory();
       history.sort((a: HistoryItem, b: HistoryItem) => b.timestamp - a.timestamp);
-      // 复用已缓存的 _dataUrl
-      for (const item of history) {
-        if (item.imagePath && item.status === "completed") {
-          const cached = _cachedItems?.find(c => c.id === item.id);
-          if (cached?._dataUrl) {
-            (item as any)._dataUrl = cached._dataUrl;
-          }
-        }
-      }
-      _cachedItems = history as any;
-      setItems(history);
+      const entries: HistoryEntry[] = history.map((item) => ({
+        ...item,
+        _dataUrl: _loadedImages.get(item.imagePath || ""),
+      }));
+      _cachedItems = entries;
+      setItems(entries);
     };
-
-    const handleFocus = () => refresh();
-    window.addEventListener("focus", handleFocus);
-    return () => window.removeEventListener("focus", handleFocus);
+    window.addEventListener("focus", refresh);
+    return () => window.removeEventListener("focus", refresh);
   }, []);
+
+  // 懒加载单张图片
+  const loadImage = useCallback(async (item: HistoryEntry) => {
+    if (!item.imagePath || item._dataUrl || item._loading) return;
+    const cached = _loadedImages.get(item.imagePath);
+    if (cached) {
+      setItems((prev) => prev.map((i) => (i.id === item.id ? { ...i, _dataUrl: cached } : i)));
+      return;
+    }
+    // 标记加载中
+    setItems((prev) => prev.map((i) => (i.id === item.id ? { ...i, _loading: true } : i)));
+    try {
+      const du = await window.electronAPI.readImage(item.imagePath);
+      _loadedImages.set(item.imagePath!, du);
+      setItems((prev) =>
+        prev.map((i) => (i.id === item.id ? { ...i, _dataUrl: du, _loading: false } : i))
+      );
+      // 更新全局缓存
+      if (_cachedItems) {
+        const idx = _cachedItems.findIndex((c) => c.id === item.id);
+        if (idx >= 0) _cachedItems[idx]._dataUrl = du;
+      }
+    } catch {
+      setItems((prev) => prev.map((i) => (i.id === item.id ? { ...i, _dataUrl: "", _loading: false } : i)));
+    }
+  }, []);
+
+  // IntersectionObserver：卡片进入视口时加载图片
+  const cardRef = useCallback(
+    (node: HTMLDivElement | null, item: HistoryEntry) => {
+      if (!node || item._dataUrl !== undefined) return;
+      if (!observerRef.current) {
+        observerRef.current = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                const el = entry.target as HTMLDivElement;
+                const id = el.dataset.historyId;
+                const found = items.find((i) => i.id === id);
+                if (found) loadImage(found);
+                observerRef.current?.unobserve(el);
+              }
+            });
+          },
+          { rootMargin: "200px" }
+        );
+      }
+      node.dataset.historyId = item.id;
+      observerRef.current.observe(node);
+    },
+    [items, loadImage]
+  );
 
   const handleDelete = async (id: string) => {
     const updated = items.filter((item) => item.id !== id);
@@ -92,6 +132,7 @@ export default function History() {
     await window.electronAPI.clearAllImages();
     setItems([]);
     _cachedItems = [];
+    _loadedImages.clear();
     message.success("已清空全部记录和图片");
   };
 
@@ -115,6 +156,8 @@ export default function History() {
       minute: "2-digit",
     });
   };
+
+  if (!ready) return null;
 
   return (
     <div>
@@ -149,11 +192,7 @@ export default function History() {
         </Space>
       </div>
 
-      {loading ? (
-        <div style={{ textAlign: "center", padding: 80 }}>
-          <Spin size="large" />
-        </div>
-      ) : items.length === 0 ? (
+      {items.length === 0 ? (
         <Empty
           image={<PictureOutlined style={{ fontSize: 64, color: "#ccc" }} />}
           description="还没有生成过图片"
@@ -172,100 +211,104 @@ export default function History() {
           }}
         >
           {items.map((item) => (
-            <Card
+            <div
               key={item.id}
-              hoverable
-              size="small"
-              styles={{ body: { padding: 12 } }}
-              actions={[
-                <Tooltip title="复制提示词" key="copy">
-                  <CopyOutlined
-                    onClick={() => {
-                      navigator.clipboard.writeText(item.prompt);
-                      message.success("提示词已复制");
-                    }}
-                  />
-                </Tooltip>,
-                <Tooltip title="下载" key="download">
-                  <DownloadOutlined
-                    onClick={() =>
-                      handleDownload((item as any)._dataUrl, item.id)
-                    }
-                  />
-                </Tooltip>,
-                <Popconfirm
-                  title="确定删除此记录？"
-                  onConfirm={() => handleDelete(item.id)}
-                  okText="确定"
-                  cancelText="取消"
-                  key="delete"
-                >
-                  <DeleteOutlined style={{ color: "#ff4d4f" }} />
-                </Popconfirm>,
-              ]}
+              ref={(node) => cardRef(node, item)}
             >
-              <div
-                style={{
-                  width: "100%",
-                  height: 200,
-                  overflow: "hidden",
-                  borderRadius: 6,
-                  marginBottom: 8,
-                  background: "#f0f0f0",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
+              <Card
+                hoverable
+                size="small"
+                styles={{ body: { padding: 12 } }}
+                actions={[
+                  <Tooltip title="复制提示词" key="copy">
+                    <CopyOutlined
+                      onClick={() => {
+                        navigator.clipboard.writeText(item.prompt);
+                        message.success("提示词已复制");
+                      }}
+                    />
+                  </Tooltip>,
+                  <Tooltip title="下载" key="download">
+                    <DownloadOutlined
+                      onClick={() =>
+                        item._dataUrl && handleDownload(item._dataUrl, item.id)
+                      }
+                    />
+                  </Tooltip>,
+                  <Popconfirm
+                    title="确定删除此记录？"
+                    onConfirm={() => handleDelete(item.id)}
+                    okText="确定"
+                    cancelText="取消"
+                    key="delete"
+                  >
+                    <DeleteOutlined style={{ color: "#ff4d4f" }} />
+                  </Popconfirm>,
+                ]}
               >
-                {item.status === "completed" && (item as any)._dataUrl ? (
-                  <Image
-                    src={(item as any)._dataUrl}
-                    alt={item.prompt}
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                    }}
-                    preview={{ mask: "预览" }}
-                  />
-                ) : (
-                  <PictureOutlined style={{ fontSize: 32, color: "#ccc" }} />
-                )}
-              </div>
+                <div
+                  style={{
+                    width: "100%",
+                    height: 200,
+                    overflow: "hidden",
+                    borderRadius: 6,
+                    marginBottom: 8,
+                    background: "#f0f0f0",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  {item._dataUrl ? (
+                    <Image
+                      src={item._dataUrl}
+                      alt={item.prompt}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                      preview={{ mask: "预览" }}
+                    />
+                  ) : (
+                    <PictureOutlined style={{ fontSize: 32, color: "#ccc" }} />
+                  )}
+                </div>
 
-              <div
-                style={{
-                  fontSize: 13,
-                  color: "#333",
-                  lineHeight: 1.4,
-                  maxHeight: 36,
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  display: "-webkit-box",
-                  WebkitLineClamp: 2,
-                  WebkitBoxOrient: "vertical",
-                  marginBottom: 8,
-                }}
-                title={item.prompt}
-              >
-                {item.prompt}
-              </div>
-              <Space size={4} wrap>
-                <Tag color="purple" style={{ fontSize: 11 }}>
-                  {item.providerName}
-                </Tag>
-                <Tag style={{ fontSize: 11 }}>{item.model}</Tag>
-                <Tag style={{ fontSize: 11 }}>{item.size}</Tag>
-                {item.mode === "i2i" && (
-                  <Tag color="orange" style={{ fontSize: 11 }}>
-                    图生图
+                <div
+                  style={{
+                    fontSize: 13,
+                    color: "#333",
+                    lineHeight: 1.4,
+                    maxHeight: 36,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    display: "-webkit-box",
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: "vertical",
+                    marginBottom: 8,
+                  }}
+                  title={item.prompt}
+                >
+                  {item.prompt}
+                </div>
+                <Space size={4} wrap>
+                  <Tag color="purple" style={{ fontSize: 11 }}>
+                    {item.providerName}
                   </Tag>
-                )}
-              </Space>
-              <div style={{ fontSize: 11, color: "#999", marginTop: 8 }}>
-                {formatTime(item.timestamp)}
-              </div>
-            </Card>
+                  <Tag style={{ fontSize: 11 }}>{item.model}</Tag>
+                  <Tag style={{ fontSize: 11 }}>{item.size}</Tag>
+                  {item.mode === "i2i" && (
+                    <Tag color="orange" style={{ fontSize: 11 }}>
+                      图生图
+                    </Tag>
+                  )}
+                </Space>
+                <div style={{ fontSize: 11, color: "#999", marginTop: 8 }}>
+                  {formatTime(item.timestamp)}
+                </div>
+              </Card>
+            </div>
           ))}
         </div>
       )}
