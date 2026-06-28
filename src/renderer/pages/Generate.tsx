@@ -79,11 +79,23 @@ const STYLE_PRESETS = [
   { key: "watercolor", label: "水彩",     suffix: ", watercolor painting, soft washes, flowing colors, artistic, delicate textures, dreamy atmosphere" },
 ];
 
+const SUBJECT_PRESETS = [
+  { key: "none",       label: "不限" },
+  { key: "portrait",   label: "人物",   prefix: "a person as the main subject, " },
+  { key: "animal",     label: "动物",   prefix: "an animal as the main subject, " },
+  { key: "landscape",  label: "风景",   prefix: "a landscape scene as the main subject, " },
+  { key: "product",    label: "静物",   prefix: "a product or still life object as the main subject, centered composition, " },
+  { key: "food",       label: "食物",   prefix: "delicious food as the main subject, appetizing food photography, " },
+  { key: "building",   label: "建筑",   prefix: "architecture and buildings as the main subject, " },
+  { key: "vehicle",    label: "交通工具", prefix: "a vehicle as the main subject, " },
+  { key: "plant",      label: "植物花卉", prefix: "plants or flowers as the main subject, botanical, " },
+];
+
 export default function Generate() {
   const navigate = useNavigate();
   const { task, input, saveInput, setInputMode, startTask, finishTask, failTask, resetTask, setResultDataUrl } = useGenTask();
   const cur = input[input.mode];
-  const { prompt, ratioIdx, qualityIdx, selectedStyle } = cur;
+  const { prompt, ratioIdx, qualityIdx, selectedStyle, selectedSubject } = cur;
   const { mode } = input;
 
   const [providerId, setProviderId] = useState("");
@@ -175,9 +187,12 @@ export default function Generate() {
     const size = calcSize(ratioIdx, qualityIdx);
     const sizeStr = `${size.width}x${size.height}`;
 
-    // 拼接风格后缀
+    // 拼接主体前缀 + 风格后缀
+    const subject = SUBJECT_PRESETS.find((s) => s.key === selectedSubject);
     const style = STYLE_PRESETS.find((s) => s.key === selectedStyle);
-    const fullPrompt = selectedStyle && style ? prompt + style.suffix : prompt;
+    let fullPrompt = prompt;
+    if (selectedSubject && subject) fullPrompt = subject.prefix + fullPrompt;
+    if (selectedStyle && style) fullPrompt = fullPrompt + style.suffix;
 
     startTask({
       prompt: fullPrompt,
@@ -392,6 +407,41 @@ export default function Generate() {
                   color: isActive ? "#fff" : "#555",
                   fontWeight: isActive ? 600 : 400,
                   fontSize: 14,
+                  transition: "all 0.2s",
+                  border: isActive ? "none" : "1px solid #e8e8e8",
+                  userSelect: "none",
+                  opacity: task.status === "generating" ? 0.5 : 1,
+                }}
+              >
+                {s.label}
+              </div>
+            );
+          })}
+        </div>
+      </Card>
+
+      {/* 画面主体 */}
+      <Card size="small" title="画面主体" style={{ marginBottom: 16 }}>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+          {SUBJECT_PRESETS.map((s) => {
+            const isActive = selectedSubject === s.key || (s.key === "none" && !selectedSubject);
+            return (
+              <div
+                key={s.key}
+                onClick={() => {
+                  if (task.status === "generating") return;
+                  saveInput({ selectedSubject: s.key === "none" ? "" : s.key });
+                }}
+                style={{
+                  padding: "6px 14px",
+                  borderRadius: 20,
+                  cursor: task.status === "generating" ? "not-allowed" : "pointer",
+                  background: isActive
+                    ? "linear-gradient(135deg, var(--gradient-start), var(--gradient-end))"
+                    : "#f5f5f5",
+                  color: isActive ? "#fff" : "#555",
+                  fontWeight: isActive ? 600 : 400,
+                  fontSize: 13,
                   transition: "all 0.2s",
                   border: isActive ? "none" : "1px solid #e8e8e8",
                   userSelect: "none",

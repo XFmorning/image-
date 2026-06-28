@@ -21,6 +21,7 @@ export interface GenInput {
   ratioIdx: number;
   qualityIdx: number;
   selectedStyle: string;
+  selectedSubject: string;
 }
 
 export interface GenInputState {
@@ -34,6 +35,7 @@ const EMPTY_INPUT: GenInput = {
   ratioIdx: 0,
   qualityIdx: 0,
   selectedStyle: "",
+  selectedSubject: "",
 };
 
 const EMPTY_INPUT_STATE: GenInputState = {
