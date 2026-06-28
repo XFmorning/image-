@@ -42,6 +42,10 @@ import {
   TEMPLATES,
   randomTemplate,
   templatesByMode,
+  getAllTemplates,
+  loadCustomTemplates,
+  saveCustomTemplate,
+  removeCustomTemplate,
   type TemplateItem,
 } from "../prompt-templates";
 import { useGenTask, type GenTask, type GenStatus } from "../GenerationContext";
@@ -171,6 +175,28 @@ export default function Generate() {
     const item = randomTemplate();
     saveInput({ prompt: item.prompt });
     message.info(`随机灵感：${item.label}`);
+  };
+
+  // ========== 自定义模板 ==========
+  const [customTemplates, setCustomTemplates] = useState<TemplateItem[]>(loadCustomTemplates);
+  const [customLabel, setCustomLabel] = useState("");
+  const [customPrompt, setCustomPrompt] = useState("");
+
+  const handleAddCustom = () => {
+    if (!customLabel.trim() || !customPrompt.trim()) {
+      message.warning("名称和提示词不能为空");
+      return;
+    }
+    saveCustomTemplate(customLabel.trim(), customPrompt.trim(), mode);
+    setCustomTemplates(loadCustomTemplates());
+    setCustomLabel("");
+    setCustomPrompt("");
+    message.success("已保存到「我的模板」");
+  };
+
+  const handleRemoveCustom = (index: number) => {
+    removeCustomTemplate(index);
+    setCustomTemplates(loadCustomTemplates());
   };
 
   // ========== 参考图 ==========
@@ -885,16 +911,33 @@ export default function Generate() {
             label: cat.name,
             children: (
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {TEMPLATES.filter((t) => t.category === cat.key && (!t.mode || t.mode === mode || t.mode === "both" || cat.mode === "both")).map(
-                  (item, idx) => (
+                {getAllTemplates().filter((t) => t.category === cat.key && (!t.mode || t.mode === mode || t.mode === "both" || cat.mode === "both")).map(
+                  (item, idx) => {
+                    const isCustom = cat.key === "custom";
+                    return (
                     <Card
                       key={idx}
                       size="small"
                       hoverable
                       onClick={() => handleSelectTemplate(item)}
+                      extra={isCustom ? (
+                        <Button
+                          type="text"
+                          size="small"
+                          danger
+                          icon={<DeleteOutlined />}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            // 在 customTemplates 中找到正确的索引
+                            const realIdx = customTemplates.findIndex(ct => ct.label === item.label && ct.prompt === item.prompt);
+                            if (realIdx >= 0) handleRemoveCustom(realIdx);
+                          }}
+                        />
+                      ) : undefined}
                     >
                       <div style={{ fontWeight: 600, marginBottom: 4 }}>
                         {item.label}
+                        {isCustom && <Tag color="orange" style={{ marginLeft: 6, fontSize: 10 }}>自定义</Tag>}
                       </div>
                       <div
                         style={{
@@ -908,13 +951,23 @@ export default function Generate() {
                         {item.prompt}
                       </div>
                     </Card>
-                  )
-                )}
+                  );
+                })}
               </div>
             ),
           }))}
         />
         )}
+        {/* 自定义模板表单 */}
+        <Divider />
+        <div style={{ padding: "0 4px" }}>
+          <div style={{ fontWeight: 600, marginBottom: 8, fontSize: 14 }}>添加自定义模板</div>
+          <Space direction="vertical" size={8} style={{ width: "100%" }}>
+            <Input placeholder="模板名称" value={customLabel} onChange={(e) => setCustomLabel(e.target.value)} />
+            <Input.TextArea placeholder="提示词内容" value={customPrompt} onChange={(e) => setCustomPrompt(e.target.value)} rows={3} />
+            <Button type="primary" size="small" onClick={handleAddCustom} block>保存到我的模板</Button>
+          </Space>
+        </div>
       </Drawer>
 
       {/* 任务列表抽屉 */}

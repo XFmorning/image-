@@ -11,9 +11,10 @@ export const TEMPLATE_CATEGORIES: { key: string; name: string; icon: string; mod
   { key: "landscape", name: "风景建筑", icon: "PictureOutlined", mode: "t2i" },
   { key: "illustration", name: "艺术插画", icon: "ExperimentOutlined", mode: "t2i" },
   { key: "ui", name: "UI与界面", icon: "LaptopOutlined", mode: "t2i" },
-  { key: "ecommerce", name: "产品电商", icon: "ShoppingOutlined", mode: "both" },
-  { key: "brand", name: "品牌海报", icon: "CrownOutlined", mode: "both" },
+  { key: "ecommerce", name: "产品电商", icon: "ShoppingOutlined", mode: "t2i" },
+  { key: "brand", name: "品牌海报", icon: "CrownOutlined", mode: "t2i" },
   { key: "i2i", name: "图生图专用", icon: "SwapOutlined", mode: "i2i" },
+  { key: "custom", name: "我的模板", icon: "StarOutlined", mode: "both" },
 ];
 
 export const TEMPLATES: TemplateItem[] = [
@@ -635,4 +636,33 @@ export function templatesByCategory(category: string): TemplateItem[] {
 
 export function templatesByMode(mode: "t2i" | "i2i" | "both"): TemplateItem[] {
   return TEMPLATES.filter((t) => t.mode === mode);
+}
+
+// ====== 自定义模板 ======
+
+const CUSTOM_KEY = "futureai_custom_templates";
+
+export function loadCustomTemplates(): TemplateItem[] {
+  try {
+    const raw = localStorage.getItem(CUSTOM_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+}
+
+export function saveCustomTemplate(label: string, prompt: string, mode: "t2i" | "i2i" | "both"): TemplateItem {
+  const templates = loadCustomTemplates();
+  const item: TemplateItem = { label, prompt, category: "custom", mode };
+  templates.push(item);
+  localStorage.setItem(CUSTOM_KEY, JSON.stringify(templates));
+  return item;
+}
+
+export function removeCustomTemplate(index: number): void {
+  const templates = loadCustomTemplates();
+  templates.splice(index, 1);
+  localStorage.setItem(CUSTOM_KEY, JSON.stringify(templates));
+}
+
+export function getAllTemplates(): TemplateItem[] {
+  return [...TEMPLATES, ...loadCustomTemplates()];
 }
