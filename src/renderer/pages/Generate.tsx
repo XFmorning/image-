@@ -114,7 +114,16 @@ export default function Generate() {
   const [taskListOpen, setTaskListOpen] = useState(false);
   const [historyPickOpen, setHistoryPickOpen] = useState(false);
   const [historyImages, setHistoryImages] = useState<{ id: string; dataUrl: string }[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState("portrait");
+  // 初始分类由当前模式决定
+  const [selectedCategory, setSelectedCategory] = useState(() =>
+    (TEMPLATE_CATEGORIES.find((c) => !c.mode || c.mode === "t2i" || c.mode === "both")?.key || "portrait")
+  );
+
+  // 切换模式时重置分类
+  useEffect(() => {
+    const first = TEMPLATE_CATEGORIES.find((c) => !c.mode || c.mode === mode || c.mode === "both");
+    if (first) setSelectedCategory(first.key);
+  }, [mode]);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [elapsedTimes, setElapsedTimes] = useState<Record<string, number>>({});
 
