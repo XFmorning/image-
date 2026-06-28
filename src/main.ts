@@ -180,25 +180,34 @@ function registerIpcHandlers() {
   // --- URL 下载（绕过 CORS） ---
 
   ipcMain.handle("fetch-url-buffer", async (_, url: string, authHeader?: string) => {
-    try {
-      const headers: Record<string, string> = {};
-      if (authHeader) headers["Authorization"] = authHeader;
-      console.log("[main] fetch-url-buffer 开始下载:", url.substring(0, 80) + "...");
-      const response = await fetch(url, { headers });
-      console.log("[main] fetch-url-buffer 响应状态:", response.status, response.headers.get("content-type"));
-      if (!response.ok) {
-        console.error("[main] fetch-url-buffer HTTP 错误:", response.status, await response.text().catch(() => ""));
-        return null;
+    // 先试不带认证头（有些 CDN/S3 预签名 URL 带了认证反而 403）
+    for (const useAuth of [false, true]) {
+      const ac = new AbortController();
+      const timer = setTimeout(() => ac.abort(), 30000); // 30s 超时
+      try {
+        const headers: Record<string, string> = {};
+        if (useAuth && authHeader) headers["Authorization"] = authHeader;
+        console.log(`[main] fetch-url-buffer ${useAuth ? "带认证" : "无认证"}:`, url.substring(0, 80) + "...");
+        const response = await fetch(url, { headers, signal: ac.signal });
+        clearTimeout(timer);
+        console.log("[main] fetch-url-buffer 响应状态:", response.status, response.headers.get("content-type"));
+        if (response.ok) {
+          const buf = await response.arrayBuffer();
+          console.log("[main] fetch-url-buffer 下载成功，大小:", buf.byteLength);
+          const base64 = Buffer.from(buf).toString("base64");
+          return "data:image/png;base64," + base64;
+        }
+        console.error("[main] fetch-url-buffer HTTP 错误:", response.status);
+      } catch (e: any) {
+        clearTimeout(timer);
+        if (e.name === "AbortError") {
+          console.error("[main] fetch-url-buffer 30s 超时:", url.substring(0, 60));
+        } else {
+          console.error("[main] fetch-url-buffer 异常:", e.message || e);
+        }
       }
-      const buf = await response.arrayBuffer();
-      console.log("[main] fetch-url-buffer 下载成功，大小:", buf.byteLength);
-      // 转 base64 保证 IPC 结构克隆安全
-      const base64 = Buffer.from(buf).toString("base64");
-      return "data:image/png;base64," + base64;
-    } catch (e: any) {
-      console.error("[main] fetch-url-buffer 异常:", e.message || e);
-      return null;
     }
+    return null;
   });
 
   // --- 存储管理 ---
