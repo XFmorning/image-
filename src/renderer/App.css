@@ -201,101 +201,164 @@ html, body, #root {
 
 .ant-card {
   border-radius: var(--radius-lg) !important;
-  box-shadow: var(--shadow-card) !important;
-  border: 1px solid #f0f0f0 !important;
-  transition: box-shadow 0.3s, transform 0.2s !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(102,126,234,0.06) !important;
+  border: 1px solid rgba(102,126,234,0.08) !important;
+  transition: box-shadow 0.3s, transform 0.2s, border-color 0.3s !important;
+  overflow: hidden;
 }
 
 .ant-card:hover {
-  box-shadow: var(--shadow-hover) !important;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06), 0 8px 24px rgba(102,126,234,0.1) !important;
+  border-color: rgba(102,126,234,0.18) !important;
 }
 
 .ant-card .ant-card-head {
-  border-bottom: 1px solid #f5f5f5 !important;
+  border-bottom: 1px solid rgba(102,126,234,0.06) !important;
   border-radius: var(--radius-lg) var(--radius-lg) 0 0 !important;
+  background: linear-gradient(180deg, rgba(102,126,234,0.03), transparent) !important;
+  padding: 14px 20px 10px !important;
 }
 
-/* ========== 按钮圆润化 ========== */
+.ant-card .ant-card-head-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #333;
+}
+
+.ant-card .ant-card-body {
+  padding: 16px 20px !important;
+}
+
+/* ========== 按钮美化 ========== */
 
 .ant-btn {
-  border-radius: var(--radius-sm) !important;
-  transition: all 0.25s !important;
+  border-radius: 10px !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  font-weight: 500;
 }
 
 .ant-btn-primary {
-  box-shadow: 0 2px 8px rgba(102,126,234,0.3) !important;
+  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)) !important;
+  border: none !important;
+  box-shadow: 0 4px 14px rgba(102,126,234,0.3) !important;
 }
 
 .ant-btn-primary:hover {
-  box-shadow: 0 4px 16px rgba(102,126,234,0.4) !important;
+  box-shadow: 0 6px 20px rgba(102,126,234,0.45) !important;
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
+.ant-btn-default:hover {
+  border-color: var(--primary) !important;
+  color: var(--primary) !important;
   transform: translateY(-1px);
 }
 
-.ant-btn:hover {
-  transform: translateY(-1px);
-}
-
-/* ========== 输入框圆润化 ========== */
+/* ========== 输入框美化 ========== */
 
 .ant-input,
-.ant-input-password {
-  border-radius: var(--radius-sm) !important;
-}
-
-textarea.ant-input {
-  border-radius: var(--radius-md) !important;
-  resize: none;
-}
-
-/* ========== Tabs 优化 ========== */
-
-.ant-tabs-tab {
-  border-radius: var(--radius-sm) !important;
-  padding: 8px 20px !important;
+.ant-input-password,
+.ant-select-selector {
+  border-radius: 10px !important;
+  border-color: #e8e8f0 !important;
   transition: all 0.25s !important;
 }
 
-.ant-tabs-tab-active {
-  background: rgba(102,126,234,0.1) !important;
+.ant-input:focus,
+.ant-input-password:focus,
+.ant-select-focused .ant-select-selector {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px rgba(102,126,234,0.1) !important;
 }
 
-/* 主内容选中态统一为淡紫色 */
-.ant-segmented .ant-segmented-item-selected {
-  background: rgba(102,126,234,0.12) !important;
+textarea.ant-input {
+  border-radius: 12px !important;
+  resize: none;
+  line-height: 1.8;
+}
+
+/* ========== Tabs 美化 ========== */
+
+.ant-tabs-tab {
+  border-radius: 10px !important;
+  padding: 10px 24px !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  font-size: 15px;
+  font-weight: 600;
+  color: #888;
+}
+
+.ant-tabs-tab:hover {
   color: var(--primary) !important;
 }
 
-/* ========== Tag 圆润化 ========== */
+.ant-tabs-tab-active {
+  background: linear-gradient(135deg, rgba(102,126,234,0.08), rgba(118,75,162,0.05)) !important;
+  color: var(--primary) !important;
+}
+
+.ant-tabs-ink-bar {
+  height: 3px !important;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end)) !important;
+}
+
+/* 选中态统一淡紫 */
+.ant-segmented .ant-segmented-item-selected {
+  background: linear-gradient(135deg, rgba(102,126,234,0.15), rgba(118,75,162,0.1)) !important;
+  color: var(--primary) !important;
+  font-weight: 600;
+}
+
+/* ========== Tag 美化 ========== */
 
 .ant-tag {
-  border-radius: 6px !important;
+  border-radius: 8px !important;
+  font-weight: 500;
+  padding: 2px 10px;
 }
 
-/* ========== Segmented 优化 ========== */
+/* ========== Segmented 美化 ========== */
 
 .ant-segmented {
-  border-radius: var(--radius-sm) !important;
-  background: #f0f0f5 !important;
-  padding: 3px !important;
+  border-radius: 12px !important;
+  background: #f5f4f8 !important;
+  padding: 4px !important;
 }
 
-/* ========== Modal 优化 ========== */
+.ant-segmented .ant-segmented-item {
+  border-radius: 10px !important;
+  transition: all 0.25s !important;
+}
 
-.ant-modal-content {
+/* ========== Select 美化 ========== */
+
+.ant-select-selector {
+  border-radius: 10px !important;
+  padding: 5px 12px !important;
+}
+
+/* ========== Modal/Drawer 美化 ========== */
+
+.ant-modal-content,
+.ant-drawer-content {
   border-radius: var(--radius-lg) !important;
   overflow: hidden;
 }
 
-/* ========== Drawer 优化 ========== */
-
-.ant-drawer-content {
-  border-radius: var(--radius-lg) 0 0 var(--radius-lg) !important;
+.ant-drawer-header {
+  border-bottom: 1px solid rgba(102,126,234,0.06) !important;
+  padding: 20px 24px !important;
 }
 
-/* ========== 消息提示优化 ========== */
+.ant-drawer-body {
+  padding: 20px 24px !important;
+}
 
 .ant-message-notice-content {
-  border-radius: var(--radius-md) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1) !important;
 }
 
 /* ========== 页面标题 ========== */
@@ -305,9 +368,9 @@ textarea.ant-input {
 }
 
 .page-header h2 {
-  font-size: 26px;
+  font-size: 28px;
   font-weight: 800;
-  background: linear-gradient(135deg, #1a1a2e, var(--gradient-start));
+  background: linear-gradient(135deg, #2a2048, var(--gradient-start), var(--gradient-end));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
