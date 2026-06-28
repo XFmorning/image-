@@ -99,7 +99,7 @@ const SUBJECT_PRESETS = [
 
 export default function Generate() {
   const navigate = useNavigate();
-  const { tasks, updateTask, removeTask, clearTasks, task, input, saveInput, setInputMode, startTask, finishTask, failTask, resetTask, setResultDataUrl } = useGenTask();
+  const { tasks, addTask, updateTask, removeTask, clearTasks, task, input, saveInput, setInputMode } = useGenTask();
   const cur = input[input.mode];
   const { prompt, ratioIdx, qualityIdx, selectedStyle, selectedSubject } = cur;
   const { mode } = input;
@@ -184,7 +184,61 @@ export default function Generate() {
     setFileList((prev) => prev.filter((f) => f.uid !== uid));
   };
 
-  // ========== 生成 ==========
+  // ========== 单次生成（5 分钟超时） ==========
+
+  const execOneGenerate = async (taskId: string, fullPrompt: string, sizeStr: string, provider: ProviderConfig, basePrompt: string) => {
+    const TIMEOUT_MS = 5 * 60 * 1000; // 5 分钟
+
+    const timeout = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error("生成超时（超过 5 分钟未返回结果）")), TIMEOUT_MS)
+    );
+
+    try {
+      let result;
+      if (mode === "i2i" && fileList.length > 0) {
+        const files = fileList.map((f) => f.originFileObj).filter(Boolean) as File[];
+        result = await Promise.race([
+          generateImageWithRef({ prompt: fullPrompt, size: sizeStr, provider, refImages: files }),
+          timeout,
+        ]);
+      } else {
+        result = await Promise.race([
+          generateImage({ prompt: fullPrompt, size: sizeStr, provider }),
+          timeout,
+        ]);
+      }
+
+      if (result.success && result.images.length > 0) {
+        const timestamp = Date.now();
+        const filename = `img_${timestamp}_${taskId.slice(-6)}.png`;
+        await window.electronAPI.saveImageBuffer(filename, result.images[0]);
+
+        const history = await window.electronAPI.getHistory();
+        history.unshift({
+          id: `${timestamp}_${taskId}`,
+          prompt: basePrompt,
+          imagePath: filename,
+          providerName: provider.name,
+          model: provider.model,
+          size: sizeStr,
+          mode,
+          timestamp,
+          status: "completed" as const,
+        });
+        await window.electronAPI.setHistory(history);
+
+        const dataUrl = await window.electronAPI.readImage(filename);
+        updateTask(taskId, { status: "completed", resultFilename: filename, resultDataUrl: dataUrl, endTime: Date.now() });
+        message.success("生成成功！");
+      } else {
+        updateTask(taskId, { status: "failed", errorMsg: result.error || "生成失败", errorCode: result.errorCode || "", endTime: Date.now() });
+      }
+    } catch (e: any) {
+      updateTask(taskId, { status: "failed", errorMsg: e.message || "请求异常", errorCode: e.message?.includes("超时") ? "timeout" : "network", endTime: Date.now() });
+    }
+  };
+
+  // ========== 生成入口 ==========
 
   const handleGenerate = async () => {
     if (!prompt.trim()) {
@@ -208,65 +262,23 @@ export default function Generate() {
     if (selectedSubject && subject) fullPrompt = subject.prefix + fullPrompt;
     if (selectedStyle && style) fullPrompt = fullPrompt + style.suffix;
 
-    startTask({
+    // 使用新 API：addTask 返回稳定的 taskId
+    const taskId = addTask({
       prompt: fullPrompt,
       size: sizeStr,
       mode,
       providerName: provider.name,
       providerModel: provider.model,
+      status: "generating",
     });
 
-    try {
-      let result;
-      if (mode === "i2i" && fileList.length > 0) {
-        const files = fileList
-          .map((f) => f.originFileObj)
-          .filter(Boolean) as File[];
-        result = await generateImageWithRef({
-          prompt: fullPrompt,
-          size: sizeStr,
-          provider,
-          refImages: files,
-        });
-      } else {
-        result = await generateImage({ prompt: fullPrompt, size: sizeStr, provider });
-      }
-
-      if (result.success && result.images.length > 0) {
-        const timestamp = Date.now();
-        const filename = `img_${timestamp}.png`;
-        await window.electronAPI.saveImageBuffer(filename, result.images[0]);
-
-        const history = await window.electronAPI.getHistory();
-        history.unshift({
-          id: `${timestamp}`,
-          prompt,
-          imagePath: filename,
-          providerName: provider.name,
-          model: provider.model,
-          size: sizeStr,
-          mode,
-          timestamp,
-          status: "completed",
-        });
-        await window.electronAPI.setHistory(history);
-
-        const dataUrl = await window.electronAPI.readImage(filename);
-        setResultDataUrl(dataUrl);
-        finishTask(filename);
-        message.success("生成成功！");
-      } else {
-        failTask(result.error || "生成失败", result.errorCode || "");
-      }
-    } catch (e: any) {
-      failTask(e.message || "请求异常", "network");
-    }
+    // 异步执行，不 await，让界面不锁死
+    execOneGenerate(taskId, fullPrompt, sizeStr, provider, prompt);
   };
 
-  // ========== 重新生成（先重置再触发生成） ==========
+  // ========== 重新生成 ==========
 
   const handleRetry = () => {
-    resetTask();
     handleGenerate();
   };
 
@@ -940,38 +952,10 @@ export default function Generate() {
                             type="text"
                             icon={<SyncOutlined />}
                             onClick={() => {
-                              // 重置任务状态为 pending，然后在 handleGenerate 中重新执行
-                              updateTask(t.id, { status: "pending" as GenStatus, errorMsg: "", errorCode: "" });
-                              // 立即标记为 generating 并重新走 API
                               const prov = providers.find(p => p.name === t.providerName);
                               if (!prov) return;
-                              updateTask(t.id, { status: "generating" as GenStatus, startTime: Date.now() });
-                              (async () => {
-                                try {
-                                  let result;
-                                  if (t.mode === "i2i" && fileList.length > 0) {
-                                    const files = fileList.map(f => f.originFileObj).filter(Boolean) as File[];
-                                    result = await generateImageWithRef({ prompt: t.prompt, size: t.size, provider: prov, refImages: files });
-                                  } else {
-                                    result = await generateImage({ prompt: t.prompt, size: t.size, provider: prov });
-                                  }
-                                  if (result.success && result.images.length > 0) {
-                                    const ts = Date.now();
-                                    const fn = `img_${ts}_${t.id.slice(-6)}.png`;
-                                    await window.electronAPI.saveImageBuffer(fn, result.images[0]);
-                                    const hu = await window.electronAPI.getHistory();
-                                    hu.unshift({ id: `${ts}_${t.id}`, prompt: t.prompt, imagePath: fn, providerName: t.providerName, model: t.providerModel, size: t.size, mode: t.mode, timestamp: ts, status: "completed" as const });
-                                    await window.electronAPI.setHistory(hu);
-                                    const du = await window.electronAPI.readImage(fn);
-                                    updateTask(t.id, { status: "completed", resultFilename: fn, resultDataUrl: du, endTime: Date.now() });
-                                    message.success("重试成功");
-                                  } else {
-                                    updateTask(t.id, { status: "failed", errorMsg: result.error || "生成失败", errorCode: result.errorCode || "", endTime: Date.now() });
-                                  }
-                                } catch (e: any) {
-                                  updateTask(t.id, { status: "failed", errorMsg: e.message || "请求异常", errorCode: "network", endTime: Date.now() });
-                                }
-                              })();
+                              updateTask(t.id, { status: "generating" as GenStatus, startTime: Date.now(), errorMsg: "", errorCode: "" });
+                              execOneGenerate(t.id, t.prompt, t.size, prov, t.prompt);
                             }}
                           />
                         )}
