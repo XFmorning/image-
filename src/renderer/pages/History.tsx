@@ -21,12 +21,21 @@ import {
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 
+// 模块级缓存：只在首次加载时从磁盘读取
+let _cachedItems: (HistoryItem & { _dataUrl?: string })[] | null = null;
+let _cacheTime = 0;
+
 export default function History() {
-  const [items, setItems] = useState<HistoryItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [items, setItems] = useState<(HistoryItem & { _dataUrl?: string })[]>(_cachedItems || []);
+  const [loading, setLoading] = useState(!_cachedItems);
   const navigate = useNavigate();
 
-  const loadHistory = async () => {
+  const loadHistory = async (force = false) => {
+    if (!force && _cachedItems) {
+      setItems(_cachedItems);
+      setLoading(false);
+      return;
+    }
     const history = await window.electronAPI.getHistory();
     history.sort((a: HistoryItem, b: HistoryItem) => b.timestamp - a.timestamp);
     for (const item of history) {
@@ -38,6 +47,8 @@ export default function History() {
         }
       }
     }
+    _cachedItems = history as any;
+    _cacheTime = Date.now();
     setItems(history);
     setLoading(false);
   };
@@ -46,9 +57,33 @@ export default function History() {
     loadHistory();
   }, []);
 
+  // 每次页面获得焦点时静默刷新元数据（不重新加载图片）
+  useEffect(() => {
+    const refresh = async () => {
+      const history = await window.electronAPI.getHistory();
+      history.sort((a: HistoryItem, b: HistoryItem) => b.timestamp - a.timestamp);
+      // 复用已缓存的 _dataUrl
+      for (const item of history) {
+        if (item.imagePath && item.status === "completed") {
+          const cached = _cachedItems?.find(c => c.id === item.id);
+          if (cached?._dataUrl) {
+            (item as any)._dataUrl = cached._dataUrl;
+          }
+        }
+      }
+      _cachedItems = history as any;
+      setItems(history);
+    };
+
+    const handleFocus = () => refresh();
+    window.addEventListener("focus", handleFocus);
+    return () => window.removeEventListener("focus", handleFocus);
+  }, []);
+
   const handleDelete = async (id: string) => {
     const updated = items.filter((item) => item.id !== id);
     setItems(updated);
+    _cachedItems = updated;
     await window.electronAPI.setHistory(updated);
     message.success("已删除");
   };
@@ -56,6 +91,7 @@ export default function History() {
   const handleClearAll = async () => {
     await window.electronAPI.clearAllImages();
     setItems([]);
+    _cachedItems = [];
     message.success("已清空全部记录和图片");
   };
 
