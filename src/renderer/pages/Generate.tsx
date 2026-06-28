@@ -15,6 +15,10 @@ import {
   Space,
   Segmented,
   Select,
+  Badge,
+  List,
+  Empty,
+  Divider,
 } from "antd";
 import {
   UploadOutlined,
@@ -26,6 +30,8 @@ import {
   CopyOutlined,
   CheckCircleOutlined,
   CloseCircleOutlined,
+  SyncOutlined,
+  OrderedListOutlined,
 } from "@ant-design/icons";
 import type { UploadFile } from "antd";
 import { generateImage, generateImageWithRef } from "../api";
@@ -35,7 +41,7 @@ import {
   randomTemplate,
   type TemplateItem,
 } from "../prompt-templates";
-import { useGenTask } from "../GenerationContext";
+import { useGenTask, type GenTask, type GenStatus } from "../GenerationContext";
 
 const ASPECT_RATIOS = [
   { label: "1:1",  hint: "头像·社交",  w: 1,  h: 1 },
@@ -93,7 +99,7 @@ const SUBJECT_PRESETS = [
 
 export default function Generate() {
   const navigate = useNavigate();
-  const { task, input, saveInput, setInputMode, startTask, finishTask, failTask, resetTask, setResultDataUrl } = useGenTask();
+  const { tasks, updateTask, removeTask, clearTasks, task, input, saveInput, setInputMode, startTask, finishTask, failTask, resetTask, setResultDataUrl } = useGenTask();
   const cur = input[input.mode];
   const { prompt, ratioIdx, qualityIdx, selectedStyle, selectedSubject } = cur;
   const { mode } = input;
@@ -102,8 +108,10 @@ export default function Generate() {
   const [providers, setProviders] = useState<ProviderConfig[]>([]);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [taskListOpen, setTaskListOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("portrait");
   const [elapsedTime, setElapsedTime] = useState(0);
+  const [elapsedTimes, setElapsedTimes] = useState<Record<string, number>>({});
 
   const promptRef = useRef<HTMLTextAreaElement>(null);
 
@@ -117,18 +125,24 @@ export default function Generate() {
     });
   }, []);
 
-  // ========== 计时器 ==========
+  // ========== 计时器（所有正在生成的任务） ==========
 
   useEffect(() => {
-    if (task.status !== "generating") {
+    const gens = tasks.filter(t => t.status === "generating");
+    if (gens.length === 0) {
       setElapsedTime(0);
       return;
     }
     const timer = setInterval(() => {
-      setElapsedTime(Math.floor((Date.now() - task.startTime) / 1000));
+      const now = Date.now();
+      const times: Record<string, number> = {};
+      gens.forEach(t => { times[t.id] = Math.floor((now - t.startTime) / 1000); });
+      setElapsedTimes(times);
+      // 兼容旧 UI：显示最近一个正在生成的任务用时
+      setElapsedTime(Math.floor((now - gens[gens.length - 1].startTime) / 1000));
     }, 1000);
     return () => clearInterval(timer);
-  }, [task.status, task.startTime]);
+  }, [tasks]);
 
   // ========== 模板库 ==========
 
@@ -371,7 +385,6 @@ export default function Generate() {
           placeholder="用英文描述你想要生成的图像，或点击下方「模板库」选择..."
           rows={4}
           style={{ fontSize: 14, marginBottom: 12 }}
-          disabled={task.status === "generating"}
         />
         <Space>
           <Button icon={<BookOutlined />} onClick={() => setDrawerOpen(true)}
@@ -394,13 +407,12 @@ export default function Generate() {
               <div
                 key={s.key}
                 onClick={() => {
-                  if (task.status === "generating") return;
                   saveInput({ selectedStyle: s.key === "none" ? "" : s.key });
                 }}
                 style={{
                   padding: "8px 16px",
                   borderRadius: 20,
-                  cursor: task.status === "generating" ? "not-allowed" : "pointer",
+                  cursor: "pointer",
                   background: isActive
                     ? "linear-gradient(135deg, var(--gradient-start), var(--gradient-end))"
                     : "#f5f5f5",
@@ -410,7 +422,7 @@ export default function Generate() {
                   transition: "all 0.2s",
                   border: isActive ? "none" : "1px solid #e8e8e8",
                   userSelect: "none",
-                  opacity: task.status === "generating" ? 0.5 : 1,
+                  opacity: 1,
                 }}
               >
                 {s.label}
@@ -429,13 +441,12 @@ export default function Generate() {
               <div
                 key={s.key}
                 onClick={() => {
-                  if (task.status === "generating") return;
                   saveInput({ selectedSubject: s.key === "none" ? "" : s.key });
                 }}
                 style={{
                   padding: "6px 14px",
                   borderRadius: 20,
-                  cursor: task.status === "generating" ? "not-allowed" : "pointer",
+                  cursor: "pointer",
                   background: isActive
                     ? "linear-gradient(135deg, var(--gradient-start), var(--gradient-end))"
                     : "#f5f5f5",
@@ -445,7 +456,7 @@ export default function Generate() {
                   transition: "all 0.2s",
                   border: isActive ? "none" : "1px solid #e8e8e8",
                   userSelect: "none",
-                  opacity: task.status === "generating" ? 0.5 : 1,
+                  opacity: 1,
                 }}
               >
                 {s.label}
@@ -481,8 +492,7 @@ export default function Generate() {
                   value: p.id,
                   label: `${p.name} (${p.model})`,
                 }))}
-                disabled={task.status === "generating"}
-              />
+                    />
             )}
             <Button size="small" type="link" onClick={() => navigate("/models")}
               style={{ fontSize: 12 }}>
@@ -505,8 +515,7 @@ export default function Generate() {
                   ),
                   value: i,
                 }))}
-                disabled={task.status === "generating"}
-              />
+                    />
             </Space>
             <Space align="center">
               <span style={{ color: "#666", fontSize: 14, minWidth: 40 }}>画质:</span>
@@ -517,28 +526,36 @@ export default function Generate() {
                   label: q.label,
                   value: i,
                 }))}
-                disabled={task.status === "generating"}
-              />
+                    />
               <Tag color="blue" style={{ marginLeft: 8 }}>
                 {calcSize(ratioIdx, qualityIdx).width}×{calcSize(ratioIdx, qualityIdx).height}
               </Tag>
             </Space>
           </Space>
 
-          <Button
-            type="primary"
-            size="large"
-            icon={<ThunderboltOutlined />}
-            onClick={handleGenerate}
-            loading={task.status === "generating"}
-            style={{
-              background: "var(--gradient-start)",
-              borderColor: "var(--gradient-start)",
-              alignSelf: "flex-end",
-            }}
-          >
-            {task.status === "generating" ? "生成中" : "生成"}
-          </Button>
+          <div style={{ display: "flex", gap: 8, alignSelf: "flex-end" }}>
+            <Badge count={tasks.filter(t => t.status === "generating" || t.status === "pending").length} size="small" offset={[-4, 4]}>
+              <Button
+                size="large"
+                icon={<OrderedListOutlined />}
+                onClick={() => setTaskListOpen(true)}
+              >
+                任务
+              </Button>
+            </Badge>
+            <Button
+              type="primary"
+              size="large"
+              icon={<ThunderboltOutlined />}
+              onClick={handleGenerate}
+              style={{
+                background: "var(--gradient-start)",
+                borderColor: "var(--gradient-start)",
+              }}
+            >
+              生成
+            </Button>
+          </div>
         </Space>
       </Card>
 
@@ -809,6 +826,180 @@ export default function Generate() {
             ),
           }))}
         />
+      </Drawer>
+
+      {/* 任务列表抽屉 */}
+      <Drawer
+        title={`任务列表${tasks.length > 0 ? ` (${tasks.length})` : ""}`}
+        open={taskListOpen}
+        onClose={() => setTaskListOpen(false)}
+        placement="right"
+        size="large"
+        styles={{ body: { padding: 0 } }}
+      >
+        {tasks.length === 0 ? (
+          <Empty description="还没有任务" style={{ paddingTop: 60 }}>
+            <Button onClick={() => setTaskListOpen(false)}>去生成</Button>
+          </Empty>
+        ) : (
+          <div>
+            <List
+              style={{ maxHeight: "calc(100vh - 220px)", overflow: "auto" }}
+              dataSource={[...tasks].reverse()}
+              renderItem={(t) => {
+                const tElapsed = t.endTime
+                  ? Math.floor((t.endTime - t.startTime) / 1000)
+                  : elapsedTimes[t.id] || 0;
+                return (
+                  <List.Item
+                    style={{
+                      padding: "12px 16px",
+                      borderBottom: "1px solid #f0f0f0",
+                    }}
+                  >
+                    <div style={{ display: "flex", gap: 10, width: "100%", alignItems: "center" }}>
+                      {/* 缩略图/状态 */}
+                      <div
+                        style={{
+                          width: 52,
+                          height: 52,
+                          borderRadius: 8,
+                          overflow: "hidden",
+                          flexShrink: 0,
+                          background: "#f5f5f5",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          border: "1px solid #eee",
+                        }}
+                      >
+                        {t.resultDataUrl ? (
+                          <img src={t.resultDataUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                        ) : t.status === "generating" ? (
+                          <Spin size="small" />
+                        ) : t.status === "failed" ? (
+                          <CloseCircleOutlined style={{ color: "#ff4d4f", fontSize: 22 }} />
+                        ) : t.status === "pending" ? (
+                          <span style={{ color: "#bbb", fontSize: 11 }}>等待</span>
+                        ) : (
+                          <span style={{ color: "#bbb", fontSize: 11 }}>就绪</span>
+                        )}
+                      </div>
+
+                      {/* 信息 */}
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 13, fontWeight: 500, marginBottom: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                          {t.prompt.slice(0, 60)}
+                        </div>
+                        <Space size={4} wrap style={{ fontSize: 11 }}>
+                          <Tag color={t.mode === "t2i" ? "blue" : "cyan"} style={{ fontSize: 10 }}>{t.size}</Tag>
+                          <Tag color="purple" style={{ fontSize: 10 }}>{t.providerModel}</Tag>
+                          <Tag
+                            color={t.status === "generating" ? "gold" : t.status === "completed" ? "success" : t.status === "failed" ? "error" : "default"}
+                            style={{ fontSize: 10 }}
+                          >
+                            {t.status === "generating" ? "生成中" :
+                             t.status === "completed" ? "完成" :
+                             t.status === "failed" ? "失败" :
+                             t.status === "pending" ? "排队" : "就绪"}
+                          </Tag>
+                          {t.errorMsg && (
+                            <Tooltip title={t.errorMsg}>
+                              <Tag color="error" style={{ fontSize: 10, maxWidth: 100, overflow: "hidden", textOverflow: "ellipsis" }}>
+                                {t.errorCode || "错误"}
+                              </Tag>
+                            </Tooltip>
+                          )}
+                        </Space>
+                      </div>
+
+                      {/* 时间 */}
+                      <div style={{ fontSize: 12, color: "#bbb", whiteSpace: "nowrap", textAlign: "right" }}>
+                        {tElapsed}s
+                      </div>
+
+                      {/* 操作 */}
+                      <div style={{ display: "flex", gap: 2, flexShrink: 0 }}>
+                        {t.status === "completed" && (
+                          <Button
+                            size="small"
+                            type="text"
+                            icon={<DownloadOutlined />}
+                            onClick={() => {
+                              if (!t.resultDataUrl) return;
+                              const link = document.createElement("a");
+                              link.href = t.resultDataUrl;
+                              link.download = `generated_${t.id.slice(-6)}.png`;
+                              link.click();
+                            }}
+                          />
+                        )}
+                        {t.status === "failed" && (
+                          <Button
+                            size="small"
+                            type="text"
+                            icon={<SyncOutlined />}
+                            onClick={() => {
+                              // 重置任务状态为 pending，然后在 handleGenerate 中重新执行
+                              updateTask(t.id, { status: "pending" as GenStatus, errorMsg: "", errorCode: "" });
+                              // 立即标记为 generating 并重新走 API
+                              const prov = providers.find(p => p.name === t.providerName);
+                              if (!prov) return;
+                              updateTask(t.id, { status: "generating" as GenStatus, startTime: Date.now() });
+                              (async () => {
+                                try {
+                                  let result;
+                                  if (t.mode === "i2i" && fileList.length > 0) {
+                                    const files = fileList.map(f => f.originFileObj).filter(Boolean) as File[];
+                                    result = await generateImageWithRef({ prompt: t.prompt, size: t.size, provider: prov, refImages: files });
+                                  } else {
+                                    result = await generateImage({ prompt: t.prompt, size: t.size, provider: prov });
+                                  }
+                                  if (result.success && result.images.length > 0) {
+                                    const ts = Date.now();
+                                    const fn = `img_${ts}_${t.id.slice(-6)}.png`;
+                                    await window.electronAPI.saveImageBuffer(fn, result.images[0]);
+                                    const hu = await window.electronAPI.getHistory();
+                                    hu.unshift({ id: `${ts}_${t.id}`, prompt: t.prompt, imagePath: fn, providerName: t.providerName, model: t.providerModel, size: t.size, mode: t.mode, timestamp: ts, status: "completed" as const });
+                                    await window.electronAPI.setHistory(hu);
+                                    const du = await window.electronAPI.readImage(fn);
+                                    updateTask(t.id, { status: "completed", resultFilename: fn, resultDataUrl: du, endTime: Date.now() });
+                                    message.success("重试成功");
+                                  } else {
+                                    updateTask(t.id, { status: "failed", errorMsg: result.error || "生成失败", errorCode: result.errorCode || "", endTime: Date.now() });
+                                  }
+                                } catch (e: any) {
+                                  updateTask(t.id, { status: "failed", errorMsg: e.message || "请求异常", errorCode: "network", endTime: Date.now() });
+                                }
+                              })();
+                            }}
+                          />
+                        )}
+                        <Button
+                          size="small"
+                          type="text"
+                          danger
+                          icon={<DeleteOutlined />}
+                          onClick={() => removeTask(t.id)}
+                        />
+                      </div>
+                    </div>
+                  </List.Item>
+                );
+              }}
+            />
+            {tasks.length > 0 && (
+              <div style={{ padding: "12px 16px", borderTop: "1px solid #f0f0f0", display: "flex", justifyContent: "flex-end", gap: 8 }}>
+                <Button size="small" onClick={() => {
+                  tasks.filter(t => t.status === "completed").forEach(t => removeTask(t.id));
+                }}>
+                  清空已完成
+                </Button>
+                <Button size="small" onClick={clearTasks}>全部清空</Button>
+              </div>
+            )}
+          </div>
+        )}
       </Drawer>
     </div>
   );
