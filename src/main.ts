@@ -153,11 +153,20 @@ function registerIpcHandlers() {
     try {
       const headers: Record<string, string> = {};
       if (authHeader) headers["Authorization"] = authHeader;
+      console.log("[main] fetch-url-buffer 开始下载:", url.substring(0, 80) + "...");
       const response = await fetch(url, { headers });
-      if (!response.ok) return null;
+      console.log("[main] fetch-url-buffer 响应状态:", response.status, response.headers.get("content-type"));
+      if (!response.ok) {
+        console.error("[main] fetch-url-buffer HTTP 错误:", response.status, await response.text().catch(() => ""));
+        return null;
+      }
       const buf = await response.arrayBuffer();
-      return Buffer.from(buf); // 转为 Node Buffer，Electron IPC 可序列化
-    } catch {
+      console.log("[main] fetch-url-buffer 下载成功，大小:", buf.byteLength);
+      // 转 base64 保证 IPC 结构克隆安全
+      const base64 = Buffer.from(buf).toString("base64");
+      return "data:image/png;base64," + base64;
+    } catch (e: any) {
+      console.error("[main] fetch-url-buffer 异常:", e.message || e);
       return null;
     }
   });

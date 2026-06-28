@@ -74,8 +74,8 @@ async function parseOpenAiResponse(data: any, apiKey: string): Promise<ArrayBuff
     if (item.b64_json) {
       images.push(b64ToBuffer(item.b64_json));
     } else if (item.url) {
-      const buf = await window.electronAPI.fetchUrlBuffer(item.url, `Bearer ${apiKey}`);
-      if (buf) images.push(buf);
+      const dataUrl = await window.electronAPI.fetchUrlBuffer(item.url, `Bearer ${apiKey}`);
+      if (dataUrl) images.push(b64ToBuffer(dataUrl.split(",", 2)[1] || dataUrl));
     }
   }
   return images;
@@ -116,8 +116,8 @@ async function parseGenericResponse(data: any, apiKey: string): Promise<ArrayBuf
     if (!c.value) continue;
     if (c.value.startsWith("http")) {
       try {
-        const buf = await window.electronAPI.fetchUrlBuffer(c.value, `Bearer ${apiKey}`);
-        if (buf) images.push(buf);
+        const dataUrl = await window.electronAPI.fetchUrlBuffer(c.value, `Bearer ${apiKey}`);
+        if (dataUrl) images.push(b64ToBuffer(dataUrl.split(",", 2)[1] || dataUrl));
       } catch { /* skip failed URLs */ }
     } else {
       try {
