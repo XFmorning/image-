@@ -41,6 +41,7 @@ import {
   TEMPLATE_CATEGORIES,
   TEMPLATES,
   randomTemplate,
+  templatesByMode,
   type TemplateItem,
 } from "../prompt-templates";
 import { useGenTask, type GenTask, type GenStatus } from "../GenerationContext";
@@ -872,12 +873,14 @@ export default function Generate() {
         <Tabs
           activeKey={selectedCategory}
           onChange={setSelectedCategory}
-          items={TEMPLATE_CATEGORIES.map((cat) => ({
+          items={TEMPLATE_CATEGORIES
+          .filter((cat) => !cat.mode || cat.mode === mode || cat.mode === "both")
+          .map((cat) => ({
             key: cat.key,
             label: cat.name,
             children: (
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {TEMPLATES.filter((t) => t.category === cat.key).map(
+                {TEMPLATES.filter((t) => t.category === cat.key && (!t.mode || t.mode === mode || t.mode === "both")).map(
                   (item, idx) => (
                     <Card
                       key={idx}

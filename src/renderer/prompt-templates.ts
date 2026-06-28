@@ -1,400 +1,455 @@
 export interface TemplateItem {
   label: string;
   prompt: string;
-  category: string;
+  category: string;  // matches TEMPLATE_CATEGORIES[].key
+  mode: "t2i" | "i2i" | "both";
 }
 
-export const TEMPLATE_CATEGORIES: { key: string; name: string; icon: string }[] = [
-  { key: "portrait", name: "人像", icon: "UserOutlined" },
-  { key: "photography", name: "摄影感", icon: "CameraOutlined" },
-  { key: "landscape", name: "风景", icon: "PictureOutlined" },
-  { key: "scifi", name: "科幻", icon: "RocketOutlined" },
-  { key: "ancient", name: "古风", icon: "EnvironmentOutlined" },
-  { key: "animal", name: "动物", icon: "BugOutlined" },
-  { key: "abstract", name: "抽象", icon: "ExperimentOutlined" },
-  { key: "video", name: "图生视频", icon: "PlayCircleOutlined" },
+export const TEMPLATE_CATEGORIES: { key: string; name: string; icon: string; mode: "t2i" | "i2i" | "both" }[] = [
+  { key: "portrait", name: "人像写真", icon: "UserOutlined", mode: "t2i" },
+  { key: "photography", name: "商业摄影", icon: "CameraOutlined", mode: "t2i" },
+  { key: "landscape", name: "风景建筑", icon: "PictureOutlined", mode: "t2i" },
+  { key: "illustration", name: "艺术插画", icon: "ExperimentOutlined", mode: "t2i" },
+  { key: "ui", name: "UI与界面", icon: "LaptopOutlined", mode: "t2i" },
+  { key: "ecommerce", name: "产品电商", icon: "ShoppingOutlined", mode: "both" },
+  { key: "brand", name: "品牌海报", icon: "CrownOutlined", mode: "both" },
+  { key: "i2i", name: "图生图专用", icon: "SwapOutlined", mode: "i2i" },
 ];
 
 export const TEMPLATES: TemplateItem[] = [
 
-  // ===================== 人像 =====================
+  // ===================== 人像写真 =====================
   {
     category: "portrait",
-    label: "电影级肖像",
-    prompt: "cinematic portrait of a person, golden hour rim lighting creating a halo effect on hair, shallow depth of field with creamy bokeh background, professional 85mm lens, sharp focus on eyes with catchlights visible, natural skin texture with subtle pores, warm color grading with slight teal shadows, editorial photography style, 8K resolution, hyperrealistic detail",
+    mode: "t2i",
+    label: "电影级黄金时刻肖像",
+    prompt: "cinematic portrait of a person, golden hour rim lighting creating a halo effect on hair, shallow depth of field with creamy bokeh background, professional 85mm lens, sharp focus on eyes with catchlights visible, natural skin texture with subtle pores, warm color grading with slight teal shadows, editorial photography style, 8K resolution, hyperrealistic detail, the subject posed naturally with relaxed shoulders and a subtle confident expression, outdoor setting with warm sunset tones",
   },
   {
     category: "portrait",
-    label: "时尚杂志封面",
-    prompt: "high fashion magazine cover portrait, model in avant-garde designer clothing, dramatic studio lighting with strong key light and deep shadows, bold makeup with striking color accents, clean seamless backdrop, editorial composition with intentional negative space for text overlay, luxury aesthetic, Vogue editorial style, sharp details on fabric textures and jewelry, professional medium format photography",
+    mode: "t2i",
+    label: "高级时装杂志封面",
+    prompt: "high fashion magazine cover portrait, model in avant-garde designer clothing, dramatic studio lighting with strong key light and deep shadows, bold makeup with striking color accents, clean seamless backdrop, editorial composition with intentional negative space for text overlay, luxury aesthetic, Vogue editorial style, sharp details on fabric textures and jewelry, professional medium format photography, the subject posed with dynamic angles and strong eye contact, clothing featuring intricate textures like silk organza or hand-beaded embellishments",
   },
   {
     category: "portrait",
-    label: "汉服古装人像",
-    prompt: "portrait of a person wearing traditional Chinese Han dynasty clothing with intricate silk embroidery and flowing layered robes, hair styled in classical Chinese hairpin arrangement, posed gracefully in a bamboo garden with morning mist, soft diffused natural light filtering through leaves, ethereal and elegant atmosphere, color palette of warm reds golds and jade greens, historical accuracy in clothing details, cinematic composition, photorealistic skin and fabric rendering",
+    mode: "t2i",
+    label: "汉服古风人像",
+    prompt: "portrait of a person wearing traditional Chinese Han dynasty clothing with intricate silk embroidery and flowing layered robes, hair styled in classical Chinese hairpin arrangement with delicate jade and gold ornaments, posed gracefully in a bamboo garden with morning mist, soft diffused natural light filtering through leaves creating dappled patterns, ethereal and elegant atmosphere, color palette of warm reds, golds and jade greens, historical accuracy in clothing details, cinematic composition, photorealistic skin and fabric rendering, the subject holding a silk fan or standing beside a weathered stone lantern",
   },
   {
     category: "portrait",
-    label: "日系清新写真",
-    prompt: "Japanese style清新 portrait, young person with natural minimal makeup, soft window light creating gentle shadows, pastel color palette dominated by whites creams and light blues, airy and light-filled composition, medium format film aesthetic with subtle grain, relaxed candid expression, minimalist bedroom or garden setting, youth and innocence mood, springtime atmosphere with cherry blossom hints",
+    mode: "t2i",
+    label: "古典油画风格肖像",
+    prompt: "classical oil painting portrait in the style of 17th century Dutch masters, dramatic chiaroscuro lighting with a single candle or window light source illuminating one side of the face, rich deep shadows on the opposite side, visible brushstroke texture on canvas, warm earthy color palette of browns, ochres and deep reds, subject in period clothing with lace collar or velvet fabric, dark atmospheric background with subtle architectural hints, timeless and dignified mood, museum quality masterpiece, detailed rendering of skin translucency and the play of light across facial features",
   },
   {
     category: "portrait",
-    label: "古典油画肖像",
-    prompt: "classical oil painting portrait in the style of 17th century Dutch masters, dramatic chiaroscuro lighting with a single candle or window light source illuminating one side of the face, rich deep shadows on the opposite side, visible brushstroke texture on canvas, warm earthy color palette of browns ochres and deep reds, subject in period clothing with lace collar or velvet fabric, dark atmospheric background, timeless and dignified mood, museum quality masterpiece",
-  },
-  {
-    category: "portrait",
+    mode: "t2i",
     label: "黑白纪实人像",
-    prompt: "black and white documentary portrait, elderly person with deeply lined face telling a lifetime of stories, harsh directional light creating strong contrast and dramatic shadows, gritty urban background with peeling paint or weathered textures, photojournalism approach capturing raw unposed emotion, grainy Tri-X 400 film aesthetic, Leica rangefinder style composition, timeless and powerful human connection, monochrome tones from deep blacks to bright whites with full gray range",
+    prompt: "black and white documentary portrait, elderly person with deeply lined face telling a lifetime of stories, harsh directional light creating strong contrast and dramatic shadows, gritty urban background with peeling paint or weathered brick textures, photojournalism approach capturing raw unposed emotion, grainy Tri-X 400 film aesthetic, Leica rangefinder style composition, timeless and powerful human connection, monochrome tones from deep blacks to bright whites with full gray range, every wrinkle and skin texture rendered in hyperrealistic detail, the subject's eyes holding a direct and piercing gaze",
   },
   {
     category: "portrait",
-    label: "极简商业白底",
-    prompt: "clean commercial portrait on pure white seamless background, professional headshot with even three-point studio lighting eliminating all shadows, subject in business attire with confident approachable expression, flawless but natural skin retouching, sharp focus from front to back, high-key lighting style, suitable for corporate profile or LinkedIn, 85mm portrait lens, minimal and polished aesthetic, no distracting elements in frame",
+    mode: "t2i",
+    label: "赛博朋克人物肖像",
+    prompt: "cyberpunk character portrait, person with subtle cybernetic facial enhancements and glowing blue LED implants, standing in a rain-soaked neon-lit alley at night, reflections of pink and purple holographic signs in water puddles on the ground, one side of face illuminated by warm neon the other by cool blue light, high-tech dystopian atmosphere, detailed mechanical texture on cybernetics showing micro-circuitry and brushed metal finishes, Blade Runner 2049 inspired color grading, cinematic wide composition, rain droplets on skin and clothing creating specular highlights, steam rising from street vents adding atmospheric depth",
   },
   {
     category: "portrait",
-    label: "赛博朋克人物",
-    prompt: "cyberpunk character portrait, person with subtle cybernetic facial enhancements and glowing blue LED implants, standing in a rain-soaked neon-lit alley at night, reflections of pink and purple holographic signs in water puddles, one side of face illuminated by warm neon the other by cool blue light, high-tech dystopian atmosphere, detailed mechanical texture on cybernetics, Blade Runner 2049 inspired color grading, cinematic wide composition, rain droplets on skin and clothing",
+    mode: "t2i",
+    label: "90年代胶片复古写真",
+    prompt: "vintage 1980s-90s film portrait, subject with retro hairstyle and period-appropriate clothing, warm Kodak Portra 400 color palette with creamy skin tones and slightly muted greens, soft natural window light from one side creating gentle shadow transitions, cozy interior setting with period-appropriate furniture and decor details like a rotary phone or cassette player, subtle film grain and slight color shift toward warm amber, nostalgic and intimate mood, medium format 6x7 composition, candid moment captured feel, the subject in a relaxed unposed posture with a natural gentle smile",
   },
   {
     category: "portrait",
-    label: "复古胶片人像",
-    prompt: "vintage 1980s film portrait, subject with retro hairstyle and clothing, warm Kodak Portra 400 color palette with creamy skin tones and slightly muted greens, soft natural window light from one side, cozy interior setting with period-appropriate furniture and decor, subtle film grain and slight color shift toward warm amber, nostalgic and intimate mood, medium format 6x7 composition, candid moment captured feel",
-  },
-
-  // ===================== 摄影感 =====================
-  {
-    category: "photography",
-    label: "手写笔记本桌面照",
-    prompt: "Amateur photo of an open notebook lying flat on a desk, filled with handwritten notes in black ballpoint pen. The handwriting is casual and slightly messy, like personal notes, with natural imperfections, crossed out words, underlined headings. Shot from slightly above at an angle, natural daylight from a window creating soft shadows across the page, no flash. Casual desk setting with a coffee cup and pen visible at the edges, shot on iPhone, realistic everyday study or work scene, warm and intimate atmosphere",
-  },
-  {
-    category: "photography",
-    label: "韩式雾面编辑风",
+    mode: "t2i",
+    label: "韩式雾面编辑风写真",
     prompt: "9:16 vertical editorial portrait, single subject, soft black mist filter creating subtle haze and gentle highlight bloom, muted tones, minimal indoor space with clean background and slight texture, young subject with minimal makeup and natural skin texture, fitted ribbed knit top or soft camisole under a loose shirt with high-waisted shorts or skirt, slightly messy hair with natural volume, sitting on floor with one leg bent and the other relaxed, body slightly leaning with shoulders not aligned and head tilted, subject slightly off-center with negative space present, calm slightly distant expression with natural lips, soft side light with gentle shadow falloff, understated quiet mood subtly sensual through natural body lines, fine grain with slight softness and realistic unposed quality",
   },
   {
+    category: "portrait",
+    mode: "t2i",
+    label: "极简商业白底人像",
+    prompt: "clean commercial portrait on pure white seamless background, professional headshot with even three-point studio lighting eliminating all shadows, subject in business attire with confident approachable expression, flawless but natural skin retouching showing fine pores and subtle texture, sharp focus from front to back, high-key lighting style, suitable for corporate profile or LinkedIn, 85mm portrait lens, minimal and polished aesthetic, no distracting elements in frame, the subject centered with balanced composition and direct warm eye contact",
+  },
+  {
+    category: "portrait",
+    mode: "t2i",
+    label: "逆光美背情绪写真",
+    prompt: "vertical high-end female emotional portrait, theme of backlit beauty and elegant back lines, the absolute focus is the back: shoulder blade contours, spine midline, waist curve and backlit silhouette, adult woman with natural poised temperament, face partially visible from side profile or slight turn, low-back dress or off-shoulder silk camisole with soft draping fabric, soft natural window light or warm golden hour backlight creating a luminous edge along shoulders and hair strands, indoor setting with minimal decor: white linen bedding, sheer curtains, wooden floor, overall mood quiet intimate and restrained, shallow depth of field, cinematic film photography style, subtle grain, photorealistic skin texture, no plastic AI look, vertical 3:4 or 9:16 composition",
+  },
+  {
+    category: "portrait",
+    mode: "t2i",
+    label: "夜间手机柔光人像",
+    prompt: "a young adult woman with soft refined features, thin metal glasses, and shoulder-length dark tousled hair, leaning forward across a dark upholstered couch at night, she wears a pale cream lace-trim camisole with thin straps and matching soft shorts, one hand holds a smartphone close to the foreground with the screen glow casting cool reflections on her fingers and glasses lenses, her expression is dreamy and softly tired, eyes lifted toward the camera as if she just looked up from scrolling, shot in vertical 3:4 at slightly above eye level, medium close-up to three-quarter portrait, warm dim tungsten room light mixed with cool phone-screen reflections, no flash, soft falloff across the couch and wall, shallow depth of field, soft low-light grain, slight motion blur, natural imperfect sharpness, background plain beige-gray wall with minimal decor, late-night intimate atmosphere, soft glam makeup with subtle eyeliner and glossy lips, realistic social-media night portrait aesthetic",
+  },
+  {
+    category: "portrait",
+    mode: "t2i",
+    label: "红跑道超低角运动人像",
+    prompt: "bright photorealistic outdoor portrait of a young woman lying on a red running track on a modern white arch pedestrian bridge, ultra-wide low-angle selfie perspective, her arm reaching toward the camera in the foreground creating strong depth through foreshortening, relaxed dynamic pose, wired headphones around her neck catching light, white sleeveless top, loose gray pants, black hair spread naturally on the ground, clean blue sky with soft white clouds above, strong midday sunlight creating crisp shadows and high clarity, fresh youthful energetic mood, architectural symmetry of the bridge structure framing the composition, realistic skin texture with subtle sweat sheen, cinematic composition, 3:4 vertical image, shot with wide angle lens for dramatic perspective distortion",
+  },
+
+  // ===================== 商业摄影 =====================
+  {
     category: "photography",
-    label: "RAW iPhone纪实风",
-    prompt: "Create a completely RAW quality, unprocessed, unedited image with full iPhone camera quality. A momentary blur, natural imperfections, no posing. Shot from slightly above, natural daylight from a window, no flash. Casual everyday setting, shot on iPhone, strong sense of realism and authenticity, 4K detail with subtle noise and grain",
+    mode: "t2i",
+    label: "生活感桌面笔记照",
+    prompt: "amateur photo of an open notebook lying flat on a desk, filled with handwritten notes in black ballpoint pen, the handwriting is casual and slightly messy like personal study notes with natural imperfections, crossed out words, underlined headings, and margin doodles, shot from slightly above at an angle capturing the texture of the paper and the indentations of the pen, natural daylight from a window creating soft shadows across the page, no flash, casual desk setting with a ceramic coffee cup with slight coffee ring stains and a pen visible at the edges, shot on iPhone, realistic everyday study or work scene, warm and intimate atmosphere, shallow depth of field keeping the notebook sharp while the background softly blurs",
   },
   {
     category: "photography",
-    label: "90年代傻瓜相机",
-    prompt: "90s point-and-shoot camera quality, amateur film photo aesthetic, slight overexposure with blown highlights, visible film grain, color shifts toward warm amber or cool cyan, imperfect composition with slight tilt, on-camera flash with redeye possible, typical family snapshot feel, casual framing as if taken without looking through viewfinder, nostalgic 1990s everyday life mood",
+    mode: "t2i",
+    label: "便利店深夜街头纪实",
+    prompt: "ultra-realistic urban street group photo at a convenience store entrance at 10 PM summer night, 3 to 4 young people briefly chatting at the entrance, someone holding drinks with condensation on the bottles, someone sitting on plastic outdoor chairs, someone standing looking at their phone, bright white LED light streaming through the glass doors and windows, warm yellow street lights and distant car headlights outside creating mixed color temperature, characters wearing everyday clothes: T-shirts, shirts, shorts, jeans, sneakers, no internet celebrity styling, faces and postures look like real pedestrians not overly polished, environment includes real convenience store elements: freezer stickers, promotional posters, trash cans, entrance mats, glass reflections, shared bikes on roadside, water droplets from drink bottles on ground, the image should look like a very authentic life slice captured by a street photographer",
   },
   {
     category: "photography",
-    label: "便利店深夜街拍",
-    prompt: "Create an ultra-realistic urban street group photo at a convenience store entrance at 10 PM summer night. 3-4 young people briefly chatting at the entrance, someone holding drinks, someone sitting on plastic outdoor chairs, someone standing looking at their phone. Bright white light streaming through the glass doors and windows, warm yellow street lights and distant car headlights outside. Characters wearing everyday clothes: T-shirts, shirts, shorts, jeans, sneakers. No internet celebrity styling. Faces and postures must look like real pedestrians, not overly polished. Environment must include real convenience store elements: freezer stickers, promotional posters, trash cans, entrance mats, glass reflections, shared bikes on roadside, water droplets from drink bottles on ground. The image should look like a very authentic life slice captured by a photographer in the city",
+    mode: "t2i",
+    label: "地铁车厢日常抓拍",
+    prompt: "a beautiful woman looking at her phone on the subway, a candid unposed photo, natural mixed lighting from train interior fluorescent tubes and tunnel darkness outside windows, slight motion blur from train movement, reflections on glass windows showing other passengers, other commuters partially visible in background out of focus, unposed spontaneous moment caught mid-gesture, photojournalism style, realistic skin texture with subtle imperfections, shot on smartphone, vertical composition, strong sense of being there in the moment, the subject absorbed in the screen unaware of being photographed, everyday urban commute atmosphere",
   },
   {
     category: "photography",
-    label: "地铁抓拍",
-    prompt: "A beautiful woman looking at her phone on the subway, a candid photo. Natural mixed lighting from train interior fluorescents and tunnel darkness outside windows, slight motion blur from train movement, reflections on glass, other passengers partially visible in background out of focus, unposed spontaneous moment, photojournalism style, realistic skin texture with subtle imperfections, shot on smartphone, vertical composition, strong sense of being there in the moment",
-  },
-  {
-    category: "photography",
+    mode: "t2i",
     label: "35mm胶片温泉旅店",
-    prompt: "35mm film photography, warm vintage Japanese onsen ryokan aesthetic, soft ambient wooden lantern lighting mixed with gentle natural window light, subtle film grain, gentle color shift toward warm amber, high atmosphere editorial style, intimate medium shot, natural relaxed pose on the edge of a traditional wooden engawa veranda, wearing a loose white yukata, warm wooden interior with paper sliding doors and distant steaming hot spring in soft focus, gentle rim lighting highlighting skin and fabric texture, authentic vintage film color grading, extremely sharp yet soft skin rendering, natural hair strands, realistic fabric wrinkles, no plastic skin, no digital over-sharpening, authentic 35mm film atmosphere",
+    prompt: "35mm film photography, warm vintage Japanese onsen ryokan aesthetic, soft ambient wooden lantern lighting mixed with gentle natural window light, subtle film grain, gentle color shift toward warm amber and slight cyan in shadows, high atmosphere editorial style, intimate medium shot, natural relaxed pose sitting on the edge of a traditional wooden engawa veranda, wearing a loose white yukata with natural fabric wrinkles, warm wooden interior with paper sliding doors and distant steaming hot spring in soft focus, gentle rim lighting from behind highlighting hair and fabric edges, authentic vintage film color grading, extremely sharp yet soft skin rendering, natural hair strands catching backlight, realistic fabric texture and drape, no plastic skin, no digital over-sharpening, authentic 35mm film atmosphere",
   },
   {
     category: "photography",
-    label: "闪光灯直闪运动风",
-    prompt: "35mm color film photography with harsh direct on-camera flash, specular highlights on skin and clothing, strong catchlights in eyes, high contrast flash illumination, authentic film grain and color shift, fresh innocent editorial style, intimate first-person low-angle POV shot from below, direct on-camera flash creating sharp highlights and deep shadows, background slightly underexposed, high contrast film color grading with natural flash look, authentic 35mm direct flash aesthetic, realistic skin texture showing fine pores and natural texture, no plastic skin, no digital over-sharpening, no airbrushing",
+    mode: "t2i",
+    label: "直闪灯光运动风",
+    prompt: "35mm color film photography with harsh direct on-camera flash, specular highlights on skin and clothing creating a distinctive fashion editorial look, strong catchlights in eyes, high contrast flash illumination with deep shadows behind the subject, authentic film grain and color shift toward slightly cool tones, fresh innocent editorial style, intimate first-person low-angle POV shot from below, direct on-camera flash creating sharp highlights on the face and deep shadows on the neck, background slightly underexposed creating natural vignette, high contrast film color grading with natural flash look, authentic 35mm direct flash aesthetic, realistic skin texture showing fine pores and natural texture, no plastic skin, no digital over-sharpening, no airbrushing, spontaneous party or night-out energy",
   },
   {
     category: "photography",
-    label: "2003年数码相机家庭照",
-    prompt: "A photo from 2003, shot with an early digital camera, of a family in the courtyard of their residential compound. Low resolution typical of early 2000s consumer digital cameras, slight CCD sensor noise, limited dynamic range with slightly clipped highlights, dated color reproduction with slight greenish tint typical of that era, JPEG compression artifacts, timestamp in bottom right corner optional, natural daylight, unposed family moment, nostalgic early digital photography aesthetic",
+    mode: "t2i",
+    label: "2000年代数码相机家庭照",
+    prompt: "a photo from 2003, shot with an early consumer digital camera, of a family in the courtyard of their residential compound, low resolution typical of early 2000s consumer digital cameras around 2-3 megapixels, slight CCD sensor noise with characteristic purple fringing at high contrast edges, limited dynamic range with slightly clipped highlights on faces, dated color reproduction with slight greenish tint typical of that era's white balance limitations, JPEG compression artifacts visible when zooming in, optional timestamp in bottom right corner in orange digital font, natural daylight from slightly overcast sky, unposed family moment with someone mid-laugh and a child caught mid-motion, nostalgic early digital photography aesthetic that evokes the transition from film to digital",
   },
   {
     category: "photography",
-    label: "Apple Park发布会观众拍",
-    prompt: "Amateur iPhone photo at Apple Park during a keynote, presenter on stage. Shot from the crowd at a distance, slight camera shake, imperfect framing, some heads partially blocking the view, stage lighting creating exposure challenges, the big screen visible with presentation slides, audience members holding up phones to record, authentic event atmosphere captured by an attendee rather than professional photographer",
+    mode: "t2i",
+    label: "唱片公司楼梯间写真",
+    prompt: "photorealistic cinematic portrait, a fictional adult Korean female idol in her mid-twenties, not resembling any real celebrity, Japanese negative film look: soft overexposure, faded neutrals, low contrast, subtle grain, and imperfect snapshot framing, scene: the back stairwell of a small record label building with moving boxes, scuffed concrete steps, a gray metal handrail, and a pale security light, atmosphere quiet and slightly intimate as if caught in a private moment, subject wears a slightly cropped black blazer casually open over a fitted heather-gray ribbed tee, loose khaki cargo pants, thin silver chain necklace, a roll of black gaffer tape placed beside her, one sneaker lace still half-tied, she is seated on the stairs with one knee slightly raised and one leg relaxed lower, leaning back lightly with one hand braced behind her, head tilted up toward the camera with a calm self-possessed expression, flat stairwell light with understated backstage realism, photorealistic and cinematic with no excessive glamour, 2:3 portrait",
+  },
+  {
+    category: "photography",
+    mode: "t2i",
+    label: "上海地铁站台晨光",
+    prompt: "a candid photograph of a young woman standing on a Shanghai metro platform during the summer morning commute, authentic daily life photography, natural candid moment, half-body framing at eye level from moderate distance, the arriving train a motion-blurred streak behind her, the yellow safety line at her feet, East Asian young woman in her early twenties with almond-shaped eyes, straight refined nose, fair to light beige skin tone with visible subsurface scattering under cool overhead station light, summer fresh look with minimal makeup, she wears a relaxed oversized white shirt dress with collar lightly open and sleeves loosely rolled above the elbow, a structured natural tan canvas tote hangs from her shoulder, a physical novel tucked under one arm, she stands absorbed looking down at the open book, background includes white and grey tiled metro wall, overhead route signage board, other commuters blurred and distant, two or three stray hairs displaced by the train's air displacement, cool overhead fluorescent lighting with a slight greenish cast, subtle ISO 400 film grain in shadow areas, aspect ratio 2:3, no watermark no text overlay",
+  },
+  {
+    category: "photography",
+    mode: "t2i",
+    label: "城中村鱼市追猫街拍",
+    prompt: "hyper-chaotic early-2000s Japanese digicam snapshot aesthetic with raw paparazzi energy and accidental comedy, the main subject is sprinting wildly through a busy city street while yelling and laughing in pure chaos, desperately trying to catch a mischievous cat that just stole a large shiny fish from a market stall, the cat dominates the foreground frame with its face pushed absurdly close into the lens, massive fisheye distortion stretches its features dramatically with huge bulging eyes and exaggerated whiskers, the fish flapping violently with droplets and motion streaks flying outward, behind the cat the human subject is charging forward aggressively with intense energy reaching toward the animal mid-run, randomized layered Y2K Tokyo streetwear inspired by chaotic Shibuya nightlife fashion, extreme low-angle fisheye lens with severe Dutch angle and asymmetrical framing, insanely intense movement blur with radial streaking and shutter drag, CCD sensor smearing and directional speed trails, harsh direct flash combined with bright outdoor sunlight, dirty CCD digicam texture with blown highlights and chromatic aberration, gritty nostalgic cyber-chaos atmosphere, ultra-raw candid energy with messy composition and humorous accidental masterpiece aesthetic",
+  },
+  {
+    category: "photography",
+    mode: "t2i",
+    label: "烛光侧室古风写真",
+    prompt: "medium-shot authentic daily life photograph of an East Asian young woman standing in a small side room lit only by a single candle on a low stone shelf, 85mm lens, waist-up framing, shallow depth of field, the candle is off-frame to the left and the room behind her exists only as dark warm suggestion, East Asian young woman in her early twenties with almond-shaped eyes receiving the candle's warm flicker, straight refined nose with the bridge illuminated in a narrow warm stripe, skin tone fair beige warmed entirely by candlelight into amber, skin subsurface scattering visible under directional candlelight, specular micro-highlights on cheekbones and nose ridge, she wears an aged amber silk qipao with chrysanthemum embroidery in tones of old bronze and dusty ochre, mandarin collar, short sleeves, she stands facing the candle without looking at it, arms at her sides, very still, the room is otherwise empty, two or three stray hairs displaced by faint air movement, single candle: warm amber-orange directional and fragile, it carves the left side of her face from darkness and leaves the right in near-black shadow, deep chiaroscuro with no artificial fill, subtle ISO 400 film grain in shadow areas, aspect ratio 9:16, not cartoon not digitally painted not anime",
   },
 
-  // ===================== 风景 =====================
+  // ===================== 风景建筑 =====================
   {
     category: "landscape",
-    label: "写实山水",
-    prompt: "majestic mountain landscape at golden hour, layered mountain ranges receding into atmospheric haze creating depth, a winding river reflecting the warm sunset sky, ancient pine trees clinging to rocky cliffs in the foreground, dramatic clouds catching the last light of day, ultra wide angle composition emphasizing the vast scale, natural colors ranging from deep green to warm orange and purple, National Geographic documentary photography style, 8K ultra high resolution, every rock texture and tree branch sharply defined",
+    mode: "t2i",
+    label: "写实山水大景",
+    prompt: "majestic mountain landscape at golden hour, layered mountain ranges receding into atmospheric haze creating depth through aerial perspective, a winding river reflecting the warm sunset sky with silver highlights on the water surface, ancient pine trees clinging to rocky cliffs in the foreground with gnarled roots visible, dramatic clouds catching the last light of day in fiery oranges and soft pinks, ultra wide angle composition emphasizing the vast scale, natural colors ranging from deep forest green to warm orange and purple in the sky, National Geographic documentary photography style, 8K ultra high resolution, every rock texture and tree branch sharply defined, the scene conveying both grandeur and serene stillness",
   },
   {
     category: "landscape",
-    label: "星空银河",
-    prompt: "breathtaking Milky Way arching across a pitch-black night sky over silent mountain silhouettes, millions of stars visible with distinct galactic core dust lanes in purple and blue, a small tent with warm orange glow providing scale and human connection, long exposure astrophotography technique, no light pollution visible, pristine wilderness setting, reflection of stars in a still alpine lake, cosmic awe and solitude mood, professional astrophotography with star tracker, ultra wide fisheye composition",
+    mode: "t2i",
+    label: "银河星空",
+    prompt: "breathtaking Milky Way arching across a pitch-black night sky over silent mountain silhouettes, millions of stars visible with distinct galactic core dust lanes in deep purple and electric blue, a small tent with warm orange glow providing scale and human connection in the foreground, long exposure astrophotography technique capturing star trails beginning to form at the edges, no light pollution visible, pristine wilderness setting at high altitude, reflection of stars in a perfectly still alpine lake creating mirror symmetry, cosmic awe and solitude mood, professional astrophotography with star tracker, ultra wide fisheye composition, the foreground illuminated by a subtle campfire or lantern glow revealing alpine meadow details",
   },
   {
     category: "landscape",
-    label: "日落海滩",
-    prompt: "tropical paradise beach at sunset, golden hour light painting the white sand in warm amber tones, silhouettes of leaning palm trees framing the composition, gentle waves creating foam patterns on the shore, the sun a perfect orange disk touching the horizon over calm turquoise ocean, scattered clouds painted in pink and coral by the setting sun, drone aerial perspective showing the full curve of the bay, vacation paradise mood, vibrant but natural color saturation, 8K travel photography",
+    mode: "t2i",
+    label: "日落海滩天堂",
+    prompt: "tropical paradise beach at sunset, golden hour light painting the white sand in warm amber and rose tones, silhouettes of leaning palm trees framing the composition on both sides creating a natural frame, gentle waves creating delicate foam patterns on the shore with each receding wave leaving a mirror-like wet sand reflection, the sun a perfect orange disk touching the horizon over calm turquoise ocean water, scattered clouds painted in pink coral and soft lavender by the setting sun, drone aerial perspective showing the full curve of the bay with rocky headlands, vacation paradise mood, vibrant but natural color saturation, 8K travel photography, the composition conveying the transition from day to evening in a tropical setting",
   },
   {
     category: "landscape",
-    label: "樱花季节",
-    prompt: "springtime cherry blossom avenue in full bloom, ancient sakura trees forming a natural pink tunnel over a quiet stone pathway, delicate petals falling like pink snow caught in a gentle breeze, soft morning sunlight filtering through the blossom canopy creating dappled light patterns on the ground, a traditional wooden bridge over a calm pond reflecting the pink canopy, romantic and peaceful Japanese spring atmosphere, no people visible, anime-inspired composition with photorealistic rendering, pastel pink and soft green color palette",
+    mode: "t2i",
+    label: "樱花季古寺",
+    prompt: "springtime cherry blossom avenue in full bloom at the peak of sakura season, ancient trees forming a natural pink and white tunnel over a quiet stone pathway leading toward a traditional temple gate, delicate petals falling like pink snow caught in a gentle breeze creating a dreamlike atmosphere, soft morning sunlight filtering through the blossom canopy creating dappled light patterns on the mossy stone ground, a traditional wooden vermillion bridge arching over a calm pond reflecting the pink canopy above, romantic and peaceful Japanese spring atmosphere, a few visitors in the distance wearing kimono providing subtle human scale, photorealistic rendering with pastel pink and soft green color palette, the composition drawing the eye through the blossom tunnel toward the temple beyond",
   },
   {
     category: "landscape",
-    label: "北欧森林",
-    prompt: "dense Scandinavian pine forest in early morning, thick ground mist hovering between tree trunks at knee height, first rays of sunrise breaking through the canopy creating god rays in the fog, moss-covered boulders and fallen logs on the forest floor, deep green color palette with soft golden highlights, pristine untouched wilderness atmosphere, medium telephoto compression emphasizing the density of trees, silence and tranquility mood, nature documentary cinematography, hyperrealistic detail on bark moss and ferns",
+    mode: "t2i",
+    label: "北欧晨雾森林",
+    prompt: "dense Scandinavian pine and birch forest in early morning, thick ground mist hovering between tree trunks at knee height creating an ethereal layering effect, first rays of sunrise breaking through the canopy creating volumetric god rays cutting diagonally through the fog, moss-covered boulders and fallen logs carpeted in bright green moss on the forest floor, deep green color palette with soft golden highlights where light penetrates, pristine untouched wilderness atmosphere, a small deer partially visible through the mist in the middle distance, medium telephoto compression emphasizing the density and verticality of trees, silence and tranquility mood, nature documentary cinematography, hyperrealistic detail on bark texture, moss, fern fronds, and droplets of morning dew on spider webs",
   },
   {
     category: "landscape",
-    label: "沙漠奇观",
-    prompt: "vast Sahara desert at golden hour, endless waves of sand dunes sculpted by wind into perfect geometric curves and sharp ridges, dramatic side-lighting emphasizing every dune contour with long shadows, a distant camel caravan creating tiny silhouettes for scale, warm monochromatic palette shifting from deep orange in shadows to bright gold on sunlit faces, clear deep blue sky at the top of frame, Arabian Nights atmosphere, aerial perspective showing the infinite scale, hyperrealistic sand texture visible in foreground",
-  },
-  {
-    category: "landscape",
+    mode: "t2i",
     label: "冬日雪景村庄",
-    prompt: "charming snow-covered Alpine village at blue hour, warm golden light spilling from cottage windows reflecting on the fresh snow, smoke rising gently from chimneys against the deep blue twilight sky, snow-laden pine trees framing the scene, a frozen stream winding through the village center, Christmas card perfect composition, cozy and peaceful winter atmosphere, the first stars becoming visible in the darkening sky, photorealistic architectural details on traditional wooden chalets, soft focus on distant mountains",
+    prompt: "charming snow-covered Alpine village at blue hour, warm golden light spilling from cottage windows creating warm pools on the fresh snow outside, smoke rising gently from chimneys straight up into the still cold air against the deep blue twilight sky, snow-laden pine trees framing the scene with branches bending under the weight, a frozen stream winding through the village center with a stone bridge arching over it, the village church spire visible against the darkening sky, Christmas card perfect composition, cozy and peaceful winter atmosphere, the first stars becoming visible in the sky above the mountains, photorealistic architectural details on traditional wooden chalets with carved balconies and snow-covered roofs, soft focus on distant mountain peaks",
   },
   {
     category: "landscape",
-    label: "现代城市天际线",
-    prompt: "modern metropolitan skyline at blue hour from across a harbor or river, glass skyscrapers with interior office lights beginning to illuminate creating a mosaic pattern, city lights and traffic trails reflecting perfectly on the calm water surface, iconic buildings clearly recognizable in the skyline, clear gradient sky from deep blue at top to warm orange at the horizon where the sun has just set, professional architectural photography, ultra sharp detail on building facades, drone perspective at optimal height showing the full city panorama",
+    mode: "t2i",
+    label: "现代城市天际线蓝调",
+    prompt: "modern metropolitan skyline at blue hour from across a harbor or river, glass skyscrapers with interior office lights beginning to illuminate creating a mosaic pattern of warm and cool dots against the deep blue sky, city lights and traffic trails reflecting perfectly on the calm water surface creating long streaks of gold and red, iconic buildings clearly recognizable in the skyline with distinctive architectural silhouettes, clear gradient sky from deep navy blue at top to warm orange at the horizon where the sun has just set, professional architectural photography, ultra sharp detail on building facades showing individual window frames and structural elements, drone perspective at optimal height showing the full city panorama, the composition conveying the energy and scale of a world-class city at dusk",
   },
   {
     category: "landscape",
-    label: "热带雨林瀑布",
-    prompt: "hidden waterfall deep in a lush tropical rainforest, water cascading over moss-covered rock faces into a crystal-clear emerald pool below, dense jungle vegetation with giant ferns broad-leaf plants and hanging vines framing the scene on all sides, sun rays piercing through gaps in the canopy creating highlights on the water spray and mist, exotic birds and butterflies adding life and scale, primordial untouched nature atmosphere, vibrant green color palette with rainbow hints in water spray, National Geographic documentary style, hyperrealistic detail on every leaf and water droplet",
+    mode: "t2i",
+    label: "热带雨林秘境瀑布",
+    prompt: "hidden waterfall deep in a lush tropical rainforest, water cascading over multiple tiers of moss-covered dark rock faces into a crystal-clear emerald pool below, dense jungle vegetation with giant tree ferns, broad-leaf monstera plants, hanging lianas and philodendrons framing the scene on all sides creating a natural cathedral-like enclosure, sun rays piercing through gaps in the canopy above creating bright highlights on the water spray and rising mist, colorful exotic birds perched on branches and blue morpho butterflies adding life and scale, primordial untouched nature atmosphere, vibrant green color palette with subtle rainbow hints in the water spray where sunlight refracts, National Geographic documentary style, hyperrealistic detail on every leaf vein, moss texture, water droplet, and the churning surface of the plunge pool",
   },
 
-  // ===================== 科幻 =====================
+  // ===================== 艺术插画 =====================
   {
-    category: "scifi",
-    label: "3A游戏实机画面",
-    prompt: "GTA 6 in-game footage style, very detailed, very realistic. Close-up shot taken from a stationary 4K monitor, slight blurriness as if taken handheld from the screen. A wide bright environment with realistic details, natural character movement, authentic game HUD elements visible, the lighting and color grading matching triple-A open world game aesthetic, photorealistic game engine rendering quality, the image should look exactly like a screenshot captured during actual gameplay rather than promotional material or concept art",
+    category: "illustration",
+    mode: "t2i",
+    label: "传统水墨山水",
+    prompt: "traditional Chinese ink wash landscape painting, misty vertical mountains composed of layered ink washes from pale gray to deepest black creating infinite depth, a solitary waterfall descending from a cliff face disappearing into clouds below, ancient twisted pine trees clinging to rocky outcrops with expressive brushwork, a tiny figure of a scholar with a walking staff on a narrow mountain path providing human scale and narrative, rice paper texture visible with ink bleeding effects at edges of washes where the brush lingered, red seal stamp in one corner with archaic characters, poetic composition with intentional empty space for meditation and visual breathing room, master calligraphy brushwork showing both bold strokes and delicate dry brush techniques, serene and timeless Zen atmosphere evoking the great Song and Yuan dynasty landscapists",
   },
   {
-    category: "scifi",
-    label: "巨型太空站",
-    prompt: "massive orbital space station in low Earth orbit, intricate modular architecture with connecting tunnels solar arrays and docking bays, the blue curve of Earth filling the background with visible continents and swirling white cloud patterns, the Milky Way visible in the deep black of space above, small maintenance spacecraft providing scale against the station's massive hull, highly detailed mechanical and industrial design with visible panel lines heat radiators and antenna arrays, cinematic lighting with strong rim light from the sun creating dramatic shadows, science fiction concept art quality, 8K, photorealistic rendering of metal surfaces and Earth below",
-  },
-  {
-    category: "scifi",
-    label: "外星行星地表",
-    prompt: "alien exoplanet surface with twin moons visible in the purple sky, strange bioluminescent flora in fluorescent blues pinks and oranges dotting the landscape, unusual crystalline rock formations with geometric patterns suggesting intelligent origin, a shallow methane lake reflecting the alien sky in iridescent colors, thin atmosphere creating a slight haze on the horizon, no Earth-like elements visible, completely original alien ecosystem design, science fiction concept art for film production, cinematic ultra wide composition emphasizing the alien scale, 8K photorealistic detail on crystal formations and organic alien plant structures",
-  },
-  {
-    category: "scifi",
-    label: "赛博朋克夜市",
-    prompt: "ground-level view of a crowded cyberpunk night market street, multi-level chaos of neon holographic advertisements in Chinese Japanese and English overlapping each other, steam rising from street food vendor carts and subway grates mixing with ambient neon glow, diverse crowd of augmented humans in futuristic street fashion some with visible cybernetic limbs or glowing implants, rain-slicked reflective pavement mirroring the neon chaos above, overhead monorail and drones adding vertical depth, dense atmospheric haze with volumetric lighting, Blade Runner meets Ghost in the Shell aesthetic, ultra detailed environmental storytelling, cinematic wide angle composition",
-  },
-  {
-    category: "scifi",
-    label: "高度拟真机器人",
-    prompt: "extreme close-up portrait of a highly advanced humanoid robot, face with subtle mechanical seams and panel gaps visible only upon close inspection, one synthetic eye glowing faintly blue with visible micro-circuitry in the iris, brushed titanium and carbon fiber surface textures with precise machining marks, the boundary between machine and human blurred by the elegant design, studio lighting with softbox creating gentle highlights on the metallic surfaces, depth of field focusing on the eye and cheek area, 3D render quality with octane engine, hyperrealistic material rendering of metal polymers and glass lens elements",
-  },
-  {
-    category: "scifi",
-    label: "未来飞行器",
-    prompt: "advanced futuristic aircraft in mid-flight above a future city, sleek aerodynamic blended-wing body design with no visible seams or rivets, energy-efficient blue plasma propulsion system leaving a subtle ion trail, active camouflage panels mid-transition from sky-matching to visible, the aircraft banking slightly showing its full profile against dramatic sunset clouds, drone escort vehicles visible in formation nearby, the city below with spire-like eco-architecture and vertical gardens, cinematic composition with the aircraft occupying two-thirds of frame, photorealistic rendering of composite materials and atmospheric effects",
-  },
-  {
-    category: "scifi",
-    label: "全息数据界面",
-    prompt: "futuristic holographic data visualization floating in a dark control room, multiple transparent layers of information screens arranged in a semi-circle around the viewer, glowing cyan and amber data streams flowing between displays, 3D wireframe models of planetary systems rotating in the center, subtle particle effects and light bloom around interactive elements, glass and metal reflections of the holograms on the polished floor, clean minimalist UI design inspired by Iron Man and Minority Report interfaces, the operator visible only as a faint silhouette behind the glowing displays, cinematic composition emphasizing depth and information density",
-  },
-  {
-    category: "scifi",
-    label: "地下秘密基地",
-    prompt: "underground secret research facility, vast cavern carved into bedrock with industrial metal catwalks staircases and platforms spanning multiple levels, dim amber warning lights and flickering fluorescent tubes providing the only illumination, massive cylindrical containment units in the center glowing with an ominous blue energy, scientists in hazmat suits barely visible on distant walkways for scale, steam venting from pipes and condensation dripping from the rocky ceiling, survival horror science fiction atmosphere, detailed industrial design with visible conduits warning signs and safety railings, cinematic low-angle composition emphasizing the oppressive scale, gritty photorealistic textures",
-  },
-  {
-    category: "scifi",
-    label: "机甲格纳库",
-    prompt: "giant military mecha standing in a maintenance hangar bay, the robot towering 30 meters tall with armored plating showing battle damage and scorch marks, technicians and engineers on elevated platforms working on various sections providing sense of scale, overhead crane systems and ammunition loaders surrounding the mecha, harsh industrial floodlights creating dramatic shadows across the mecha's form, the robot's head visible in the upper third with sensor eyes glowing red in standby mode, Japanese mecha anime style realized with photorealistic 3D rendering, every hydraulic piston joint actuator and armor panel rendered in extreme detail, epic cinematic composition",
-  },
-
-  // ===================== 古风 =====================
-  {
-    category: "ancient",
-    label: "水墨山水",
-    prompt: "traditional Chinese ink wash landscape painting, misty vertical mountains composed of layered ink washes from pale gray to deepest black, a solitary waterfall descending from a cliff face into clouds below, ancient twisted pine trees clinging to rocky outcrops, a tiny figure of a scholar with a staff on a mountain path providing scale, rice paper texture visible with ink bleeding effects at edges of washes, red seal stamp in one corner, poetic Tang dynasty composition with intentional empty space for meditation, master calligraphy brushwork, serene and timeless Zen atmosphere",
-  },
-  {
-    category: "ancient",
+    category: "illustration",
+    mode: "t2i",
     label: "敦煌飞天壁画",
-    prompt: "Dunhuang Mogao Caves mural style celestial flying Apsara being, graceful figure with flowing multicolored silk ribbons and scarves trailing in sweeping curves suggesting divine flight, playing a pipa instrument while floating among clouds, rich mineral pigment colors dominated by turquoise blue vermillion red and gold leaf, weathered fresco texture on ancient plaster walls with subtle crack patterns, Tang dynasty Buddhist art style with Indian Gandhara influences, circular halo behind the figure's head, flowers and musical instruments scattered in the surrounding space as offerings, museum quality ancient art reproduction",
+    prompt: "Dunhuang Mogao Caves mural style celestial flying Apsara celestial being, graceful figure with flowing multicolored silk ribbons and scarves trailing in sweeping S-curves suggesting divine flight through heavenly realms, playing an ancient pipa instrument while floating among stylized clouds, rich mineral pigment colors dominated by turquoise blue, vermillion red and gold leaf with subtle cracking patterns, weathered fresco texture on ancient plaster walls with authentic age patina, Tang dynasty Buddhist art style with Indian Gandhara influences visible in the facial features and body proportions, circular halo behind the figure's head rendered in faded gold, scattered lotus flowers and musical instruments in the surrounding space as divine offerings, museum quality ancient art reproduction with scholarly archaeological accuracy",
   },
   {
-    category: "ancient",
-    label: "江南水乡",
-    prompt: "classic Jiangnan water town scene at dawn, ancient whitewashed buildings with dark tiled roofs lining a calm canal, traditional stone arch bridge reflecting perfectly in the still water creating a full circle, weeping willow trees with branches touching the canal surface, a small wooden boat with a solitary boatman poling slowly through morning mist, pink and gray dawn sky reflected in the water, lanterns still glowing softly along the waterfront, nostalgic peaceful atmosphere reminiscent of classical Chinese poetry, ink wash painting aesthetic realized through photorealistic rendering, soft misty color palette of whites grays and muted greens",
-  },
-  {
-    category: "ancient",
-    label: "武侠江湖",
-    prompt: "solitary swordsman in flowing white robes standing on the peak of a mist-shrouded mountain, long hair and robe edges flowing in the mountain wind, ancient sword held loosely at the side with a tassel dancing in the breeze, sea of clouds below stretching to the horizon with other mountain peaks piercing through like islands, a single ancient pine tree bent by wind beside the figure, golden dawn light breaking over the cloud sea, wuxia cinematic composition with dramatic scale, mood of solitary mastery and inner peace, photorealistic rendering of fabric movement and atmospheric lighting, anamorphic lens flare from the rising sun",
-  },
-  {
-    category: "ancient",
-    label: "青花瓷静物",
-    prompt: "exquisite Ming dynasty blue and white porcelain vase as the central subject, intricate cobalt blue hand-painted patterns of dragons chasing pearls among clouds and waves wrapping around the vessel, placed on a dark rosewood table, soft natural window light from the left creating subtle highlights on the glossy glaze surface, a single branch of plum blossoms in a simpler vase beside it, antique scroll and brush holder in the background slightly out of focus, museum artifact photography style, every brushstroke of the cobalt pattern and every specular highlight on the ceramic surface rendered with hyperrealistic precision, elegant and timeless composition",
-  },
-  {
-    category: "ancient",
-    label: "唐代仕女图",
-    prompt: "Tang dynasty court lady portrait inspired by Zhou Fang paintings, full-figured beauty with rounded face and elaborate high chignon hairstyle adorned with gold hairpins and fresh peony flowers, wearing a flowing silk dress with wide sleeves in rich vermillion and gold, holding a round silk fan painted with a landscape, standing in a palace garden with peonies in bloom and a decorative railing, warm soft lighting suggesting late afternoon, classical Chinese figure painting style translated to photorealistic rendering, accurate historical details in clothing patterns makeup and accessories, elegant courtly atmosphere",
-  },
-  {
-    category: "ancient",
-    label: "古寺晨钟",
-    prompt: "ancient Buddhist temple courtyard at dawn, weathered stone lanterns with moss growing in their crevices lining a path of worn flagstones, a large bronze temple bell hanging from a wooden frame with a suspended log striker, the main hall with curved rooflines and faded vermillion pillars visible through morning fog, a single monk in gray robes walking toward the bell to ring the morning awakening, ginkgo tree with golden autumn leaves partially framing the scene, meditative Zen atmosphere, soft diffused morning light creating a dreamlike quality, photorealistic detail on weathered wood stone textures and autumn leaves, Japanese or Chinese temple architecture",
-  },
-
-  // ===================== 动物 =====================
-  {
-    category: "animal",
-    label: "非洲雄狮",
-    prompt: "majestic adult male lion in profile against a golden savanna sunset, full mane blowing slightly in the warm breeze, the lion gazing into the distance with piercing amber eyes, every whisker and fur strand sharply defined in the golden hour backlight, the vast African plains with acacia tree silhouettes stretching behind creating a sense of wild freedom, low camera angle from ground level making the lion appear even more powerful and regal, National Geographic Wildlife Photographer of the Year quality, shallow depth of field isolating the lion's head from the distant background, hyperrealistic detail on mane texture and facial features",
-  },
-  {
-    category: "animal",
-    label: "灵动家猫",
-    prompt: "close-up portrait of a domestic cat with large expressive eyes, the cat looking directly at the camera with curious alert expression, soft natural window light creating beautiful catchlights in the eyes and gentle shadows, shallow depth of field with only the eyes and nose in perfect focus while ears and whiskers softly blur, individual whiskers and fur strands visible with subtle color variations in the coat, cozy home environment barely visible in the creamy bokeh background, pet photography style, warm and intimate mood, 85mm lens at f1.4 for extreme shallow depth, hyperrealistic detail on eye texture and fur",
-  },
-  {
-    category: "animal",
-    label: "鲸鱼跃出海面",
-    prompt: "magnificent humpback whale fully breaching the ocean surface, its massive body rising vertically out of the water with droplets spraying in all directions, the whale's ventral pleats and barnacle clusters clearly visible on its underside, dramatic sunset sky reflected on the choppy ocean surface in oranges and pinks, the splash creating a crown of white water around the whale, a research boat in the distance providing scale revealing the whale's true size, split second action frozen in time, National Geographic wildlife photography, hyperrealistic detail on whale skin texture water droplets and ocean spray, epic and powerful composition",
-  },
-  {
-    category: "animal",
-    label: "北极狐雪景",
-    prompt: "pure white Arctic fox curled up in a fresh snowfall, the fox's thick winter coat blending almost perfectly with the surrounding snow, only the black tip of its nose and dark intelligent eyes standing out, soft overcast winter light creating a high-key almost monochromatic scene, delicate snowflakes resting on the fox's fur and whiskers without melting, the arctic tundra stretching to a featureless white horizon behind, cold and pristine atmosphere, wildlife photography with shallow depth of field, hyperrealistic detail on fur texture with each individual guard hair visible, the fox looking directly at camera with curious expression",
-  },
-  {
-    category: "animal",
-    label: "金刚鹦鹉",
-    prompt: "vibrant scarlet macaw perched on a mossy tropical branch, the parrot's brilliant red blue and yellow plumage in sharp focus showing every feather barb and subtle iridescence, the bird turned slightly to profile showing its curved black beak and intelligent eye with a catchlight, lush green rainforest canopy with out-of-focus foliage creating a natural colorful bokeh background, soft dappled sunlight filtering through leaves above creating natural highlights on the bird's plumage, exotic wildlife photography, 300mm telephoto lens compression, hyperrealistic detail on feather texture beak surface and eye ring, Costa Rica or Amazon jungle setting",
-  },
-  {
-    category: "animal",
-    label: "白头鹰翱翔",
-    prompt: "bald eagle in mid-flight with wings fully spread in a powerful soaring pose, the eagle captured from below against a dramatic stormy sky with breaks of golden sunlight creating rim lighting on the wing feathers, the iconic white head and tail feathers contrasting with the dark brown body, sharp yellow talons tucked tightly against the body in flight, every primary and secondary flight feather individually defined, the eagle's focused predatory gaze visible, split-second action wildlife photography, National Geographic quality, hyperrealistic feather detail and dramatic natural lighting, symbol of freedom and power",
-  },
-  {
-    category: "animal",
-    label: "深海水母",
-    prompt: "ethereal bioluminescent jellyfish floating in the absolute darkness of the deep ocean, its translucent bell pulsing with internal blue and purple bioluminescence creating a natural fiber-optic effect, long delicate tentacles trailing below with microscopic stinging cells catching faint light, the only illumination coming from the jellyfish itself against the pitch-black abyss, tiny particles of marine snow floating past creating depth and scale, other smaller jellyfish visible as faint glows in the distant background, underwater macro photography, otherworldly and mesmerizing atmosphere, hyperrealistic detail on the jellyfish's translucent tissues and bioluminescent patterns, full frame composition",
-  },
-  {
-    category: "animal",
-    label: "大熊猫竹林",
-    prompt: "giant panda sitting peacefully in a bamboo forest, the panda holding a fresh green bamboo stalk with both paws while eating, distinctive black and white fur pattern rendered in hyperrealistic detail showing the coarse texture of the outer guard hairs and the softer undercoat, the panda's gentle expression with dark eye patches and rounded ears, dappled sunlight filtering through the dense bamboo grove creating natural spot lighting, fallen bamboo leaves on the forest floor, the Sichuan mountain mist creating a soft atmospheric haze, wildlife documentary photography, intimate mid-range composition, the panda as China's national treasure captured with dignity and charm",
-  },
-  {
-    category: "animal",
-    label: "斑马群迁徙",
-    prompt: "aerial drone perspective of a large zebra herd crossing the African savanna during the great migration, hundreds of zebras creating a flowing river of black and white stripes across the golden grassland, dust kicked up by thousands of hooves creating a golden haze backlit by the setting sun, the intricate stripe patterns of individual zebras visible in the foreground while the herd stretches to the horizon, scattered acacia trees providing scale, the Serengeti plains in the dry season with amber grasses, epic wildlife documentary cinematography, hyperrealistic detail on the foreground zebras and atmospheric dust particles, wide panorama composition capturing the scale of the migration",
-  },
-
-  // ===================== 抽象 =====================
-  {
-    category: "abstract",
+    category: "illustration",
+    mode: "t2i",
     label: "剪影宇宙叙事海报",
-    prompt: "Generate a high-aesthetic silhouette universe collector's edition narrative poster based on a theme. The AI should choose the most symbolic and visually strong outer silhouette for the theme — an artifact, building, gate, tower, statue, eye, hand, wing, mask, mirror, throne, or any more creative contour. Inside the silhouette, generate a rich layered narrative world tied to the theme: iconic scenes, key architecture or spaces, symbols and metaphors, foreground-midground-background depth. Blend the feeling of a collector's edition film poster with dreamy watercolor texture and fine printed paper — paper grain, feathered edges, watercolor brush marks, gentle diffusion, atmospheric perspective, soft haze, volumetric light, generous negative space. The image should feel premium, poetic, majestic, nostalgic, and mythic. Low saturation restrained color palette, no chaotic neon or plastic digital colors",
+    prompt: "high-aesthetic silhouette universe collector's edition narrative poster, a single bold outer silhouette dominating the composition: an artifact, building, gate, tower, statue, eye, hand, wing, mask, mirror, or throne, inside the silhouette generate a rich layered narrative world tied to the theme: iconic scenes, key architecture or spaces, symbols and metaphors, foreground-midground-background depth, blend the feeling of a collector's edition film poster with dreamy watercolor texture and fine printed paper: paper grain, feathered edges, watercolor brush marks, gentle diffusion, atmospheric perspective, soft haze, volumetric light, generous negative space occupying at least 30% of the composition, the image should feel premium poetic majestic nostalgic and mythic, low saturation restrained color palette of earthy tones and muted jewel colors, no chaotic neon or plastic digital colors, museum-quality graphic design aesthetic",
   },
   {
-    category: "abstract",
-    label: "流动水墨",
-    prompt: "abstract black ink swirling and diffusing in clear water, organic fluid dynamics creating unpredictable branching patterns and cloud-like formations, high contrast monochrome with pure whites and the deepest blacks, the moment of ink drop impact frozen in ultra slow motion, negative space composition with the ink occupying only one third of frame, contemporary art gallery aesthetic, 8K macro cinematography of liquid motion, meditation on chaos and order, minimalist with maximum visual impact",
+    category: "illustration",
+    mode: "t2i",
+    label: "流动水墨抽象",
+    prompt: "abstract black ink swirling and diffusing in clear water, organic fluid dynamics creating unpredictable branching patterns and cloud-like formations at multiple scales from fine tendrils to bold masses, high contrast monochrome with pure whites and the deepest blacks, the exact moment of ink drop impact frozen in ultra slow motion showing the beautiful chaos of fluid dynamics, negative space composition with the ink occupying only one third of frame while the surrounding water remains pristine and clear, contemporary art gallery aesthetic suitable for a large-scale fine art print, 8K macro cinematography of liquid motion, meditation on chaos and order, minimalist composition with maximum visual impact, the interplay of ink density creating transparent grays between the solid black and bright white",
   },
   {
-    category: "abstract",
-    label: "液态金属",
-    prompt: "flowing liquid mercury and chrome forming organic sculptural shapes, the molten metal surface reflecting a gradient sky from warm sunset orange to cool twilight blue, perfectly smooth surface tension creating mirror-like reflections distorted by gentle ripples, the metal appearing both solid and liquid simultaneously in impossible physics, 3D rendered with octane render engine, hyperrealistic material simulation, modern luxury aesthetic, abstract composition exploring form and reflection, the metal floating in infinite white space",
+    category: "illustration",
+    mode: "t2i",
+    label: "液态金属雕塑",
+    prompt: "flowing liquid mercury and polished chrome forming organic sculptural shapes that seem to defy gravity, the molten metal surface reflecting a gradient sky from warm sunset orange to cool twilight blue with perfect mirror-like precision, surface tension creating impossibly smooth meniscus curves and ripples that distort the reflections in mesmerizing patterns, the metal appearing both solid and liquid simultaneously with impossible physics, 3D rendered with octane render engine at the highest quality settings, hyperrealistic material simulation of metal with accurate Fresnel reflections and subsurface scattering at thin edges, modern luxury aesthetic, abstract composition exploring the relationship between form and reflection, the metal floating in infinite white space with subtle contact shadows grounding the forms, every specular highlight sharp and defined",
   },
   {
-    category: "abstract",
-    label: "几何极简主义",
-    prompt: "minimalist geometric composition, pure primary colored circles squares and triangles arranged in Bauhaus style asymmetrical balance, flat vector aesthetic with crisp edges and perfectly uniform colors, generous white negative space surrounding the geometric elements, a single black line intersecting the composition at a precise angle, mid-century modern graphic design influence, the composition feeling both mathematically precise and artistically intentional, clean modern art gallery poster aesthetic, no gradients or shadows, pure form and color relationships",
+    category: "illustration",
+    mode: "t2i",
+    label: "几何极简主义构成",
+    prompt: "minimalist geometric composition, pure primary colored circles squares and triangles arranged in Bauhaus style asymmetrical balance, flat vector aesthetic with crisp edges and perfectly uniform colors without any gradient or texture, generous white negative space surrounding the geometric elements occupying at least 50% of the frame, a single black line bisecting the composition at a precise calculated angle, mid-century modern graphic design influence with references to Josef Albers and Wassily Kandinsky, the composition feeling both mathematically precise and artistically intentional, clean modern art gallery poster aesthetic, no gradients or shadows, pure exploration of form color relationships and spatial tension, the colors carefully chosen with exact CMYK values for print reproduction, museum poster quality",
   },
   {
-    category: "abstract",
-    label: "宇宙星云",
-    prompt: "abstract cosmic nebula formation, swirling clouds of interstellar gas and dust in deep purples electric blues and hot pinks, fractal-like structures suggesting galaxy formation at multiple scales from vast spiral arms to microscopic particle interactions, bright star cluster points scattered throughout creating depth, the boundary between scientific accuracy and abstract art intentionally blurred, Hubble Space Telescope color palette, the composition evoking both the infinite cosmos and the patterns of cellular biology, 8K digital art, ethereal and transcendent atmosphere",
+    category: "illustration",
+    mode: "t2i",
+    label: "宇宙星云幻境",
+    prompt: "abstract cosmic nebula formation, swirling clouds of interstellar gas and dust in deep purples electric blues and hot pinks with subtle transitions between colors, fractal-like structures suggesting galaxy formation at multiple scales from vast spiral arms to microscopic particle interactions, bright star cluster points scattered throughout creating depth through varying sizes and brightness, the boundary between scientific accuracy and abstract art intentionally blurred, Hubble Space Telescope color palette mapped to visible spectrum, the composition evoking both the infinite cosmos and the patterns of cellular biology seen under a microscope, 8K digital art with incredible detail density, ethereal and transcendent atmosphere with a sense of deep space and cosmic scale, the image suitable for a large format fine art print or planetarium dome projection",
+  },
+  {
+    category: "illustration",
+    mode: "t2i",
+    label: "巴洛克静物油画",
+    prompt: "exquisite classical still life oil painting in the Flemish Baroque tradition, a dramatic composition featuring a silver gilt chalice, overripe figs split open revealing their jewel-like interior, a partially peeled lemon with its rind spiraling downward, a Venetian glass goblet half-filled with deep red wine catching light, all arranged on a dark wooden table with a rich burgundy velvet drape cascading over one corner, strong chiaroscuro lighting from a single unseen window to the upper left creating dramatic shadows and brilliant highlights, visible brushstrokes and impasto texture on the canvas, deep warm color palette of burnt umber cadmium red ochre and touches of ultramarine blue in the shadows, the composition following classical triangular arrangement, every surface texture rendered with obsessive detail: the cool hard metal of silver the soft fuzz of peach skin the translucent glow of grape flesh the rough wood grain of the table, museum quality masterpiece ready for a National Gallery wall",
+  },
+  {
+    category: "illustration",
+    mode: "t2i",
+    label: "赛博朋克雨夜街景",
+    prompt: "ground-level view of a crowded cyberpunk night market street, multi-level chaos of neon holographic advertisements in Chinese Japanese and English overlapping each other in vertical layers up the buildings, steam rising from street food vendor carts and subway grates mixing with ambient neon glow creating volumetric light effects, diverse crowd of augmented humans in futuristic street fashion some with visible cybernetic limbs or glowing subdermal implants, rain-slicked reflective pavement mirroring the neon chaos above in perfect glossy reflections, overhead monorail trains and delivery drones adding vertical depth to the composition, dense atmospheric haze with visible light beams cutting through, Blade Runner meets Ghost in the Shell aesthetic with attention to urban Asian futurism, ultra detailed environmental storytelling through shop signs graffiti and detritus, cinematic wide angle composition capturing the overwhelming sensory density of a future megalopolis at night",
+  },
+  {
+    category: "illustration",
+    mode: "t2i",
+    label: "新中式国潮山水海�itea",
+    prompt: "minimalist neo-Chinese aesthetic composition on pure white matte textured art paper with irregular torn paper edges, an S-shaped winding crack-like negative space dividing the composition revealing a colorful oriental landscape scene within, inside the opening a winding river rendered in varying shades of blue flowing from top to bottom like a silk ribbon, riverbanks dotted with verdant hills and terraced fields in soft greens and warm earth tones, ancient style pavilions and bridges with curved rooflines and white walls black tiles along the water, lush trees with delicate foliage and a solitary fishing boat on the water, the outer white area features subtle paper grain texture and a red Chinese seal stamp, elegant calligraphy at the bottom reading mountain and water poetry, overall atmosphere quiet profound and poetic, 8K ultra detailed, the composition balancing detailed inner landscape with generous white negative space",
   },
 
-  // ===================== 图生视频专用 =====================
+  // ===================== UI与界面 =====================
   {
-    category: "video",
-    label: "16格动漫表情网格",
-    prompt: "Create a 16-panel expression grid of a character. Their face shape, hairstyle, and clothing must remain highly consistent across all panels. The 16 expressions should include: happy, sad, angry, surprised, shy, speechless, evil grin, contemplative, curious, proud, wronged, disdainful, confused, scared, crying, and a heart expression. Clean white grid lines separating each panel, consistent even lighting across all frames, same character identity preserved 100% across every expression, anime illustration style, professional animation expression sheet quality",
+    category: "ui",
+    mode: "t2i",
+    label: "3A游戏实机画面",
+    prompt: "photorealistic in-game screenshot from a fictional AAA open-world game, close-up over-the-shoulder third-person view following a detailed character through a richly detailed urban environment, natural character movement with cloth physics and hair animation, authentic game HUD elements visible including a minimalist health bar compass and objective marker that look like actual gameplay UI, the lighting and color grading matching triple-A open world game aesthetic with physically based rendering, ray-traced reflections on wet surfaces, high quality ambient occlusion, volumetric fog and god rays, the image should look exactly like a screenshot captured during actual gameplay on maximum PC settings rather than promotional material or concept art, slight chromatic aberration at screen edges and subtle film grain for realism, 4K resolution with the slight softness of temporal anti-aliasing",
   },
   {
-    category: "video",
-    label: "角色官方设定集",
-    prompt: "Based on this character and background, please create a character reference sheet similar to official setting materials used by professional animation studios. Include: (1) three-view turnaround drawings showing front view side view and back view with perfect anatomical and costume consistency, (2) a grid of 6-8 facial expression variations showing different emotions while preserving identical facial structure, (3) detailed breakdown callouts of clothing equipment and accessories with close-up views, (4) a color palette swatch section with labeled color codes for skin hair outfit and accessories, (5) a brief explanation of the character's world setting and background story in a sidebar, (6) organized professional layout on clean white background with neat section dividers, professional illustration style, this should look like an official production character bible page suitable for animation or game development reference",
+    category: "ui",
+    mode: "t2i",
+    label: "未来全息数据界面",
+    prompt: "futuristic holographic data visualization floating in a dark command center control room, multiple transparent layers of information screens arranged in a semi-circle around the viewer position, glowing cyan and amber data streams flowing between interconnected displays with particle effects, 3D wireframe models of planetary systems or molecular structures rotating slowly in the center, subtle particle effects and light bloom around interactive elements giving a tangible holographic feel, glass and metal reflections of the holograms visible on the polished dark floor below, clean minimalist UI design inspired by major science fiction film interfaces with readable fictional data and charts, the human operator visible only as a faint silhouette behind the glowing displays for scale, cinematic composition emphasizing depth and information density, the interface showing complex but organized data: orbital trajectories energy readings and system status indicators",
   },
   {
-    category: "video",
-    label: "角色三视图（标准）",
-    prompt: "professional character turnaround reference sheet for animation production, the SAME character shown in five views arranged in a horizontal row: front view facing camera directly, 3/4 view turned 45 degrees, side profile at 90 degrees, 3/4 back view at 135 degrees, and full back view facing away, the character in a neutral A-pose with arms slightly away from body and feet shoulder-width apart, CRITICAL ANATOMY: correct human body proportions with head-to-body ratio 1:7 or 1:7.5, legs must be approximately half of total body height NOT short or stubby, natural thigh-to-calf ratio with knees at the midpoint of legs, torso proportionate not elongated, shoulders level, arms reaching to mid-thigh, neck of natural length, SAME facial features SAME hairstyle SAME body proportions SAME clothing SAME colors in EVERY view with zero variation, this is critical for character consistency, the character must be IDENTICAL across all views, clean white or light gray background with subtle alignment grid lines and horizontal proportion guide lines at head shoulders waist knees and feet, even flat studio lighting with no dramatic shadows, full body ENTIRELY visible from top of head to soles of feet in every view with equal spacing below feet, professional animation or game character design reference sheet format",
+    category: "ui",
+    mode: "t2i",
+    label: "AI视频生成App界面",
+    prompt: "professional dark theme iOS app homepage UI design for an AI Video Generator application, English language interface, professional-level visual design with carefully considered spacing and typography, the screen shows a hero section with a large video preview area displaying a stunning AI-generated cinematic clip, below are category tabs for different video styles: Cinematic Animation Documentary Commercial and Abstract, each with a representative thumbnail, a prominent Generate button with a subtle gradient and glow effect, a bottom navigation bar with Home Discover Create Library and Profile icons, the overall aesthetic is dark charcoal background with vibrant accent colors of electric blue and soft purple, clean modern sans-serif typography with clear hierarchy, subtle glass morphism effects on cards and buttons, iPhone 15 Pro screen proportions, 9:19.5 aspect ratio, the design looking like a shipped production app from a top-tier design team",
   },
   {
-    category: "video",
-    label: "角色表情变化集",
-    prompt: "character expression reference sheet for animation, the SAME single character's head and shoulders shown in a 3x3 grid of nine expressions, expressions: neutral happy sad angry surprised scared disgusted confused amused, the face must be absolutely IDENTICAL in structure proportions and features across all nine panels, only the expression changes through muscle movement around eyes eyebrows and mouth, SAME hairstyle SAME eye color SAME skin tone SAME face shape in every panel, each panel labeled with a tiny text below the expression name, clean white background with thin grid lines separating panels, even studio lighting, professional animation expression sheet used by Disney and Pixar character designers, consistent art style across all panels, the character identity preserved 100% across every expression",
+    category: "ui",
+    mode: "t2i",
+    label: "小红书风格图文卡片",
+    prompt: "a Xiaohongshu (RED) style social media post card, vertical 3:4 aspect ratio, a visually appealing lifestyle photo occupying the upper two-thirds showing a beautifully styled scene with warm natural lighting and soft pastel color grading, overlaid on the image: a catchy headline in bold Chinese characters at the top, the lower one-third features a clean white card with the post title in large readable font, body text in smaller font describing the experience or recommendation, tag icons at the bottom for likes comments and shares, the overall aesthetic is warm feminine and highly polished, with the characteristic Xiaohongshu visual language of soft filters subtle grain and lifestyle aspiration, product placements or travel scene depending on the prompt context, realistic social media screenshot appearance with status bar at the very top",
   },
   {
-    category: "video",
-    label: "图生图角色三视图（面部锁定）",
-    prompt: "IMPORTANT: use the uploaded reference image as the EXACT character to depict. Create a professional character turnaround sheet showing this EXACT same character in five views: front facing camera, 3/4 right, side profile right, 3/4 back right, full back. The face in every view must be IDENTICAL to the reference image face — same eye shape and spacing, same nose bridge height and tip shape, same lip fullness and curve, same jawline and cheekbone structure, same eyebrow arch and thickness. Same hairstyle color and cut, same skin tone, same body type, same clothing design and colors across ALL five views. If the reference shows a specific scar mole or facial feature, it MUST appear in every view where visible. CRITICAL ANATOMY: full body from head to toe in every view, correct human body proportions with head-to-body ratio 1:7 to 1:7.5, legs approximately half of total height with natural thigh-to-calf ratio and clearly defined knees, torso proportional not elongated, arms reaching to mid-thigh, neck of natural length, upright balanced posture. Character stands in neutral A-pose with feet shoulder-width apart. Clean white background with horizontal proportion alignment guides. Professional animation character design sheet. This is for video production requiring absolute facial and body proportion consistency across frames.",
+    category: "ui",
+    mode: "t2i",
+    label: "科幻HUD战斗界面",
+    prompt: "futuristic military HUD (Heads Up Display) overlay view from inside a mecha cockpit or fighter jet, the central view shows an aerial combat scene with explosions and tracer fire in the distance rendered in photorealistic detail, surrounding the central view are multiple layers of tactical interface elements: a circular targeting reticle with lock-on indicators tracking multiple enemy signatures, altitude speed and heading data displayed in glowing green monochrome on the left, a 3D radar minimap in the bottom right showing terrain and threat positions, weapons status panel showing missile counts and cannon ammunition, damage assessment diagram of the vehicle with a flashing warning on the left wing, communication channel frequencies scrolling on the top edge, all UI elements rendered with subtle screen door effect and scan lines for authenticity, the color palette dominated by military green phosphor with orange warning elements and blue friendly indicators, the overall composition feeling like a still frame from a high-budget science fiction film",
+  },
+
+  // ===================== 产品电商 =====================
+  {
+    category: "ecommerce",
+    mode: "t2i",
+    label: "奢华香水广告大片",
+    prompt: "luxury perfume advertisement poster, high-end fragrance campaign in the style of Tom Ford and Dior, a stunning young woman with confident sensual expression, voluminous glossy hair with golden highlights softly lifted by wind, soft glam makeup with glowing skin and bold lips, brown tailored blazer with patterned silk scarf and thin transparent eyeglasses, shot on 85mm portrait lens at f/1.6 from a slightly low premium angle, the perfume bottle placed in the foreground on glossy black marble surface: clear crystal glass bottle with golden liquid inside and metallic gold cap, strong reflections and golden glow with subtle condensation on the glass, dark blurred luxury interior background with warm golden light streaks, small scattered flowers near the bottle and golden particles floating in the air, deep black shadows with rich golden highlights, cinematic spotlight plus golden rim light, ultra sharp on face and bottle, the brand name VELORA PARFUMS in elegant serif typography with the tagline Not just a scent it is your Signature, hyper-realistic 4K ultra HD commercial grade advertising",
   },
   {
-    category: "video",
-    label: "角色行走循环序列帧",
-    prompt: "professional 2D animation walk cycle reference sheet, the SAME character shown in 8 sequential frames of a complete walking motion cycle viewed from the side profile, frames arranged in two horizontal rows of four, the walk cycle starting and ending at the same pose for seamless looping, CRITICAL: correct human body proportions maintained in all frames — legs approximately half of total height, natural thigh-to-calf ratio, feet plant and lift with anatomically correct knee and ankle articulation, arms swing naturally opposite to legs, torso slightly rotates with each step, head-to-body ratio 1:7, SAME character identity SAME proportions SAME clothing in every frame, only the limb positions and slight body rotation change following natural human walk biomechanics, the character must be IDENTICAL across all 8 frames with no feature drift or proportion change, clean white background with frame numbers below each pose, professional animation production reference used by Studio Ghibli and Disney animators, even lighting no shadows, consistent line quality and art style across all frames, suitable for creating looping video animation",
+    category: "ecommerce",
+    mode: "t2i",
+    label: "化妆品电商白底图",
+    prompt: "ultra-realistic luxury cosmetic product photography on pure white seamless studio background, a premium squeeze tube product with satin-finish periwinkle-blue surface and reflective metallic chrome cap, product positioned vertically centered in the frame, surrounded by ink-like swirling clouds of lavender indigo and icy blue smoke wrapping around the product creating depth and mystery, fresh purple and lilac flowers with intricate petal details and vibrant yellow centers placed at the base, tiny violet blossoms scattered for added dimension, soft directional lighting from upper left highlighting the smooth curvature of the tube and adding subtle sheen to the metallic cap, ethereal floral fragrance aesthetic with seamless cool blue and purple tones, hyper-detailed textures on petals and vapor tendrils, high-end perfumed skincare advertising style, 8K ultra-high resolution with cinematic depth of field, commercial product photography for luxury beauty brand, no text overlay no watermark",
   },
   {
-    category: "video",
-    label: "产品360度旋转展示",
-    prompt: "professional e-commerce product 360 degree rotation reference photography, the SAME product shown in 8 evenly spaced angles at 45 degree increments completing a full rotation: 0 front 45 90 side 135 180 back 225 270 side 315, the product placed on a motorized turntable with pure white seamless background, absolutely IDENTICAL studio lighting from all angles — three-point lighting with softboxes ensuring no shadow variation between shots, the product must appear at EXACTLY the same scale and height in every frame, same color balance same exposure same white balance across all 8 views, professional commercial product photography for luxury brands, suitable for creating smooth 360 spin video, the product identity and material appearance preserved 100% consistent across the complete rotation",
+    category: "ecommerce",
+    mode: "t2i",
+    label: "饮料飞溅商业广告",
+    prompt: "three ultra-dynamic soda cans in one vibrant high-end advertising composition, a can of tropical rush soda exploding with dramatic water and tropical fruit splashes including orange slices and passion fruit seeds suspended mid-air, vibrant orange and pink background lighting from colored gels, a can of lemon iced soda splashed with cold water against a glowing green dynamic light background, both cans covered in realistic condensation droplets with motion-blurred water beads flying in all directions, bursting with fruity and refreshing summer energy, deep orange pink and neon green studio lights blending together in a bold commercial setup, captured by a professional photographer using a Canon 50mm lens at high shutter speed to freeze the splashes, hyper-realistic textures on the aluminum cans showing every ridge and printed detail, crisp sharp focus on the product labels, ultra high resolution bright commercial poster aesthetic, rich color vibrancy with cinematic splash effects, 3:4 aspect ratio",
   },
   {
-    category: "video",
-    label: "武器/道具三视图蓝图",
-    prompt: "professional weapon prop design orthographic blueprint sheet for game production, the EXACT same weapon or prop shown in three technical views: front elevation facing directly, side profile at 90 degrees, and top-down plan view, all three views aligned to the same center line and scaled identically, every detail of the design must be IDENTICAL across all three views — same proportions same ornamentation same material indications same wear patterns, callout lines with measurements and material notes in the margins, blueprint aesthetic with dark blue background and white linework or white background with precise technical linework, professional game studio concept art department output, the design language consistent with fantasy RPG or sci-fi weapon depending on the reference, every rivet engraving and surface detail matching exactly across views",
+    category: "ecommerce",
+    mode: "t2i",
+    label: "草莓能量饮料广告",
+    prompt: "hyper-realistic commercial advertisement blending energy drink and sports branding, a dynamic athletic woman captured mid-air in a powerful jump pose with hair streaming upward, wearing modern sportswear: a light translucent white windbreaker jacket open to reveal an orange sports bra, matching orange athletic shorts, white chunky sneakers, surrounded by explosive splashes of red strawberry liquid and flying ice cubes frozen mid-motion, a cold metallic energy drink can in strawberry flavor bursting with condensation droplets sits prominently in the foreground, fresh whole strawberries with green leaves scattered across a glossy reflective surface, bright cinematic lighting with dramatic rim light creating separation from the vibrant orange gradient background, bold glowing typography behind the subject reading ENERGY UNLEASHED, ultra-detailed high contrast sharp focus throughout, commercial product photography style at 8K resolution, advertising poster aesthetic with energetic powerful and refreshing summer mood",
   },
   {
-    category: "video",
-    label: "建筑立面与透视图",
-    prompt: "professional architectural presentation board for a modern building design, the EXACT same building shown in three coordinated views: front elevation orthographic with exact proportions and window placements, a 3/4 perspective view from eye level showing the main entrance and facade materials, and a bird's eye axonometric view showing the roof design and site context, all three views of the SAME building with identical window counts door placements material choices and overall massing, consistent architectural style across all views, professional rendering with soft natural lighting and entourage elements like trees and people for scale, clean white background presentation board format, suitable for architectural animation establishing shots, photorealistic rendering of glass concrete and landscaping",
+    category: "ecommerce",
+    mode: "t2i",
+    label: "巧克力品牌技术分解图",
+    prompt: "branded technical infographic of a premium chocolate bar, combining a photorealistic macro photograph of the chocolate product with technical annotation overlays placed directly on top, black ink style line drawings with strategic gold accent annotations on a pure white studio background, the chocolate bar shown in a three-quarter view with one square broken off revealing the cross-section inside showing layers of ganache caramel and crunchy base, callout lines with precise labels identifying each component: tempered couverture shell caramel layer sea salt crystals cocoa nibs and hazelnut pieces, measurement lines showing exact dimensions in millimeters, material callouts with cocoa percentage and origin notes, arrows indicating the snap line and internal structure, hand-drawn technical sketch feel with architectural blueprint aesthetic, clean composition with balanced negative space, the realistic product remains clearly visible beneath the annotation layer, educational food engineering vibe with premium artisanal branding, 1:1 square format, ultra crisp social feed optimized with no watermark",
   },
   {
-    category: "video",
-    label: "角色服装设计正背面",
-    prompt: "professional fashion costume design reference sheet for animation or film production, the SAME character wearing the EXACT same outfit shown in full-body front view and full-body back view side by side at equal scale, full body visible from head to toe in both views, correct human anatomy with head-to-body ratio 1:7, legs approximately half of total height, natural upright standing posture with feet shoulder-width apart, the outfit rendered in precise detail with all seams stitching patterns fabric folds and accessories visible, the character's body proportions and posture must be IDENTICAL in both views, the face and hairstyle consistent between front and back views, fabric swatches and color palette notes in the margin, professional animation costume design department output, the design suitable for a specific genre based on the reference image, even studio lighting on white or light gray background, every button zipper pocket and decorative element matching exactly between front and back, costume continuity essential for video production",
+    category: "ecommerce",
+    mode: "t2i",
+    label: "巨型产品街头Campaign",
+    prompt: "luxury futuristic streetwear campaign poster featuring a confident young person sitting casually on a gigantic oversized retro gaming controller that dominates the foreground, the controller rendered in hyper-realistic detail with premium matte materials glowing LED accents and subtle button textures, clean editorial advertising aesthetic with massive bold typography in the background saying GAME ON, glossy reflective studio floor beneath, cinematic studio lighting from multiple sources creating dramatic shadows, pastel neon color palette combining lavender silver and soft cyan tones, the subject has an effortless relaxed attitude wearing oversized white graphic t-shirt loose black athletic shorts high white socks and modern sneakers, casual sporty fashion styling with natural makeup and youthful Gen-Z energy, seated with one leg hanging down and one knee raised looking away from the camera with cool confidence, seamless studio backdrop with glossy floor reflections, high-end commercial fashion photography at 8K, 4:3 aspect ratio, hyper detailed photorealistic with the oversized product as the hero element",
+  },
+
+  // ===================== 品牌海报 =====================
+  {
+    category: "brand",
+    mode: "t2i",
+    label: "电影级双重曝光海报",
+    prompt: "hyper-realistic cinematic double exposure portrait poster, a young person in side profile with intense focused expression detailed skin texture and sharp directional gaze, their facial silhouette seamlessly blended with a futuristic city skyline emerging from within their head and neck area, skyscrapers and urban infrastructure forming the internal structure of their profile, strong contrast of deep blue and vibrant red tones symbolizing conflict duality and inner power, abstract digital scratches fractured glass textures and light leak effects overlaying the face for dramatic visual impact, clean white background with subtle paper grain texture, ultra-detailed cinematic lighting with dramatic blue and red split toning, professional movie poster style with intentional negative space for title placement, high contrast sharp focus 8K resolution, realistic hair strands catching colored light, editorial poster composition with modern graphic design aesthetics, dramatic atmosphere suitable for a psychological thriller or character-driven drama film poster",
   },
   {
-    category: "video",
-    label: "场景多角度定场镜头",
-    prompt: "film production location scouting reference for a single environment shown from three cinematic camera angles: a wide establishing master shot showing the full environment and its context, a medium shot from a character's eye level at the main focal point, and a close-up detail shot of a key environmental storytelling element, all three shots of the EXACT same location at the same time of day with the same weather and lighting conditions, consistent color grading and atmosphere across all three views, the lighting direction and quality must match perfectly, professional film pre-production location reference photography, cinematic composition with rule of thirds and leading lines, the environment designed to serve as a key setting for a scene, photorealistic rendering with atmospheric depth, shot matching essential for video editing continuity",
+    category: "brand",
+    mode: "t2i",
+    label: "篮球巨星涂鸦海报",
+    prompt: "scrapbook doodle-style basketball poster of a legendary player, main photo: realistic action shot of the player in an iconic mid-game pose, dynamic energy frozen in time, hand-drawn white and team-color neon ink doodles overlay the image: arrows tracing movement paths, energetic stars bursting at impact points, sketchy motion lines, hand-drawn circles highlighting key details, a glowing outline tracing the player's body contour, layout with handwritten titles and stats: the player's name in bold graffiti letters at top with their nickname in script below, career stats section showing total points assists and championships in hand-drawn boxes, highlight achievements in sketchy star badges, club and national team career milestones listed with rough icons, the whole composition balancing the realistic photograph with playful notebook doodle aesthetic, modern sports poster meets personal journal style, clean but energetic slightly messy doodles in high contrast, neon accents on dark muted background, all stats realistic and proportional to the player's career",
   },
   {
-    category: "video",
-    label: "怪物/生物概念多视图",
-    prompt: "professional creature design reference sheet for game or film production, the EXACT same fantasy creature or monster shown in side profile full body, front view, and a dynamic 3/4 action pose, all three views of the identical creature with PERFECT anatomical consistency — same number of limbs same skeletal structure same joint positions same scale same proportions same textures same coloration same distinctive features in every view, the creature's limb-to-body ratio consistent across all views, if the creature has horns spikes wings tentacles or unique markings they must match exactly in count placement shape and size across all views, anatomical study callouts in the margins noting scale measurements and special features, professional creature design department output standard used by Weta Workshop and Industrial Light and Magic, the creature design biologically plausible within its fictional context with functional anatomy that makes sense for its imagined environment and behavior, even studio lighting revealing all anatomical details without obscuring shadows, the creature identity preserved 100% across every view for VFX modeling and animation rigging reference",
+    category: "brand",
+    mode: "t2i",
+    label: "东方神话人物志海报",
+    prompt: "vertical A4 premium poster for an Eastern mythology character encyclopedia, centered on a single mythological figure from Chinese legend, the design follows ancient Chinese manuscript aesthetics: the central figure rendered in grand portrait style with historically accurate clothing weapons and attributes specific to that deity or hero, symmetrical layout with information panels on both sides like ancient stele inscriptions, title at top in large seal script or Song dynasty calligraphy with a poetic spiritual motto beneath describing the character's essence in 12-28 classical Chinese characters, panels include: divine identity and origin source texts and historical records domains and powers under their control physical appearance and visual traits sacred weapons and artifacts companions and mounts classic tales and legendary episodes symbolic meanings mythological lineage and relationships cultural influence and modern legacy, all text in classical literary Chinese with short precise entries, visual style blending Dunhuang murals blue-green landscape painting bronze vessel motifs and ancient manuscript illumination, paper texture with subtle fiber patterns mineral pigment colors and gilt gold line accents, vermillion seal stamps scattered as authentication marks, the color palette determined by the character's elemental attributes: vermillion and gold for fire and war deities indigo and silver for moon and water spirits jade green and ochre for earth and nature gods, overall feeling of an artifact from a museum archive not a modern graphic design",
   },
   {
-    category: "video",
-    label: "物品图标套装（统一风格）",
-    prompt: "professional game UI item icon set, 12 different items arranged in a 4x3 grid, each item in its own square cell with consistent isometric or top-down perspective, all items sharing the EXACT same art style rendering technique lighting direction and level of detail, the items belonging to a coherent category — fantasy RPG potions weapons armor pieces or food ingredients based on the reference, each item clearly distinct from the others but visually unified through consistent style, clean cell borders between items, transparent or clean background for easy game engine integration, professional mobile game or RPG asset quality, the consistency of style across all 12 items is CRITICAL for them to read as a matching set, suitable for extracting individual frames for video game UI animation, crisp edges and vibrant colors optimized for small display sizes",
+    category: "brand",
+    mode: "t2i",
+    label: "概念字体设计海报",
+    prompt: "premium conceptual typography poster, a single bold title word rendered as the dominant visual structure of the entire composition: huge readable powerful and spelled with custom-designed letterforms, the typography is the hero with weight width contrast spacing rhythm distortion negative space edge quality and ink texture all expressing the temperament and meaning of the word, a rich but restrained 4-6 color system: dominant background color primary typography color figure or landscape tone an emotional accent color a muted support color and subtle paper texture tone, composition style: high-end editorial poster museum-quality graphic design dramatic scale with strong hierarchy, few elements maximum impact, intelligent whitespace bold flat color areas sharp cropping, silkscreen lithograph and risograph printing textures with visible paper fibers subtle ink imperfections and refined visual tension, if the title refers to a person or figure a large editorial portrait occupies 40-70% of the composition interacting with the typography through overlapping emerging or breaking through the letterforms, the final image should feel like a complete visual sentence where the title the figure the colors and the typography all explain and enhance each other, avoid generic word art glossy 3D lettering random icons and stock-photo realism",
   },
   {
-    category: "video",
-    label: "角色多角度动态姿势",
-    prompt: "dynamic character action pose reference sheet, the SAME single character shown in 4 different dynamic action poses arranged in a 2x2 grid: fighting stance, leaping through air, landing from height, and defensive crouch, the character identity ABSOLUTELY consistent across all 4 poses — same face same body proportions same costume same hair same distinctive features, only the pose and limb positions change, CRITICAL: correct human anatomy maintained in every pose despite the dynamic action, head-to-body ratio 1:7, limbs naturally proportioned with legs NOT shortened by perspective or foreshortening, each pose showing full body from head to toe with dynamic energy and clear readable silhouette, professional comic book or animation key frame reference, clean white background with slight motion lines indicating direction of movement, even studio lighting revealing all details, the poses designed to flow naturally from one to the next for animation sequence planning, suitable for video game character animation or cutscene production",
+    category: "brand",
+    mode: "t2i",
+    label: "极简建筑地标艺术海报",
+    prompt: "luxury minimalist poster centered on a famous architectural landmark, the focal element is a precise illustrated rendering of the building in clean geometric lines with subtle architectural detail, behind and interacting with the architecture one giant bold English word in a design-forward modernist typeface whose character matches the building's identity: a brutalist structure gets heavy industrial sans-serif a baroque cathedral gets elegant classical serif a deconstructivist museum gets experimental geometric letterforms, smaller body copy nearby describing the building's design philosophy in 2-3 lines of clean sans-serif text, the composition reads as an ultra high-end art poster: restrained low-key color palette of 3-4 colors where graphic elements interlock with the architecture appearing as if they form part of its structural components or extend outward from its silhouette, generous negative space premium matte paper texture, the overall feeling is of a limited edition architectural print sold at a design museum shop, balanced composition with geometric precision, 2:3 or 3:4 aspect ratio",
+  },
+  {
+    category: "brand",
+    mode: "t2i",
+    label: "城市文字旅行海报",
+    prompt: "minimalist flat travel poster illustration of an iconic world destination, clean vector art style with Scandinavian color palette of soft pastel tones, calm atmospheric scenery depicting the destination's most recognizable landmarks and natural features reduced to their essential geometric shapes, the specific destination rendered with loving attention to its unique character: lakeside village with alpine mountains and perfect reflections colorful harbor houses with fjord backdrop traditional riverside town with cherry blossoms and pagoda or white cliffside architecture with blue domes overlooking the sea, ultra clean composition with geometric landscape shapes smooth gradients and elegant typography featuring the destination name in refined sans-serif or serif, modern tourism poster aesthetic with serene travel mood crisp vector lines and cinematic wide-angle scenery, peaceful stylized skies with geometric clouds, highly detailed environment art rendered in contemporary flat illustration style, premium editorial travel design with balanced composition and minimal shadows, dreamy vacation atmosphere with soft morning or golden hour lighting, high-end hospitality brand poster vibe, 4K ultra detailed",
+  },
+
+  // ===================== 图生图专用 =====================
+  {
+    category: "i2i",
+    mode: "i2i",
+    label: "照片转电影级油画风格",
+    prompt: "transform the uploaded reference photo into a classical oil painting in the style of 17th century Dutch Golden Age masters, preserve the original subject's identity facial structure and pose while rendering everything with visible brushstrokes rich impasto texture on canvas and the warm earthy color palette of Rembrandt or Vermeer, apply dramatic chiaroscuro lighting with a single light source illuminating the subject while the background falls into deep atmospheric shadow, add subtle aging effects: fine craquelure across the surface slight yellowing of varnish and the soft glow of old master pigments, retain the original composition but reinterpret clothing as period garments with lace collars velvet fabrics and subtle gold embroidery, the background should become a dark atmospheric interior with perhaps the hint of a window or architectural element, the final result should look like a genuine museum-quality painting that has hung in a gallery for centuries, not a digital filter effect, pay special attention to the eyes which should retain the original person's gaze and expression while rendered with the luminous quality of oil paint, the edges should softly dissolve into the dark background as in authentic Baroque portraiture",
+  },
+  {
+    category: "i2i",
+    mode: "i2i",
+    label: "照片转动漫角色",
+    prompt: "using the uploaded photo as the exact character reference, transform this person into a high-quality anime illustration while preserving their core facial identity and recognizable features, the art style should be a polished Japanese animation aesthetic with clean lineart subtle cel shading and soft gradient coloring, the character should have the same eye shape nose structure and face proportions as the original but translated into anime conventions with slightly larger more expressive eyes, the hair should maintain the original color and general style but rendered with anime shine and flowing strands, outfit can be stylized into an anime-appropriate costume in a similar color palette to the original, the background should be a simple atmospheric scene appropriate to the character: a school rooftop at sunset a quiet street under cherry blossoms or a cozy room with warm window light, add subtle lighting effects including rim light and soft bloom for that cinematic anime look, the overall feeling should be as if this person is a character from a high-quality anime series or film, not a cheap filter but a genuine artistic translation between mediums",
+  },
+  {
+    category: "i2i",
+    mode: "i2i",
+    label: "产品白底图场景替换",
+    prompt: "take the product from the uploaded image and place it into a premium clean white studio photography setup, carefully extract the product preserving all its details textures colors and labels exactly as they appear in the original, place it on a pure white seamless infinity background with soft studio lighting from above and slightly to the left creating a gentle shadow beneath the product for grounding, the lighting should be even and commercial-grade with softboxes eliminating harsh shadows while maintaining the product's three-dimensionality, add subtle reflections on a glossy white surface below, render the product in hyper-realistic 8K commercial photography quality with every detail of the packaging material and label perfectly sharp and readable, the composition should be centered with the product occupying approximately 70% of the frame leaving clean white space around it suitable for e-commerce listing, the result should look indistinguishable from a professional product photograph shot in a commercial photography studio specifically for Amazon or a luxury brand website, no background objects no hands no props just the product hero shot on pure white",
+  },
+  {
+    category: "i2i",
+    mode: "i2i",
+    label: "照片转手绘儿童插画",
+    prompt: "transform the uploaded photo into a delicate minimalist hand-drawn children's book illustration with a soft whimsical fairy-tale aesthetic, use simple elongated shapes thin imperfect hand-drawn pencil lines flat pastel colors and minimal details, apply a cute doll-like character style with rosy cheeks tiny facial features and simplified charming anatomy while keeping the original person recognizable through their distinctive features like hair color face shape and characteristic expression, stylize the clothing in a playful storybook way with simplified shapes and gentle decorative details like tiny flowers stars or stripes, add subtle paper texture soft pencil and pastel shading watercolor softness in the coloring with gentle color bleeds at the edges, the background should be a clean white or soft cream with small hand-drawn stars sparkles or simple floral elements scattered lightly around, the overall mood should feel airy cozy naive and charming like a modern Scandinavian nursery postcard or a beloved children's book illustration, avoid photorealism 3D rendering cinematic lighting glossy surfaces complex shadows and realistic anatomy, the final result should look like an illustration you would find in a high-quality children's picture book not a digital photo filter",
+  },
+  {
+    category: "i2i",
+    mode: "i2i",
+    label: "照片转粗糙涂鸦风格",
+    prompt: "turn the uploaded photo into a chaotic funny doodle illustration intentionally messy and low-skill as if drawn quickly with cheap markers crayons and worn-out felt pens on scrap paper, create exaggerated facial features with awkward proportions: uneven eyes oversized head tiny body crooked smile and clumsy anatomy while still keeping the person recognizable through their key distinguishing features, use rough childish sketch lines shaky hand-drawn strokes visible scribbles overlapping outlines accidental marks and random doodles around the scene, add a simple cartoon-style background with badly drawn buildings trees clouds street elements and completely uneven perspective, coloring should look careless and imperfect with visible stroke texture inconsistent fill areas that go outside the lines wax crayon texture marker bleed and irregular shading, include playful imperfections: crossed-out redrawn lines unfinished details random arrows pointing at nothing tiny nonsensical notes stars swirls zigzags and abstract scribbles in the margins, the overall aesthetic should feel humorous spontaneous handmade energetic goofy and intentionally unpolished resembling a child's sketchbook mixed with absurd internet meme art, high texture detail with visible paper grain asymmetrical composition awkward framing expressive doodle chaos and raw sketch energy",
+  },
+  {
+    category: "i2i",
+    mode: "i2i",
+    label: "照片季节场景变换",
+    prompt: "take the uploaded photo and completely transform the season and weather conditions while preserving the exact same location architecture and general composition, if the original shows summer change to deep winter: add thick snow covering all surfaces replace green leaves with bare snow-laden branches add a soft grey overcast sky with gentle snowfall particles, change the lighting from warm to cool and diffuse, add winter details like icicles hanging from edges frost on windows and breath mist in the cold air, if showing winter change to vibrant autumn: add warm golden and red foliage to trees scatter fallen leaves on the ground replace the cool lighting with warm golden hour sunlight filtering through colored leaves, add autumn atmosphere with slight atmospheric haze and the long shadows of late afternoon, the people or subjects in the scene should remain in their same positions and general appearance but their clothing should subtly adapt to the new season: lighter and brighter for summer heavier and layered for winter, the overall scene should look completely naturally like it was photographed in the new season not like a digital composite, maintain photorealistic quality throughout with appropriate seasonal lighting atmospheric effects and environmental details",
+  },
+  {
+    category: "i2i",
+    mode: "i2i",
+    label: "老旧照片高清修复上色",
+    prompt: "restore and enhance the uploaded old or damaged photograph, carefully repair all visible damage: remove scratches dust spots tears creases and stains while preserving the original image's character and historical authenticity, enhance faded colors back to their original vibrancy using historically appropriate color references for the era, if the photo is black and white add natural historically accurate colorization: research the period-appropriate colors for skin tones clothing fabrics architectural elements and environmental details, sharpen blurred areas using intelligent detail reconstruction while maintaining natural film grain texture, improve overall contrast and dynamic range to reveal details lost in shadows and highlights, keep the original composition and aspect ratio intact, the final result should look like the photograph was professionally restored by a museum conservation specialist: clear vibrant and detailed but still authentically vintage, not over-processed or artificial looking, the emotional impact and historical value of the original image should be preserved and enhanced not erased, the subjects should still look like real people from their era not modern AI-generated faces",
+  },
+  {
+    category: "i2i",
+    mode: "i2i",
+    label: "人像背景替换与重设",
+    prompt: "using the uploaded portrait photo as strict identity reference preserving the exact facial features skin tone hair and body proportions of the subject, completely remove the original background and replace it with a carefully chosen new environment that fits the subject's pose lighting direction and overall mood, the new background options based on need: a professional corporate office with warm wood paneling and bookshelves for a business portrait, a sunlit outdoor garden with flowering plants and soft bokeh for a lifestyle portrait, a dramatic studio setup with colored gels and shadow patterns for a creative editorial look, or a minimalist architectural space with clean lines and natural light for a modern aesthetic, the key requirement is that the lighting on the subject must perfectly match the new background: if the background is backlit the subject needs rim light matching that direction, if the background is in warm sunset the subject needs warm tone fill, the subject's edges must be cleanly extracted with natural hair strands preserved and no obvious cutout artifacts, the final composite should be seamless and photorealistic looking like the subject was originally photographed in this new environment with matching perspective depth of field and ambient light color",
+  },
+  {
+    category: "i2i",
+    mode: "i2i",
+    label: "角色多视图参考表",
+    prompt: "based on the uploaded character reference image, generate a professional animation production character turnaround sheet showing this EXACT same character in five views arranged in a horizontal row: front view facing directly, 3/4 view turned 45 degrees right, side profile at 90 degrees, 3/4 back view at 135 degrees, and full back view facing away, the character in a neutral A-pose with arms slightly away from body and feet shoulder-width apart, CRITICAL: the face in every view must be IDENTICAL to the reference image face with the same eye shape and spacing same nose bridge height and tip shape same lip fullness and curve same jawline and cheekbone structure same eyebrow arch and thickness, same hairstyle color and cut same skin tone same body type same clothing design and colors across ALL five views with zero variation, correct human body proportions with head-to-body ratio 1:7 to 1:7.5, legs approximately half of total height with natural thigh-to-calf ratio knees at midpoint, arms reaching to mid-thigh, neck of natural length full body entirely visible from top of head to soles of feet in every view, clean white or light gray background with subtle alignment grid lines and horizontal proportion guide markers at head shoulders waist knees and feet, even flat studio lighting with no dramatic shadows, professional animation studio character design reference sheet format",
+  },
+  {
+    category: "i2i",
+    mode: "i2i",
+    label: "照片转纸艺拼贴风格",
+    prompt: "recreate the uploaded image in a charming handcrafted paper craft collage style, simplify the main subject and scene details to make them suitable for layered paper artwork, the composition should use multiple layers of cut paper with visible paper thickness casting subtle drop shadows between layers creating a diorama-like depth effect, the paper textures should be visible: construction paper with slight fiber texture tissue paper with translucency corrugated cardboard edges and patterned scrapbook paper for decorative elements, the color palette should shift to warm pastels and soft muted tones with the characteristic look of colored craft paper, edges should show the slight irregularity of hand-cut shapes with tiny imperfections that add handmade charm, add cute decorative elements around the main subject: small paper birds butterflies flowers stars clouds or hearts depending on the scene, the composition should feel visually pleasing soft and adorable like a handmade greeting card or a children's craft project elevated to fine art, maintain the original subject's recognizable identity and the general composition of the scene but reinterpret everything through the lens of paper craft, soft natural lighting with gentle shadows consistent across all layers, high detail showing paper grain and cut edges, overall feeling of warmth creativity and handmade love",
+  },
+  {
+    category: "i2i",
+    mode: "i2i",
+    label: "照片转MS Paint拙劣风",
+    prompt: "redraw the uploaded image in the most clumsy messy and hopelessly amateur way possible as if created in Microsoft Paint by someone who has never used a computer before, use a flat white background and render everything with the characteristic MS Paint aesthetic: jagged pixelated edges from the lack of anti-aliasing obviously filled areas using the paint bucket tool with gaps where the fill leaked through, use only the default MS Paint color palette with garish bright colors chosen seemingly at random, lines should be drawn with the pencil tool at 1px thickness with shaky mouse-drawn quality and no smooth curves, shapes should be approximated with the rectangle and oval tools creating a blocky geometric interpretation, the image should vaguely resemble the original in concept: the same number of subjects in roughly the same positions with some attempt at the same colors but everything is strangely off and awkwardly proportioned, add accidental MS Paint artifacts: random stray pixels incomplete eraser smudges text tool typos with default font text boxes left in wrong places, emphasize the low-quality pixelated look and make it appear ridiculously badly drawn yet somehow endearing in its earnestness, the final result should look like something that would go viral on social media for being hilariously terrible",
+  },
+  {
+    category: "i2i",
+    mode: "i2i",
+    label: "照片背景扩展与重构",
+    prompt: "take the uploaded photo and dramatically expand the background beyond the original frame while keeping the main subject perfectly intact, imagine what exists beyond the cropped edges: extend the environment architecture landscape or interior outward in all directions maintaining consistent perspective lighting and visual style, if the photo shows a person in a room expand to reveal the full room with furniture windows doors and decorative elements that logically complete the space, if outdoors expand to reveal more of the landscape cityscape or natural environment with appropriate depth layers from foreground to distant horizon, the expanded areas must be seamlessly integrated with the original image: matching the same camera angle lens characteristics depth of field white balance color grading and film grain, the original subject remains untouched while the expanded background tells a richer story about the place and context, the final composition can shift the subject to a new position within a wider frame creating a more cinematic or editorial composition, the aspect ratio can change from the original to a wider format like 16:9 or 2.35:1 for a cinematic feel, the overall effect should be like seeing the uncropped original photograph revealing the full scene the photographer actually captured, photorealistic quality throughout with no visible seam between original and expanded areas",
   },
 ];
 
-/** 中→英 prompt 关键词映射 */
+/** 中英 prompt 关键词映射 */
 const ZH_EN_MAP: Record<string, string> = {
   "4k": "4K",
   "高清": "high definition",
@@ -558,4 +613,8 @@ export function randomTemplate(): TemplateItem {
 
 export function templatesByCategory(category: string): TemplateItem[] {
   return TEMPLATES.filter((t) => t.category === category);
+}
+
+export function templatesByMode(mode: "t2i" | "i2i" | "both"): TemplateItem[] {
+  return TEMPLATES.filter((t) => t.mode === mode);
 }
