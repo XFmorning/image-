@@ -192,6 +192,41 @@ export async function generateImage(params: GenerateParams): Promise<ApiResult> 
         return { success: true, images: await parseStabilityResponse(data) };
       }
 
+      // ---- Pollinations.ai (免费无 Key) ----
+      case "pollinations": {
+        // Pollinations 接口: GET /prompt/<prompt>?model=<model>&width=...&height=...&nologo=true
+        // 返回直接是图片二进制
+        const model = provider.model || "flux";
+        const params = new URLSearchParams({
+          model,
+          width: String(width),
+          height: String(height),
+          nologo: "true",
+          private: "true",
+          enhance: "true",
+        });
+        // 提示词需要 URL 编码
+        const encodedPrompt = encodeURIComponent(prompt);
+        const url = `${provider.baseUrl}/prompt/${encodedPrompt}?${params.toString()}`;
+
+        response = await fetch(url, {
+          method: "GET",
+          headers: { Accept: "image/*" },
+        });
+        if (!response.ok) {
+          const errText = await response.text();
+          const { message, code } = formatError(response.status, errText);
+          return { success: false, images: [], error: message, errorCode: code };
+        }
+        const ct = response.headers.get("content-type") || "";
+        if (ct.includes("image")) {
+          return { success: true, images: [await response.arrayBuffer()] };
+        }
+        // 兜底：极少数情况下返回 JSON
+        const data = await response.json();
+        return { success: true, images: await parseGenericResponse(data, "") };
+      }
+
       // ---- 自定义 ----
       case "custom":
       default: {
@@ -297,6 +332,38 @@ export async function generateImageWithRef(params: GenerateWithRefParams): Promi
         }
         const data = await response.json();
         return { success: true, images: await parseStabilityResponse(data) };
+      }
+
+      // ---- Pollinations.ai (免费无 Key, 仅文生图) ----
+      case "pollinations": {
+        // Pollinations 暂不支持标准图生图接口，回退到文生图（忽略参考图）
+        const model = provider.model || "flux";
+        const params = new URLSearchParams({
+          model,
+          width: String(width),
+          height: String(height),
+          nologo: "true",
+          private: "true",
+          enhance: "true",
+        });
+        const encodedPrompt = encodeURIComponent(prompt);
+        const url = `${provider.baseUrl}/prompt/${encodedPrompt}?${params.toString()}`;
+
+        response = await fetch(url, {
+          method: "GET",
+          headers: { Accept: "image/*" },
+        });
+        if (!response.ok) {
+          const errText = await response.text();
+          const { message, code } = formatError(response.status, errText);
+          return { success: false, images: [], error: message, errorCode: code };
+        }
+        const ct = response.headers.get("content-type") || "";
+        if (ct.includes("image")) {
+          return { success: true, images: [await response.arrayBuffer()] };
+        }
+        const data = await response.json();
+        return { success: true, images: await parseGenericResponse(data, "") };
       }
 
       // ---- 自定义 ----
