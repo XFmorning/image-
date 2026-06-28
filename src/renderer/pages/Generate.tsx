@@ -900,9 +900,14 @@ export default function Generate() {
 
                       {/* 信息 */}
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 13, fontWeight: 500, marginBottom: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                          {t.prompt.slice(0, 60)}
-                        </div>
+                        <Tooltip title={t.prompt} placement="topLeft">
+                          <div
+                            onClick={() => { navigator.clipboard.writeText(t.prompt); message.success("提示词已复制"); }}
+                            style={{ fontSize: 13, fontWeight: 500, marginBottom: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", cursor: "pointer", color: "#333" }}
+                          >
+                            {t.prompt.slice(0, 60)}{t.prompt.length > 60 ? "…" : ""}
+                          </div>
+                        </Tooltip>
                         <Space size={4} wrap style={{ fontSize: 11 }}>
                           <Tag color={t.mode === "t2i" ? "blue" : "cyan"} style={{ fontSize: 10 }}>{t.size}</Tag>
                           <Tag color="purple" style={{ fontSize: 10 }}>{t.providerName}·{t.providerModel}</Tag>
@@ -926,8 +931,11 @@ export default function Generate() {
                       </div>
 
                       {/* 时间 */}
-                      <div style={{ fontSize: 12, color: "#bbb", whiteSpace: "nowrap", textAlign: "right" }}>
-                        {tElapsed}s
+                      <div style={{ fontSize: 11, color: "#bbb", whiteSpace: "nowrap", textAlign: "right" }}>
+                        <Tooltip title={new Date(t.startTime).toLocaleString("zh-CN")}>
+                          <div>{new Date(t.startTime).toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}</div>
+                        </Tooltip>
+                        <div>{tElapsed}s</div>
                       </div>
 
                       {/* 操作 */}
