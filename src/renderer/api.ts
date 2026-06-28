@@ -68,14 +68,14 @@ function b64ToBuffer(b64: string): ArrayBuffer {
 }
 
 /** 解析 OpenAI 兼容响应: { data: [{ b64_json?, url? }] } */
-async function parseOpenAiResponse(data: any): Promise<ArrayBuffer[]> {
+async function parseOpenAiResponse(data: any, apiKey: string): Promise<ArrayBuffer[]> {
   const images: ArrayBuffer[] = [];
   for (const item of data.data || []) {
     if (item.b64_json) {
       images.push(b64ToBuffer(item.b64_json));
     } else if (item.url) {
-      const resp = await fetch(item.url);
-      images.push(await resp.arrayBuffer());
+      const dataUrl = await window.electronAPI.fetchUrlBuffer(item.url, `Bearer ${apiKey}`);
+      if (dataUrl) images.push(b64ToBuffer(dataUrl.split(",", 2)[1] || dataUrl));
     }
   }
   return images;
@@ -116,10 +116,8 @@ async function parseGenericResponse(data: any, apiKey: string): Promise<ArrayBuf
     if (!c.value) continue;
     if (c.value.startsWith("http")) {
       try {
-        const resp = await fetch(c.value, {
-          headers: { Authorization: `Bearer ${apiKey}` },
-        });
-        images.push(await resp.arrayBuffer());
+        const dataUrl = await window.electronAPI.fetchUrlBuffer(c.value, `Bearer ${apiKey}`);
+        if (dataUrl) images.push(b64ToBuffer(dataUrl.split(",", 2)[1] || dataUrl));
       } catch { /* skip failed URLs */ }
     } else {
       try {
@@ -164,7 +162,7 @@ export async function generateImage(params: GenerateParams): Promise<ApiResult> 
           return { success: false, images: [], error: message, errorCode: code };
         }
         const data = await response.json();
-        return { success: true, images: await parseOpenAiResponse(data) };
+        return { success: true, images: await parseOpenAiResponse(data, provider.apiKey) };
       }
 
       // ---- Stability AI ----
@@ -192,6 +190,41 @@ export async function generateImage(params: GenerateParams): Promise<ApiResult> 
         // 否则按 JSON 解析
         const data = await response.json();
         return { success: true, images: await parseStabilityResponse(data) };
+      }
+
+      // ---- Pollinations.ai (免费无 Key) ----
+      case "pollinations": {
+        // Pollinations 接口: GET /prompt/<prompt>?model=<model>&width=...&height=...&nologo=true
+        // 返回直接是图片二进制
+        const model = provider.model || "flux";
+        const params = new URLSearchParams({
+          model,
+          width: String(width),
+          height: String(height),
+          nologo: "true",
+          private: "true",
+          enhance: "true",
+        });
+        // 提示词需要 URL 编码
+        const encodedPrompt = encodeURIComponent(prompt);
+        const url = `${provider.baseUrl}/prompt/${encodedPrompt}?${params.toString()}`;
+
+        response = await fetch(url, {
+          method: "GET",
+          headers: { Accept: "image/*" },
+        });
+        if (!response.ok) {
+          const errText = await response.text();
+          const { message, code } = formatError(response.status, errText);
+          return { success: false, images: [], error: message, errorCode: code };
+        }
+        const ct = response.headers.get("content-type") || "";
+        if (ct.includes("image")) {
+          return { success: true, images: [await response.arrayBuffer()] };
+        }
+        // 兜底：极少数情况下返回 JSON
+        const data = await response.json();
+        return { success: true, images: await parseGenericResponse(data, "") };
       }
 
       // ---- 自定义 ----
@@ -272,7 +305,7 @@ export async function generateImageWithRef(params: GenerateWithRefParams): Promi
           return { success: false, images: [], error: message, errorCode: code };
         }
         const data = await response.json();
-        return { success: true, images: await parseOpenAiResponse(data) };
+        return { success: true, images: await parseOpenAiResponse(data, provider.apiKey) };
       }
 
       // ---- Stability AI (image-to-image) ----
@@ -299,6 +332,38 @@ export async function generateImageWithRef(params: GenerateWithRefParams): Promi
         }
         const data = await response.json();
         return { success: true, images: await parseStabilityResponse(data) };
+      }
+
+      // ---- Pollinations.ai (免费无 Key, 仅文生图) ----
+      case "pollinations": {
+        // Pollinations 暂不支持标准图生图接口，回退到文生图（忽略参考图）
+        const model = provider.model || "flux";
+        const params = new URLSearchParams({
+          model,
+          width: String(width),
+          height: String(height),
+          nologo: "true",
+          private: "true",
+          enhance: "true",
+        });
+        const encodedPrompt = encodeURIComponent(prompt);
+        const url = `${provider.baseUrl}/prompt/${encodedPrompt}?${params.toString()}`;
+
+        response = await fetch(url, {
+          method: "GET",
+          headers: { Accept: "image/*" },
+        });
+        if (!response.ok) {
+          const errText = await response.text();
+          const { message, code } = formatError(response.status, errText);
+          return { success: false, images: [], error: message, errorCode: code };
+        }
+        const ct = response.headers.get("content-type") || "";
+        if (ct.includes("image")) {
+          return { success: true, images: [await response.arrayBuffer()] };
+        }
+        const data = await response.json();
+        return { success: true, images: await parseGenericResponse(data, "") };
       }
 
       // ---- 自定义 ----
