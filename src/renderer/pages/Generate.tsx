@@ -36,6 +36,7 @@ import {
   PictureOutlined,
 } from "@ant-design/icons";
 import type { UploadFile } from "antd";
+import heroImage from "../assets/hero.png";
 import { generateImage, generateImageWithRef } from "../api";
 import {
   TEMPLATE_CATEGORIES,
@@ -624,14 +625,8 @@ export default function Generate() {
         {/* 空闲状态 */}
         {task.status === "idle" && (
           <div style={{ textAlign: "center", padding: "40px 20px" }}>
-            {/* 装饰插图 */}
-            <div className="idle-illustration">
-              <div className="orb orb-1" />
-              <div className="orb orb-2" />
-              <div className="orb orb-3" />
-              <div className="icon-center">
-                <ThunderboltOutlined style={{ fontSize: 32, color: "var(--gradient-start)" }} />
-              </div>
+            <div style={{ marginBottom: 16 }}>
+              <img src={heroImage} alt="Morning AI" style={{ width: 240, height: "auto", borderRadius: 16, boxShadow: "0 8px 32px rgba(102,126,234,0.15)" }} />
             </div>
             <h3 style={{ color: "#1a1a2e", marginBottom: 6, fontSize: 20, fontWeight: 700 }}>
               开始你的创作之旅
