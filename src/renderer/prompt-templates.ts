@@ -6,6 +6,7 @@ export interface TemplateItem {
 
 export const TEMPLATE_CATEGORIES: { key: string; name: string; icon: string }[] = [
   { key: "portrait", name: "人像", icon: "UserOutlined" },
+  { key: "photography", name: "摄影感", icon: "CameraOutlined" },
   { key: "landscape", name: "风景", icon: "PictureOutlined" },
   { key: "scifi", name: "科幻", icon: "RocketOutlined" },
   { key: "ancient", name: "古风", icon: "EnvironmentOutlined" },
@@ -63,6 +64,48 @@ export const TEMPLATES: TemplateItem[] = [
     prompt: "vintage 1980s film portrait, subject with retro hairstyle and clothing, warm Kodak Portra 400 color palette with creamy skin tones and slightly muted greens, soft natural window light from one side, cozy interior setting with period-appropriate furniture and decor, subtle film grain and slight color shift toward warm amber, nostalgic and intimate mood, medium format 6x7 composition, candid moment captured feel",
   },
 
+  // ===================== 摄影感 =====================
+  {
+    category: "photography",
+    label: "RAW iPhone纪实风",
+    prompt: "Create a completely RAW quality, unprocessed, unedited image with full iPhone camera quality. A momentary blur, natural imperfections, no posing. Shot from slightly above, natural daylight from a window, no flash. Casual everyday setting, shot on iPhone, strong sense of realism and authenticity, 4K detail with subtle noise and grain",
+  },
+  {
+    category: "photography",
+    label: "90年代傻瓜相机",
+    prompt: "90s point-and-shoot camera quality, amateur film photo aesthetic, slight overexposure with blown highlights, visible film grain, color shifts toward warm amber or cool cyan, imperfect composition with slight tilt, on-camera flash with redeye possible, typical family snapshot feel, casual framing as if taken without looking through viewfinder, nostalgic 1990s everyday life mood",
+  },
+  {
+    category: "photography",
+    label: "便利店深夜街拍",
+    prompt: "Create an ultra-realistic urban street group photo at a convenience store entrance at 10 PM summer night. 3-4 young people briefly chatting at the entrance, someone holding drinks, someone sitting on plastic outdoor chairs, someone standing looking at their phone. Bright white light streaming through the glass doors and windows, warm yellow street lights and distant car headlights outside. Characters wearing everyday clothes: T-shirts, shirts, shorts, jeans, sneakers. No internet celebrity styling. Faces and postures must look like real pedestrians, not overly polished. Environment must include real convenience store elements: freezer stickers, promotional posters, trash cans, entrance mats, glass reflections, shared bikes on roadside, water droplets from drink bottles on ground. The image should look like a very authentic life slice captured by a photographer in the city",
+  },
+  {
+    category: "photography",
+    label: "地铁抓拍",
+    prompt: "A beautiful woman looking at her phone on the subway, a candid photo. Natural mixed lighting from train interior fluorescents and tunnel darkness outside windows, slight motion blur from train movement, reflections on glass, other passengers partially visible in background out of focus, unposed spontaneous moment, photojournalism style, realistic skin texture with subtle imperfections, shot on smartphone, vertical composition, strong sense of being there in the moment",
+  },
+  {
+    category: "photography",
+    label: "35mm胶片温泉旅店",
+    prompt: "35mm film photography, warm vintage Japanese onsen ryokan aesthetic, soft ambient wooden lantern lighting mixed with gentle natural window light, subtle film grain, gentle color shift toward warm amber, high atmosphere editorial style, intimate medium shot, natural relaxed pose on the edge of a traditional wooden engawa veranda, wearing a loose white yukata, warm wooden interior with paper sliding doors and distant steaming hot spring in soft focus, gentle rim lighting highlighting skin and fabric texture, authentic vintage film color grading, extremely sharp yet soft skin rendering, natural hair strands, realistic fabric wrinkles, no plastic skin, no digital over-sharpening, authentic 35mm film atmosphere",
+  },
+  {
+    category: "photography",
+    label: "闪光灯直闪运动风",
+    prompt: "35mm color film photography with harsh direct on-camera flash, specular highlights on skin and clothing, strong catchlights in eyes, high contrast flash illumination, authentic film grain and color shift, fresh innocent editorial style, intimate first-person low-angle POV shot from below, direct on-camera flash creating sharp highlights and deep shadows, background slightly underexposed, high contrast film color grading with natural flash look, authentic 35mm direct flash aesthetic, realistic skin texture showing fine pores and natural texture, no plastic skin, no digital over-sharpening, no airbrushing",
+  },
+  {
+    category: "photography",
+    label: "2003年数码相机家庭照",
+    prompt: "A photo from 2003, shot with an early digital camera, of a family in the courtyard of their residential compound. Low resolution typical of early 2000s consumer digital cameras, slight CCD sensor noise, limited dynamic range with slightly clipped highlights, dated color reproduction with slight greenish tint typical of that era, JPEG compression artifacts, timestamp in bottom right corner optional, natural daylight, unposed family moment, nostalgic early digital photography aesthetic",
+  },
+  {
+    category: "photography",
+    label: "Apple Park发布会观众拍",
+    prompt: "Amateur iPhone photo at Apple Park during a keynote, presenter on stage. Shot from the crowd at a distance, slight camera shake, imperfect framing, some heads partially blocking the view, stage lighting creating exposure challenges, the big screen visible with presentation slides, audience members holding up phones to record, authentic event atmosphere captured by an attendee rather than professional photographer",
+  },
+
   // ===================== 风景 =====================
   {
     category: "landscape",
@@ -111,6 +154,11 @@ export const TEMPLATES: TemplateItem[] = [
   },
 
   // ===================== 科幻 =====================
+  {
+    category: "scifi",
+    label: "3A游戏实机画面",
+    prompt: "GTA 6 in-game footage style, very detailed, very realistic. Close-up shot taken from a stationary 4K monitor, slight blurriness as if taken handheld from the screen. A wide bright environment with realistic details, natural character movement, authentic game HUD elements visible, the lighting and color grading matching triple-A open world game aesthetic, photorealistic game engine rendering quality, the image should look exactly like a screenshot captured during actual gameplay rather than promotional material or concept art",
+  },
   {
     category: "scifi",
     label: "巨型太空站",
@@ -259,6 +307,16 @@ export const TEMPLATES: TemplateItem[] = [
   },
 
   // ===================== 图生视频专用 =====================
+  {
+    category: "video",
+    label: "16格动漫表情网格",
+    prompt: "Create a 16-panel expression grid of a character. Their face shape, hairstyle, and clothing must remain highly consistent across all panels. The 16 expressions should include: happy, sad, angry, surprised, shy, speechless, evil grin, contemplative, curious, proud, wronged, disdainful, confused, scared, crying, and a heart expression. Clean white grid lines separating each panel, consistent even lighting across all frames, same character identity preserved 100% across every expression, anime illustration style, professional animation expression sheet quality",
+  },
+  {
+    category: "video",
+    label: "角色官方设定集",
+    prompt: "Based on this character and background, please create a character reference sheet similar to official setting materials used by professional animation studios. Include: (1) three-view turnaround drawings showing front view side view and back view with perfect anatomical and costume consistency, (2) a grid of 6-8 facial expression variations showing different emotions while preserving identical facial structure, (3) detailed breakdown callouts of clothing equipment and accessories with close-up views, (4) a color palette swatch section with labeled color codes for skin hair outfit and accessories, (5) a brief explanation of the character's world setting and background story in a sidebar, (6) organized professional layout on clean white background with neat section dividers, professional illustration style, this should look like an official production character bible page suitable for animation or game development reference",
+  },
   {
     category: "video",
     label: "角色三视图（标准）",
