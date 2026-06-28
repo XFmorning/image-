@@ -5,6 +5,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   setConfig: (config: any) => ipcRenderer.invoke("set-config", config),
   getHistory: () => ipcRenderer.invoke("get-history"),
   setHistory: (history: any[]) => ipcRenderer.invoke("set-history", history),
+  appendToHistory: (entry: any) => ipcRenderer.invoke("append-to-history", entry),
   readImage: (filename: string) => ipcRenderer.invoke("read-image", filename),
   saveImageBuffer: (filename: string, buffer: ArrayBuffer) =>
     ipcRenderer.invoke("save-image-buffer", filename, buffer),

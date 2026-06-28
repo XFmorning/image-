@@ -37,6 +37,7 @@ interface ElectronAPI {
   setConfig: (config: Config) => Promise<boolean>;
   getHistory: () => Promise<HistoryItem[]>;
   setHistory: (history: HistoryItem[]) => Promise<boolean>;
+  appendToHistory: (entry: any) => Promise<boolean>;
   readImage: (filename: string) => Promise<string>;
   saveImageBuffer: (filename: string, buffer: ArrayBuffer) => Promise<string>;
   saveUploadImage: (filename: string, dataUrl: string) => Promise<string>;
@@ -44,6 +45,7 @@ interface ElectronAPI {
   downloadImage: (url: string, filename: string) => Promise<string>;
   clearAllImages: () => Promise<boolean>;
   openStorageFolder: () => Promise<void>;
+  fetchUrlBuffer: (url: string, authHeader?: string) => Promise<string | null>;
   openExternal: (url: string) => Promise<void>;
 }
 

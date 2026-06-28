@@ -85,7 +85,9 @@ function registerIpcHandlers() {
     return true;
   });
 
-  // --- 历史记录 ---
+  // --- 历史记录（带写入锁防并发损坏） ---
+
+  let historyWriteLock: Promise<void> = Promise.resolve();
 
   ipcMain.handle("get-history", async () => {
     try {
@@ -97,7 +99,35 @@ function registerIpcHandlers() {
   });
 
   ipcMain.handle("set-history", async (_, history) => {
-    await fs.promises.writeFile(historyPath, JSON.stringify(history, null, 2), "utf-8");
+    const prev = historyWriteLock;
+    let resolve: () => void;
+    historyWriteLock = new Promise<void>((r) => { resolve = r; });
+    await prev;
+    try {
+      await fs.promises.writeFile(historyPath, JSON.stringify(history, null, 2), "utf-8");
+    } finally {
+      resolve!();
+    }
+    return true;
+  });
+
+  // 原子追加一条历史记录（避免读-改-写竞争）
+  ipcMain.handle("append-to-history", async (_, entry: any) => {
+    const prev = historyWriteLock;
+    let resolve: () => void;
+    historyWriteLock = new Promise<void>((r) => { resolve = r; });
+    await prev;
+    try {
+      let history: any[] = [];
+      try {
+        const raw = await fs.promises.readFile(historyPath, "utf-8");
+        history = JSON.parse(raw);
+      } catch { /* 文件不存在或损坏则从空开始 */ }
+      history.unshift(entry);
+      await fs.promises.writeFile(historyPath, JSON.stringify(history), "utf-8");
+    } finally {
+      resolve!();
+    }
     return true;
   });
 

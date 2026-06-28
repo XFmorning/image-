@@ -253,8 +253,7 @@ export default function Generate() {
         const filename = `img_${timestamp}_${taskId.slice(-6)}.png`;
         await window.electronAPI.saveImageBuffer(filename, result.images[0]);
 
-        const history = await window.electronAPI.getHistory();
-        history.unshift({
+        await window.electronAPI.appendToHistory({
           id: `${timestamp}_${taskId}`,
           prompt: basePrompt,
           imagePath: filename,
@@ -265,7 +264,6 @@ export default function Generate() {
           timestamp,
           status: "completed" as const,
         });
-        await window.electronAPI.setHistory(history);
 
         const dataUrl = await window.electronAPI.readImage(filename);
         updateTask(taskId, { status: "completed", resultFilename: filename, resultDataUrl: dataUrl, endTime: Date.now() });
