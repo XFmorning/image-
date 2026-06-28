@@ -363,7 +363,18 @@ export default function ModelConfig() {
           <Form.Item
             name="apiKey"
             label="API Key"
-            rules={[{ required: ({ getFieldValue }) => getFieldValue("apiProtocol") !== "pollinations", message: "请输入 API Key" }]}
+            rules={[
+              {
+                required: false,
+                validator: (_, value) => {
+                  const protocol = form.getFieldValue("apiProtocol");
+                  if (protocol !== "pollinations" && !value) {
+                    return Promise.reject(new Error("请输入 API Key"));
+                  }
+                  return Promise.resolve();
+                },
+              },
+            ]}
           >
             <Input.Password placeholder="sk-... (Pollinations 无需填写)" />
           </Form.Item>
