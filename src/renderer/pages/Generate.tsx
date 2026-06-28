@@ -102,7 +102,7 @@ const SUBJECT_PRESETS = [
 
 export default function Generate() {
   const navigate = useNavigate();
-  const { tasks, addTask, updateTask, removeTask, clearTasks, task, input, saveInput, setInputMode } = useGenTask();
+  const { tasks, addTask, updateTask, removeTask, clearTasks, resetTask, task, input, saveInput, setInputMode } = useGenTask();
   const cur = input[input.mode];
   const { prompt, ratioIdx, qualityIdx, selectedStyle, selectedSubject } = cur;
   const { mode } = input;
