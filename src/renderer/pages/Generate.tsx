@@ -551,13 +551,12 @@ export default function Generate() {
 
       {/* 参数配置 */}
       <Card size="small" style={{ marginBottom: 16 }}>
-        <Space direction="vertical" size={12} style={{ width: "100%" }}>
+        <Space direction="vertical" size={16} style={{ width: "100%" }}>
           {/* 模型选择 */}
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ color: "#666", fontSize: 14, minWidth: 40 }}>模型:</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+            <span style={{ color: "#888", fontSize: 13, minWidth: 36 }}>模型</span>
             {providers.length === 0 ? (
-              <Button size="small" type="link" onClick={() => navigate("/models")}
-                style={{ padding: 0 }}>
+              <Button size="small" type="link" onClick={() => navigate("/models")}>
                 暂无服务商，点击添加
               </Button>
             ) : (
@@ -565,73 +564,47 @@ export default function Generate() {
                 value={providerId}
                 onChange={(val) => {
                   setProviderId(val);
-                  window.electronAPI.setConfig({
-                    providers,
-                    activeProviderId: val,
-                  });
+                  window.electronAPI.setConfig({ providers, activeProviderId: val });
                 }}
-                style={{ minWidth: 200 }}
-                options={providers.map((p) => ({
-                  value: p.id,
-                  label: `${p.name} (${p.model})`,
-                }))}
-                    />
+                style={{ flex: 1, minWidth: 180 }}
+                options={providers.map((p) => ({ value: p.id, label: `${p.name} (${p.model})` }))}
+              />
             )}
-            <Button size="small" type="link" onClick={() => navigate("/models")}
-              style={{ fontSize: 12 }}>
-              管理
-            </Button>
+            <Button size="small" type="link" onClick={() => navigate("/models")}>管理</Button>
           </div>
 
-          <Space direction="vertical" size={8} style={{ width: "100%" }}>
-            <Space align="center">
-              <span style={{ color: "#666", fontSize: 14, minWidth: 40 }}>比例:</span>
-              <Segmented
-                value={ratioIdx}
-                onChange={(val) => saveInput({ ratioIdx: val as number })}
-                options={ASPECT_RATIOS.map((r, i) => ({
-                  label: (
-                    <div style={{ textAlign: "center", lineHeight: 1.3 }}>
-                      <div style={{ fontWeight: 600, fontSize: 14 }}>{r.label}</div>
-                      <div style={{ fontSize: 10, color: "#999", whiteSpace: "nowrap" }}>{r.hint}</div>
-                    </div>
-                  ),
-                  value: i,
-                }))}
-                    />
-            </Space>
-            <Space align="center">
-              <span style={{ color: "#666", fontSize: 14, minWidth: 40 }}>画质:</span>
-              <Segmented
-                value={qualityIdx}
-                onChange={(val) => saveInput({ qualityIdx: val as number })}
-                options={QUALITY_TIERS.map((q, i) => ({
-                  label: q.label,
-                  value: i,
-                }))}
-                    />
-              <Tag color="blue" style={{ marginLeft: 8 }}>
-                {calcSize(ratioIdx, qualityIdx).width}×{calcSize(ratioIdx, qualityIdx).height}
-              </Tag>
-            </Space>
-          </Space>
+          {/* 比例 */}
+          <div>
+            <div style={{ color: "#888", fontSize: 13, marginBottom: 6 }}>比例</div>
+            <Segmented
+              block
+              value={ratioIdx}
+              onChange={(val) => saveInput({ ratioIdx: val as number })}
+              options={ASPECT_RATIOS.map((r, i) => ({
+                label: r.label,
+                value: i,
+                title: r.hint,
+              }))}
+            />
+          </div>
 
-          <div style={{ display: "flex", gap: 8, alignSelf: "flex-end" }}>
+          {/* 画质 + 分辨率 */}
+          <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+            <span style={{ color: "#888", fontSize: 13, minWidth: 36 }}>画质</span>
+            <Segmented
+              value={qualityIdx}
+              onChange={(val) => saveInput({ qualityIdx: val as number })}
+              options={QUALITY_TIERS.map((q, i) => ({ label: q.label, value: i }))}
+            />
+            <Tag color="blue">{calcSize(ratioIdx, qualityIdx).width}×{calcSize(ratioIdx, qualityIdx).height}</Tag>
+          </div>
+
+          {/* 操作按钮 */}
+          <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
             <Badge count={tasks.filter(t => t.status === "generating" || t.status === "pending").length} size="small" offset={[-4, 4]}>
-              <Button
-                size="large"
-                icon={<OrderedListOutlined />}
-                onClick={() => setTaskListOpen(true)}
-              >
-                任务
-              </Button>
+              <Button size="large" icon={<OrderedListOutlined />} onClick={() => setTaskListOpen(true)}>任务</Button>
             </Badge>
-            <Button
-              type="primary"
-              size="large"
-              icon={<ThunderboltOutlined />}
-              onClick={handleGenerate}
-              style={{
+            <Button type="primary" size="large" icon={<ThunderboltOutlined />} onClick={handleGenerate} style={{
                 background: "var(--gradient-start)",
                 borderColor: "var(--gradient-start)",
               }}
