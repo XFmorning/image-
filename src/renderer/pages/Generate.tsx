@@ -600,17 +600,13 @@ export default function Generate() {
           </div>
 
           {/* 操作按钮 */}
-          <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+          <div style={{ display: "flex", gap: 10, justifyContent: "space-between", alignItems: "center" }}>
+            <Button type="primary" size="large" icon={<ThunderboltOutlined />} onClick={handleGenerate}>
+              生成
+            </Button>
             <Badge count={tasks.filter(t => t.status === "generating" || t.status === "pending").length} size="small" offset={[-4, 4]}>
               <Button size="large" icon={<OrderedListOutlined />} onClick={() => setTaskListOpen(true)}>任务</Button>
             </Badge>
-            <Button type="primary" size="large" icon={<ThunderboltOutlined />} onClick={handleGenerate} style={{
-                background: "var(--gradient-start)",
-                borderColor: "var(--gradient-start)",
-              }}
-            >
-              生成
-            </Button>
           </div>
         </Space>
       </Card>
