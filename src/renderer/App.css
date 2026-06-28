@@ -137,9 +137,9 @@ html, body, #root {
 
 .app-sider-menu .menu-item.active {
   color: var(--primary);
-  background: rgba(102, 126, 234, 0.12);
+  background: rgba(255, 255, 255, 0.85);
   font-weight: 600;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
 .app-sider-footer {
@@ -171,8 +171,18 @@ html, body, #root {
   flex: 1;
   height: 100%;
   overflow-y: auto;
-  background: url("./assets/main-bg.jpg") center center / cover no-repeat fixed;
+  background: #f8f9fb;
   position: relative;
+}
+
+/* 主内容顶部装饰条 */
+.main-content::before {
+  content: "";
+  display: block;
+  height: 180px;
+  margin: -36px -48px 24px;
+  background: url("./assets/main-bg.jpg") center 30% / cover no-repeat;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
 }
 
 .main-content {
