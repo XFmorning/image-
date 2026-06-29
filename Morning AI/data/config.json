@@ -1,0 +1,16 @@
+{
+  "providers": [
+    {
+      "id": "provider_1782657985655",
+      "name": "1",
+      "apiKey": "djEwpliQIVCUBIvsDjUAlnLdxZn+fzOiBs3R+8HeyBvAbKW9poYm0V6pl9hz0X1Gc1SCtoFbMtmMSxvgAfymp5a1/tQaOEn2hENEJ06Wbe/aWg==",
+      "baseUrl": "https://freeapi.dgbmc.top",
+      "model": "gpt-image-2",
+      "apiProtocol": "openai",
+      "t2iEndpoint": "",
+      "i2iEndpoint": "",
+      "createdAt": 1782657985655
+    }
+  ],
+  "activeProviderId": "provider_1782657985655"
+}

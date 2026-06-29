@@ -1,0 +1,17 @@
+# Node.js
+node_modules/
+
+# 系统文件
+Thumbs.db
+Desktop.ini
+*.lnk
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 临时文件
+*.tmp
+*.temp

@@ -1,0 +1,15 @@
+{
+  "name": "morning-ai",
+  "productName": "Morning AI",
+  "version": "1.0.0",
+  "description": "AI 图像生成桌面客户端",
+  "main": ".vite/build/main.js",
+  "dependencies": {
+    "@ant-design/icons": "^6.2.2",
+    "antd": "^6.3.7",
+    "electron-squirrel-startup": "^1.0.1",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "react-router-dom": "^7.14.2"
+  }
+}
