@@ -1,0 +1,1109 @@
+/* ============================================
+   Morning AI — Design Tokens & Global Styles
+   ============================================ */
+
+:root {
+  /* 主色 */
+  --primary: #8B5CF6;
+  --primary-hover: #7C4DFF;
+  --primary-light: #F4EDFF;
+
+  /* 背景 */
+  --bg-app: #FAFAFC;
+  --bg-card: #FFFFFF;
+  --bg-sidebar: #F5F3FF;
+
+  /* 文本 */
+  --text-title: #222222;
+  --text-body: #555555;
+  --text-secondary: #888888;
+  --text-placeholder: #BDBDBD;
+
+  /* 边框 */
+  --border: #ECECEC;
+
+  /* 成功 */
+  --success: #4CAF50;
+
+  /* 阴影 */
+  --shadow-card: 0 10px 35px rgba(0,0,0,0.05);
+  --shadow-sidebar: 0 0 60px rgba(150,120,255,0.08);
+
+  /* 圆角 */
+  --radius-xs: 14px;
+  --radius-sm: 16px;
+  --radius-md: 18px;
+  --radius-lg: 28px;
+
+  /* 尺寸 */
+  --sider-width: 300px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  font-family: "PingFang SC", "HarmonyOS Sans SC", "MiSans", "Source Han Sans",
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 15px;
+  color: var(--text-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============================================
+   全局背景 — Dreamy Gradient
+   ============================================ */
+
+body {
+  background: var(--bg-app);
+  position: relative;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(168,132,255,0.18) 0%, transparent 50%),
+    radial-gradient(circle at 85% 15%, rgba(255,210,120,0.15) 0%, transparent 50%),
+    radial-gradient(circle at 10% 80%, rgba(255,170,200,0.16) 0%, transparent 50%),
+    radial-gradient(circle at 90% 85%, rgba(255,235,180,0.14) 0%, transparent 50%);
+  filter: blur(120px);
+}
+
+/* ============================================
+   布局
+   ============================================ */
+
+.app-layout {
+  display: flex;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+/* ============================================
+   侧边栏
+   ============================================ */
+
+.app-sider {
+  width: var(--sider-width);
+  min-width: var(--sider-width);
+  height: 100%;
+  background: url("./assets/1.jpg") center center / cover no-repeat;
+  display: flex;
+  flex-direction: column;
+  color: var(--text-title);
+  user-select: none;
+  z-index: 10;
+  position: relative;
+  box-shadow: var(--shadow-sidebar);
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.6, 1.08), min-width 0.4s cubic-bezier(0.4, 0, 0.6, 1.08);
+}
+
+/* 侧边栏顶部渐变光斑 */
+.app-sider::before {
+  content: "";
+  position: absolute;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(168,132,255,0.12) 0%, transparent 70%);
+  top: -80px;
+  right: -60px;
+}
+
+.app-sider::after {
+  content: "";
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(200,160,255,0.10) 0%, transparent 70%);
+  bottom: 120px;
+  left: -50px;
+}
+
+/* --- Logo --- */
+
+.app-sider-logo {
+  padding: 20px 20px 8px;
+  position: relative;
+  z-index: 1;
+  transition: padding 0.4s cubic-bezier(0.4, 0, 0.6, 1.08);
+}
+
+.app-sider-logo .logo-card {
+  background: rgba(255,255,255,0.55);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 16px 18px;
+  border: 1px solid rgba(139,92,246,0.03);
+}
+
+.app-sider-logo h1,
+.app-sider-logo .logo-sub {
+  transition: opacity 0.3s ease;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.app-sider-logo .logo-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.app-sider-logo .logo-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #8B5CF6, #FF7A7A);
+  box-shadow: 0 0 10px rgba(139,92,246,0.4);
+  flex-shrink: 0;
+}
+
+.app-sider-logo h1 {
+  font-size: 21px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #4a3f6b 0%, #8B5CF6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 0.3px;
+  line-height: 1.3;
+}
+
+.app-sider-logo .logo-sub {
+  font-size: 11px;
+  color: #888;
+  margin-top: 2px;
+  padding-left: 20px;
+  font-weight: 500;
+}
+
+/* --- 菜单 --- */
+
+.app-sider-menu {
+  flex: 1;
+  padding: 12px 16px;
+  overflow-y: auto;
+  position: relative;
+  z-index: 1;
+}
+
+.app-sider-menu .menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 20px;
+  height: 54px;
+  margin-bottom: 2px;
+  border-radius: 18px;
+  color: #4A4A4A;
+  cursor: pointer;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.6, 1.08);
+  font-size: 16px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.app-sider-menu .menu-item span {
+  transition: opacity 0.3s ease;
+}
+
+.app-sider-menu .menu-item:hover {
+  background: rgba(139,92,246,0.06);
+  color: var(--primary);
+}
+
+.app-sider-menu .menu-item.active {
+  background: #FFFFFF;
+  color: #7B4DFF;
+  font-weight: 600;
+  box-shadow: 0 6px 20px rgba(130,90,255,0.08);
+}
+
+.app-sider-menu .menu-item .anticon {
+  font-size: 20px;
+}
+
+/* --- 底部 PRO 卡片 --- */
+
+.app-sider-footer {
+  margin: 0 16px 20px;
+  padding: 16px 20px;
+  border-radius: 28px;
+  background: linear-gradient(180deg, #EDE8FF 0%, #D8D1FF 100%);
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.4, 0, 0.6, 1.08);
+}
+
+.app-sider-footer .footer-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.app-sider-footer .pro-badge {
+  display: inline-block;
+  background: rgba(139,92,246,0.15);
+  color: var(--primary);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
+  margin-bottom: 6px;
+  width: fit-content;
+  letter-spacing: 1px;
+}
+
+.app-sider-footer .pro-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-title);
+  margin-bottom: 2px;
+}
+
+.app-sider-footer .pro-sub {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.app-sider-footer .footer-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.app-sider-footer .user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(139,92,246,0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+/* ============================================
+   主内容区
+   ============================================ */
+
+.main-layout {
+  flex: 1;
+  height: 100%;
+  overflow-y: auto;
+  background: transparent;
+  position: relative;
+}
+
+.main-content {
+  padding: 12px 40px 40px;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+/* 卡片间距 */
+.main-content .ant-card {
+  margin-bottom: 16px;
+}
+
+/* ============================================
+   通用卡片
+   ============================================ */
+
+.ant-card {
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-card) !important;
+  border: 1px solid var(--border) !important;
+  background: var(--bg-card) !important;
+  transition: box-shadow 0.3s, border-color 0.3s !important;
+}
+
+.ant-card:hover {
+  border-color: rgba(139,92,246,0.12) !important;
+}
+
+.ant-card .ant-card-head {
+  border-bottom: 1px solid var(--border) !important;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0 !important;
+  background: transparent !important;
+  padding: 16px 24px 12px !important;
+}
+
+.ant-card .ant-card-head-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-title);
+}
+
+.ant-card .ant-card-body {
+  padding: 16px 24px !important;
+}
+
+/* ============================================
+   按钮
+   ============================================ */
+
+.ant-btn {
+  border-radius: 14px !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.ant-btn-default {
+  border-color: var(--border) !important;
+  color: var(--text-body);
+}
+
+.ant-btn-default:hover {
+  border-color: var(--primary) !important;
+  color: var(--primary) !important;
+  background: var(--primary-light) !important;
+}
+
+/* 胶囊按钮 */
+.btn-capsule {
+  border-radius: 50px !important;
+  height: 42px;
+  padding: 0 28px !important;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+/* 主按钮 — 紫红渐变 */
+.btn-generate {
+  width: 240px !important;
+  height: 56px !important;
+  background: linear-gradient(90deg, #8B5CF6, #FF7A7A) !important;
+  border: none !important;
+  border-radius: 16px !important;
+  color: #fff !important;
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 10px 24px rgba(138,92,246,0.25) !important;
+  letter-spacing: 1px;
+}
+
+.btn-generate:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 36px rgba(138,92,246,0.35) !important;
+  filter: brightness(1.04);
+}
+
+/* ============================================
+   输入框
+   ============================================ */
+
+.ant-input,
+.ant-input-password {
+  border-radius: 14px !important;
+  border-color: var(--border) !important;
+  padding: 4px 16px !important;
+  font-size: 15px;
+  transition: all 0.25s !important;
+}
+
+.ant-input:focus,
+.ant-input-password:focus {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 4px rgba(139,92,246,0.08) !important;
+}
+
+textarea.ant-input {
+  border-radius: 18px !important;
+  resize: none;
+  line-height: 1.8;
+  padding: 16px 20px !important;
+}
+
+.ant-input::placeholder,
+textarea.ant-input::placeholder {
+  color: var(--text-placeholder);
+}
+
+/* ============================================
+   Select
+   ============================================ */
+
+.ant-select-selector {
+  border-radius: 14px !important;
+  border-color: var(--border) !important;
+  height: 38px !important;
+  padding: 4px 16px !important;
+  font-size: 15px;
+}
+
+.ant-select-focused .ant-select-selector {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 4px rgba(139,92,246,0.08) !important;
+}
+
+/* ============================================
+   Tabs
+   ============================================ */
+
+.ant-tabs-tab {
+  border-radius: 14px !important;
+  padding: 10px 30px !important;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.ant-tabs-nav {
+  margin-bottom: 8px !important;
+}
+
+/* 生成页整体上移覆盖 banner */
+.gen-tabs-wrapper {
+  margin-top: -60px;
+  position: relative;
+  z-index: 1;
+}
+
+.ant-tabs-tab:hover {
+  color: var(--primary) !important;
+}
+
+.ant-tabs-tab-active {
+  background: var(--primary-light) !important;
+  color: var(--primary) !important;
+}
+
+.ant-tabs-ink-bar {
+  height: 3px !important;
+  border-radius: 2px;
+  background: var(--primary) !important;
+}
+
+/* ============================================
+   Filter Chips（胶囊选择器）
+   ============================================ */
+
+.filter-chip {
+  height: 42px;
+  padding: 0 18px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-body);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.filter-chip:hover {
+  background: #F8F5FF;
+  border-color: rgba(139,92,246,0.25);
+}
+
+.filter-chip.active {
+  background: #F4EDFF;
+  border-color: #8A5BFF;
+  color: #7A4DFF;
+  font-weight: 600;
+}
+
+/* ============================================
+   比例选择卡片
+   ============================================ */
+
+.aspect-card {
+  width: 120px;
+  height: 90px;
+  border-radius: 16px;
+  border: 2px solid var(--border);
+  background: var(--bg-card);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+}
+
+.aspect-card:hover {
+  border-color: rgba(139,92,246,0.3);
+  background: #F8F5FF;
+}
+
+.aspect-card.active {
+  background: #F3EDFF;
+  border-color: #8C62FF;
+}
+
+.aspect-card .aspect-icon {
+  width: 28px;
+  height: 20px;
+  border: 2px solid #999;
+  border-radius: 4px;
+}
+
+.aspect-card.active .aspect-icon {
+  border-color: #8C62FF;
+  background: rgba(140,98,255,0.08);
+}
+
+.aspect-card .aspect-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-body);
+}
+
+.aspect-card.active .aspect-label {
+  color: #7A4DFF;
+}
+
+.aspect-card .aspect-hint {
+  font-size: 10px;
+  color: var(--text-secondary);
+}
+
+/* ============================================
+   画质按钮
+   ============================================ */
+
+.quality-btn {
+  height: 42px;
+  padding: 0 20px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-body);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.quality-btn:hover {
+  background: #F8F5FF;
+}
+
+.quality-btn.active {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* ============================================
+   Modal / Drawer
+   ============================================ */
+
+.ant-modal-content,
+.ant-drawer-content {
+  border-radius: var(--radius-lg) !important;
+  overflow: hidden;
+}
+
+.ant-drawer-header {
+  border-bottom: 1px solid var(--border) !important;
+  padding: 24px 28px !important;
+}
+
+.ant-drawer-body {
+  padding: 24px 28px !important;
+}
+
+.ant-message-notice-content {
+  border-radius: 18px !important;
+  box-shadow: 0 12px 36px rgba(0,0,0,0.08) !important;
+}
+
+/* ============================================
+   页面标题 Banner
+   ============================================ */
+
+.page-banner {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 0;
+  overflow: visible;
+}
+
+.page-banner .banner-text {
+  padding-top: 4px;
+}
+
+.page-banner .banner-img {
+  height: 180px;
+  object-fit: contain;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 0;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(to left, black 60%, transparent 100%);
+  mask-image: linear-gradient(to left, black 60%, transparent 100%);
+}
+
+.page-banner h2 {
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--text-title);
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+}
+
+.page-banner .banner-sub {
+  font-size: 15px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+  font-weight: 400;
+}
+
+.page-banner .banner-illustration {
+  width: 260px;
+  height: 160px;
+  opacity: 0.85;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ============================================
+   旧版兼容
+   ============================================ */
+
+.page-header {
+  margin-bottom: 16px;
+}
+
+.page-header h2 {
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--text-title);
+}
+
+/* ============================================
+   Tag
+   ============================================ */
+
+.ant-tag {
+  border-radius: 10px !important;
+  font-weight: 500;
+  padding: 4px 12px;
+  font-size: 13px;
+}
+
+/* ============================================
+   Segmented
+   ============================================ */
+
+.ant-segmented {
+  border-radius: 16px !important;
+  background: #F5F4F8 !important;
+  padding: 4px !important;
+}
+
+.ant-segmented .ant-segmented-item {
+  border-radius: 14px !important;
+  transition: all 0.25s !important;
+}
+
+.ant-segmented .ant-segmented-item-selected {
+  background: var(--primary-light) !important;
+  color: var(--primary) !important;
+  font-weight: 600;
+}
+
+/* ============================================
+   历史页
+   ============================================ */
+
+.history-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+/* ============================================
+   空状态
+   ============================================ */
+
+.ant-empty-image {
+  opacity: 0.4;
+}
+
+/* ============================================
+   滚动条
+   ============================================ */
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.10);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0,0,0,0.18);
+}
+
+/* ============================================
+   动画
+   ============================================ */
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  33%  { transform: translateY(-12px) rotate(3deg); }
+  66%  { transform: translateY(-6px) rotate(-2deg); }
+}
+
+@keyframes float-delayed {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  33%  { transform: translateY(-8px) rotate(-2deg); }
+  66%  { transform: translateY(-14px) rotate(1deg); }
+}
+
+@keyframes spin-ring {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(139,92,246,0.4); }
+  50%      { box-shadow: 0 0 0 16px rgba(139,92,246,0); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.8); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes celebrate-particle {
+  0%   { opacity: 1; transform: translate(0, 0) scale(1); }
+  100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0); }
+}
+
+/* ============================================
+   装饰/动画元素
+   ============================================ */
+
+.idle-illustration {
+  position: relative;
+  width: 200px;
+  height: 160px;
+  margin: 0 auto 24px;
+}
+
+.idle-illustration .orb {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.15;
+}
+
+.loading-dots {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.loading-dots span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--primary);
+  animation: float 1.2s ease-in-out infinite;
+}
+
+.loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+.loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+.celebrate-particles {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.celebrate-particle {
+  position: absolute;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  animation: celebrate-particle 1.2s ease-out forwards;
+}
+
+.shimmer-text {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 4px;
+}
+
+.fade-in {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+.scale-in {
+  animation: scaleIn 0.4s ease-out;
+}
+
+/* ============================================
+   页面切换过渡
+   ============================================ */
+
+
+/* ============================================
+   侧边栏折叠
+   ============================================ */
+
+.collapse-btn {
+  font-size: 18px;
+  color: #888;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 10px;
+  transition: all 0.25s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+}
+
+.collapse-btn:hover {
+  background: rgba(139,92,246,0.08);
+  color: var(--primary);
+}
+
+.app-sider.collapsed {
+  width: 72px !important;
+  min-width: 72px !important;
+}
+
+.app-sider.collapsed .app-sider-logo {
+  padding: 16px 8px 8px;
+}
+
+.app-sider.collapsed .logo-card {
+  display: none;
+}
+
+.app-sider.collapsed .app-sider-menu {
+  padding: 8px 8px;
+}
+
+.app-sider.collapsed .menu-item {
+  padding: 0;
+  justify-content: center;
+  height: 48px;
+  border-radius: 14px;
+}
+
+/* ============================================
+   响应式
+   ============================================ */
+
+@media (max-width: 1400px) {
+  .main-content {
+    padding: 12px 28px 32px;
+  }
+  .page-banner h2 {
+    font-size: 30px;
+  }
+  .page-banner .banner-img {
+    height: 140px;
+  }
+  .ant-tabs-tab {
+    font-size: 18px;
+    padding: 8px 20px !important;
+  }
+  .aspect-card {
+    width: 100px;
+    height: 78px;
+  }
+  .aspect-card .aspect-label {
+    font-size: 12px;
+  }
+  .btn-generate {
+    width: 200px !important;
+    height: 50px !important;
+    font-size: 16px !important;
+  }
+  .gen-tabs-wrapper {
+    margin-top: -40px;
+  }
+}
+
+@media (max-width: 1100px) {
+  :root {
+    --sider-width: 220px;
+  }
+  .main-content {
+    padding: 10px 20px 28px;
+  }
+  .page-banner h2 {
+    font-size: 26px;
+  }
+  .page-banner .banner-sub {
+    font-size: 13px;
+  }
+  .page-banner .banner-img {
+    height: 110px;
+  }
+  .ant-tabs-tab {
+    font-size: 16px;
+    padding: 6px 16px !important;
+  }
+  .ant-card .ant-card-head-title {
+    font-size: 16px;
+  }
+  .ant-card .ant-card-body {
+    padding: 12px 18px !important;
+  }
+  .ant-card .ant-card-head {
+    padding: 12px 18px 8px !important;
+  }
+  .filter-chip {
+    height: 36px;
+    padding: 0 14px;
+    font-size: 13px;
+    border-radius: 12px;
+  }
+  .aspect-card {
+    width: 88px;
+    height: 70px;
+    border-radius: 14px;
+  }
+  .btn-generate {
+    width: 180px !important;
+    height: 46px !important;
+    font-size: 15px !important;
+  }
+  .gen-tabs-wrapper {
+    margin-top: -24px;
+  }
+}
+
+@media (max-width: 800px) {
+  :root {
+    --sider-width: 64px;
+  }
+  .app-sider-logo {
+    padding: 16px 8px 8px !important;
+  }
+  .app-sider-logo h1 {
+    display: none;
+  }
+  .app-sider-logo .logo-sub {
+    display: none;
+  }
+  .app-sider .logo-row {
+    justify-content: center;
+  }
+  .app-sider-menu {
+    padding: 8px 6px !important;
+  }
+  .app-sider-menu .menu-item {
+    padding: 0 !important;
+    justify-content: center;
+    height: 48px;
+    border-radius: 14px;
+    font-size: 0;
+  }
+  .app-sider-menu .menu-item span {
+    display: none;
+  }
+  .app-sider-menu .menu-item .anticon {
+    font-size: 22px;
+  }
+  .app-sider-footer {
+    display: none;
+  }
+  .main-content {
+    padding: 8px 16px 24px;
+  }
+  .page-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .page-banner h2 {
+    font-size: 24px;
+  }
+  .page-banner .banner-img {
+    height: 90px;
+  }
+  .ant-tabs-tab {
+    font-size: 15px;
+    padding: 6px 14px !important;
+  }
+  .ant-card .ant-card-head-title {
+    font-size: 15px;
+  }
+  .filter-chip {
+    height: 32px;
+    padding: 0 10px;
+    font-size: 12px;
+    gap: 4px;
+  }
+  .aspect-card {
+    width: 72px;
+    height: 60px;
+    border-radius: 12px;
+  }
+  .quality-btn {
+    height: 36px;
+    padding: 0 14px;
+    font-size: 13px;
+  }
+  .btn-generate {
+    width: 100% !important;
+    height: 48px !important;
+    font-size: 16px !important;
+  }
+  .gen-tabs-wrapper {
+    margin-top: 0;
+  }
+  .main-content .ant-card {
+    margin-bottom: 10px;
+  }
+}

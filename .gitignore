@@ -1,6 +1,10 @@
 # Node.js
 node_modules/
 
+# Build output
+.vite/
+out/
+
 # 系统文件
 Thumbs.db
 Desktop.ini
@@ -15,3 +19,9 @@ Desktop.ini
 # 临时文件
 *.tmp
 *.temp
+
+# 安装包/压缩包（源码目录下忽略，根目录安装包已 LFS 追踪）
+*.zip
+
+# 其他项目
+awesome-gpt-image-2-main/
