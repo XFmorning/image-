@@ -1,4 +1,5 @@
 # Morning AI
+#AI自由画布桌面端
 
 AI 图像生成桌面客户端 (Electron + React + Vite)
 
